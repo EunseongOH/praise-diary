@@ -13,7 +13,7 @@ type Props = {
 const EMPTY_CHARS = ' '; // 아직 기록이 없을 땐 사용자 글자 파티클도 없어야 한다.
 
 /** 모션 엔진을 교체하기 전의 SVG 스터디. 원문을 그래픽/공유 이미지에 그대로 노출하지 않는다. */
-export function GraphicArtwork({ theme, writtenDays, letterCount, reducedMotion = false, small = false }: Props) {
+export function GraphicArtwork({ theme, writtenDays, letterCount, reducedMotion = false, small = false, letterSource = '' }: Props) {
   const id = useId().replace(/:/g, '');
   // 12월 특별 목표는 미정. 임의 숫자로 완성 판정을 하지 않으며, 아래 값은 시연용 성장 높이만 계산.
   const fill = theme.targetDays != null
