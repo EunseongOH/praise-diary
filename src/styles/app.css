@@ -129,3 +129,53 @@ button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 3px
 @media (max-width: 360px) { .app-content { padding-left: 16px; padding-right: 16px; } .month-tile__art { height: 152px; } .app-bar { padding-inline: 16px; } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; } }
 .reduce-motion *, .reduce-motion { animation: none !important; transition: none !important; }
+
+/* v0.2 — immersive dark canvas: the artwork has NO box of its own. */
+html,body{background:var(--background);color:var(--ink)}
+.app-shell{background:var(--background);box-shadow:none}
+.app-bar{background:var(--background);border:0}
+.bottom-navigation{background:var(--background);border:0}
+.bottom-navigation__item{color:var(--muted)}
+.bottom-navigation__item.is-active{color:var(--ink)}
+.bottom-navigation__item.is-active::after{background:var(--accent)}
+.ui-button--primary{background:var(--accent);color:var(--accent-ink)}
+.ui-button--secondary{background:transparent;color:var(--ink);border-color:#637B69}
+.ui-button--quiet,.ui-text-action{color:var(--accent)}
+.illustration-stage{background:transparent;border:0;border-radius:0;padding:0;color:var(--ink)}
+.illustration-stage__top{color:var(--ink)}
+.illustration-stage__subtitle,.illustration-stage__footer{color:var(--muted)}
+.graphic-artwork{max-width:400px}
+.graphic-artwork--small{max-width:176px}
+.home-page .page-intro{text-align:center;margin:11px 0 0}
+.home-page .page-title{font-weight:670;font-size:clamp(25px,6.8vw,32px);letter-spacing:-.055em;margin:6px 0 8px}
+.home-page .immersive-scene{min-height:clamp(430px,59dvh,740px);margin-inline:-22px;padding-inline:22px;display:flex;flex-direction:column;justify-content:center;align-items:stretch}
+.home-page .immersive-scene__top{justify-content:center;padding:25px 0 0}
+.home-page .immersive-scene__art{flex:1;width:100%;min-height:305px;display:grid;place-items:center}
+.home-page .immersive-scene__art .graphic-artwork{width:min(100%,410px)}
+.home-page .immersive-scene__footer{padding:0 0 20px;font-size:12px}
+.home-page .action-stack{margin:0 0 15px}
+.immersive-detail .illustration-stage,.immersive-detail .illustration-stage__view{width:100%;min-height:min(56dvh,530px);display:grid;place-items:center}
+.immersive-detail .illustration-stage .graphic-artwork{width:min(100%,430px)}
+.immersive-detail .illustration-stage__footer{padding:4px 0 20px}
+.month-tiles{gap:14px 10px}
+.month-tile{background:transparent;border:0;border-radius:0;overflow:visible}
+.month-tile__art,.month-tile--locked .month-tile__art{height:190px;background:transparent}
+.month-tile__copy{padding:4px 0 16px;min-height:94px}
+.letter-art{background:transparent}
+.letter-art__envelope,.letter-art__envelope::after{background:#1D2924;border-color:#90AC9C}
+.memory-slip{background:var(--surface);border-color:var(--line)}
+.info-sheet,.segmented-choice,.prompt-row{background:var(--surface-soft)}
+.segmented-choice__item.is-active{background:#35483A;color:var(--ink);box-shadow:none}
+.form-textarea,.form-input{background:var(--surface);color:var(--ink);border-color:#718878}
+.form-textarea::placeholder,.form-input::placeholder{color:var(--muted)}
+.prompt-row{color:var(--ink)}
+.prompt-row.is-active{border-color:var(--accent);background:var(--surface-green)}
+.write-footer{background:var(--background)}
+.switch{background:#607567}
+.switch--active{background:var(--accent)}
+.radio-row input{accent-color:var(--accent)}
+.dialog{background:#18231E;color:var(--ink);border:1px solid var(--line)}
+.dialog-backdrop{background:rgba(0,0,0,.72)}
+.toast{background:#263A30;color:var(--ink);border:1px solid var(--line)}
+::selection{background:var(--brand-lime);color:var(--accent-ink)}
+@media(max-width:360px){.home-page .immersive-scene{margin-inline:-16px;padding-inline:16px}}

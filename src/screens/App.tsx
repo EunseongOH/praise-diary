@@ -160,20 +160,20 @@ export default function App() {
       action={page.screen === 'home' ? '설정' : undefined}
       onAction={page.screen === 'home' ? () => navigate({ screen: 'settings' }) : undefined} />
     <main className={`app-content ${!isTabPage ? 'app-content--no-tabs' : ''}`} id="main-content">
-      {page.screen === 'home' && <>
-        <div className="page-intro"><span className="eyebrow">{formatMonth(todayMonth)}</span><h1 className="page-title">오늘의 나에게, 칭찬 한마디.</h1><p className="description">내가 남긴 말들이 조금씩 모여요.</p></div>
-        {todayTheme ? <section className="illustration-stage" aria-label="이번 달 그래픽">
-          <div className="illustration-stage__top"><h2 className="illustration-stage__title">{todayTheme.title}</h2><span className="illustration-stage__subtitle">{currentDays}일의 칭찬</span></div>
-          <button type="button" className="illustration-stage__view" onClick={() => navigate({ screen: 'graphic', month: todayMonth })} aria-label="그래픽 크게 보기">
+      {page.screen === 'home' && <section className="home-page">
+        <div className="page-intro"><span className="eyebrow">{formatMonth(todayMonth)}</span><h1 className="page-title">{todayTheme?.title ?? '오늘의 나에게, 칭찬 한마디.'}</h1><p className="description">내가 남긴 말들이 조금씩 모여요.</p></div>
+        {todayTheme ? <section className="illustration-stage immersive-scene" aria-label="이번 달 그래픽">
+          <div className="illustration-stage__top immersive-scene__top"><span className="illustration-stage__subtitle">{currentDays}일의 칭찬</span></div>
+          <button type="button" className="illustration-stage__view immersive-scene__art" onClick={() => navigate({ screen: 'graphic', month: todayMonth })} aria-label="그래픽 크게 보기">
             <GraphicArtwork theme={todayTheme} writtenDays={currentDays} letterCount={currentCount} letterSource={todayEntries.map(e => e.body).join(' ')} reducedMotion={state.reducedMotion} />
           </button>
-          <div className="illustration-stage__footer">그래픽을 누르면 크게 볼 수 있어요.</div>
+          <div className="illustration-stage__footer immersive-scene__footer">그래픽을 누르면 크게 볼 수 있어요.</div>
         </section> : <div className="info-sheet"><p>새로운 그래픽을 준비하고 있어요.</p></div>}
         <div className="action-stack">
           <Button className="ui-button--full" disabled={!todayTheme} onClick={() => startWrite()}>{dateHasEntry(state.entries, today) ? COPY.home.anotherEntry : COPY.home.newEntry}</Button>
           <TextAction onClick={() => navigate({ screen: 'list' })}>{COPY.home.myEntries}</TextAction>
         </div>
-      </>}
+      </section>}
 
       {page.screen === 'write' && <div className="space-stack">
         {!page.editId && <>
@@ -195,7 +195,7 @@ export default function App() {
         <div className="write-footer"><Button className="ui-button--full" onClick={saveEntry} disabled={!writerBody.trim()}>{page.editId ? COPY.write.edit : COPY.write.save}</Button></div>
       </div>}
 
-      {page.screen === 'saved' && <div className="space-stack">
+      {page.screen === 'saved' && <div className="space-stack immersive-detail">
         <div className="month-detail-title"><span className="eyebrow">{page.day && formatDay(page.day)}</span><h1 className="page-title">{savedMessage(monthTheme,page.mode ?? 'growth')}</h1></div>
         {monthTheme && <div className="illustration-stage"><GraphicArtwork theme={monthTheme} writtenDays={writtenDays(state.entries,currentMonth)} letterCount={monthEntries(state.entries,currentMonth).length} letterSource={monthEntries(state.entries,currentMonth).map(e => e.body).join(' ')} reducedMotion={state.reducedMotion} /></div>}
         <p className="description text-center">칭찬을 잘 남겼어요.</p>
@@ -234,11 +234,11 @@ export default function App() {
         <div className="page-intro"><h1 className="page-title">{COPY.collection.title}</h1><p className="description">{COPY.collection.subtitle}</p></div>
         <div className="month-tiles">{allMonths.map(month => <MonthTile key={month} month={month} theme={themeFor(month)} writtenDays={writtenDays(state.entries,month)} entries={monthEntries(state.entries,month).length} letterSource={monthEntries(state.entries,month).map(e => e.body).join(' ')} reducedMotion={state.reducedMotion} locked={month > todayMonth || !themeFor(month)} onClick={() => openMonth(month)} />)}</div>
       </>}
-      {page.screen === 'month' && <div className="space-stack"><div className="month-detail-title"><h1 className="page-title">{monthTheme?.title ?? formatMonth(currentMonth)}</h1><span className="small-caption">{writtenDays(state.entries,currentMonth)}일의 칭찬</span></div>
+      {page.screen === 'month' && <div className="space-stack immersive-detail"><div className="month-detail-title"><h1 className="page-title">{monthTheme?.title ?? formatMonth(currentMonth)}</h1><span className="small-caption">{writtenDays(state.entries,currentMonth)}일의 칭찬</span></div>
         {monthTheme && <div className="illustration-stage"><button className="illustration-stage__view" aria-label="그래픽 크게 보기" onClick={() => navigate({ screen:'graphic', month:currentMonth })}><GraphicArtwork theme={monthTheme} writtenDays={writtenDays(state.entries,currentMonth)} letterCount={monthEntries(state.entries,currentMonth).length} letterSource={monthEntries(state.entries,currentMonth).map(e => e.body).join(' ')} reducedMotion={state.reducedMotion}/></button></div>}
         <Button className="ui-button--full" variant="secondary" onClick={() => navigate({screen:'list',month:currentMonth})}>{COPY.collection.monthEntries}</Button>
       </div>}
-      {page.screen === 'graphic' && <div className="space-stack"><div className="month-detail-title"><h1 className="page-title">{monthTheme?.title ?? formatMonth(currentMonth)}</h1></div>
+      {page.screen === 'graphic' && <div className="space-stack immersive-detail"><div className="month-detail-title"><h1 className="page-title">{monthTheme?.title ?? formatMonth(currentMonth)}</h1></div>
         {monthTheme && <div className="illustration-stage"><GraphicArtwork theme={monthTheme} writtenDays={writtenDays(state.entries,currentMonth)} letterCount={monthEntries(state.entries,currentMonth).length} letterSource={monthEntries(state.entries,currentMonth).map(e => e.body).join(' ')} reducedMotion={state.reducedMotion}/><p className="illustration-stage__footer">{writtenDays(state.entries,currentMonth)}일의 칭찬</p></div>}
         <TextAction onClick={() => navigate({screen:'list',month:currentMonth})}>{COPY.collection.monthEntries}</TextAction>
       </div>}

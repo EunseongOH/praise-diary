@@ -1,5 +1,5 @@
 :root {
-  color-scheme: light;
+  color-scheme: dark;
   font-family: Pretendard, -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', system-ui, sans-serif;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -13,22 +13,23 @@
   --brand-sky: #A6C5D3;
 
   /* Semantic colors are chosen independently for WCAG 2.2 AA contrast. */
-  --background: #FFFFFF;
-  --surface: #FFFFFF;
-  --surface-soft: #F7F8F4;
-  --surface-green: #EDF5E7;
-  --line: #DCE5DE;
-  --ink: #273C2F;
-  --muted: #465C4C;
-  --accent: #235C36;
-  --accent-hover: #17472A;
+  --background: #0C1111;
+  --surface: #111B18;
+  --surface-soft: #16221D;
+  --surface-green: #203329;
+  --line: #385044;
+  --ink: #F5F6EF;
+  --muted: #B7C8BA;
+  --accent: #B8D68A;
+  --accent-hover: #D0E8AD;
   --accent-soft: #B8D68A;
-  --danger: #9C3030;
-  --danger-soft: #FFF3F1;
-  --hero: #162A28;
-  --hero-ink: #FFFFFF;
+  --accent-ink: #15221B;
+  --danger: #A63C3C;
+  --danger-soft: #332321;
+  --hero: #0C1111;
+  --hero-ink: #F5F6EF;
   --hero-sky: #A6C5D3;
-  --focus: #245D40;
+  --focus: #FAD89E;
 
   --space-1: 4px;
   --space-2: 8px;

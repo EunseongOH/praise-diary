@@ -24,11 +24,16 @@ export function GraphicArtwork({ theme, writtenDays, letterCount, reducedMotion 
   // 프로토타입 내부 그래픽에 한해서만 개인 글자 사용. 공개 공유 이미지는 별도 비식별 처리 필요.
   const chars = Array.from(letterSource).filter(c => /[가-힣a-zA-Z0-9]/.test(c)).reverse();
   const particleCount = chars.length ? Math.min(120, 18 + letterCount * 8) : 0;
-  const particles = Array.from({ length: particleCount }, (_, index) => ({
-    x: 36 + ((index * 47 + index * index * 3) % 260),
-    y: 36 + ((index * 83 + index * 7) % 270),
-    glyph: chars[(index * 17 + 7) % chars.length] ?? EMPTY_CHARS,
-  }));
+  // Keep diary glyphs inside the figure; do not scatter them across a rectangular card.
+  const particles = Array.from({ length: particleCount }, (_, index) => {
+    const arm = index % 6, radius = 24 + ((index * 23) % 94), angle = arm * Math.PI / 3;
+    const side = ((index * 13 + 7) % 29) - 14;
+    return {
+      x: theme.kind === 'snowflake' ? 170 + Math.sin(angle) * radius + Math.cos(angle) * side : 44 + ((index * 47 + index * index * 3) % 260),
+      y: theme.kind === 'snowflake' ? 168 - Math.cos(angle) * radius + Math.sin(angle) * side : 88 + ((index * 83 + index * 7) % 190),
+      glyph: chars[(index * 17 + 7) % chars.length] ?? EMPTY_CHARS,
+    };
+  });
 
   return <svg className={`graphic-artwork ${small ? 'graphic-artwork--small' : ''} ${reducedMotion ? 'reduce-motion' : ''}`}
     viewBox="0 0 340 340" role="img" aria-label={`${theme.title}, ${writtenDays}일의 칭찬이 쌓인 그래픽`}>
@@ -55,7 +60,7 @@ export function GraphicArtwork({ theme, writtenDays, letterCount, reducedMotion 
           </g>)}
         </g>
         {particles.map((particle, i) => <text key={i} x={particle.x} y={particle.y}
-          fill="#A6C5D3" opacity={0.27 + (i % 4) * 0.1} fontSize={small ? 7 : 8.8}>
+          fill="#C5DBE6" opacity={0.47 + (i % 4) * 0.1} fontSize={small ? 7 : 8.8}>
           {particle.glyph}
         </text>)}
       </g>

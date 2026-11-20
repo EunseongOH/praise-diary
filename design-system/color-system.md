@@ -44,3 +44,8 @@
 
 - https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum
 - https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast
+
+## v0.2 몰입형 다크 시안 (기존 라이트+아트카드 제안 대체)
+- 공통 배경/아트: `#0C1111` (경계 없음). 본문 `#F5F6EF`, 보조 `#B7C8BA`, 주요 CTA `#B8D68A`/버튼 글자 `#15221B`, 눈꽃 `#A6C5D3`.
+- 사용자 제안 5색은 최종 브랜드 팔레트가 아닌 탐색용이며, 밝은 색상을 본문에 억지로 쓰지 않는다.
+- 필요시 입력 필드·다이얼로그에는 별도 면색 허용. 월간 그래픽만은 카드/테두리/둥근 모서리 금지.

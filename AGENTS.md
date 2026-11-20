@@ -13,3 +13,5 @@
 
 11. User-supplied reference palette (candidate only): `#B8D68A`, `#61AE72`, `#FFFFFF`, `#FAD89E`, `#A6C5D3`. Use semantic AA-contrast tokens, not raw pastel colors for normal text. See `design-system/color-system.md`.
 12. Do not claim production completeness: sessionStorage and fake preview data are demo-only; `npm run build` has not yet been run successfully in the constrained environment.
+
+13. Immersive graphics: home/saved/detail are one uninterrupted canvas without a differently colored, rounded or bordered artwork card. Dark default #0C1111; a later light theme must preserve no-card layout. Maintain legible text and visual-state contrast.

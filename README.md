@@ -51,3 +51,6 @@ Toss WebView/로그인·동의 검증, 영구 데이터 저장/인증/보안, �
 현재 연결된 GitHub App은 이 새 저장소를 읽을 수 있지만, 설치된 앱의 **선택 저장소에 아직 추가되지 않아** API가 403으로 파일 쓰기를 거부합니다. https://github.com/settings/installations → ChatGPT 관련 앱 → Configure → Repository access → Only select repositories → Select repositories에서 `EunseongOH/praise-diary` 추가 후 Save.
 
 GitHub 저장소는 현재 **공개(Public)** 상태입니다. 실제 칭찬일기 내용·인증키·사내정보는 업로드하지 마세요.
+
+## 디자인 방향 v0.2
+사용자가 제공한 레퍼런스에 따라 그래픽 화면을 별도의 박스로 나누지 않고 앱 전체를 하나의 **몰입형 다크 캔버스**로 설계합니다. 2열 도감은 유지하고, 라이트 테마는 무경계 표현을 유지할 수 있을 때 다시 검토합니다. UX Writing·기존 날짜/저장 규칙은 변경하지 않았습니다.
