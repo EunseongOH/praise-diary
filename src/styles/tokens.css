@@ -1,18 +1,38 @@
 :root {
+  /* Visual direction v0.2: one uninterrupted dark canvas, not an artwork card.
+     Soft colors are exploration candidates, not final brand colors. */
   color-scheme: dark;
-  font-family: Pretendard, -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', system-ui, sans-serif;
+  font-family: var(--font-body);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
 
-  /* 2026-11-21: user's color inspiration, NOT final brand specification. */
+  /* Type study v0.3: SUIT Variable is a candidate, not final brand type. */
+  --font-body: 'SUIT Variable', 'Pretendard Variable', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', system-ui, sans-serif;
+  --font-display: var(--font-body);
+  --type-hero: clamp(28px, 7vw, 32px);
+  --type-page: 26px;
+  --type-section: 18px;
+  --type-entry-title: 20px;
+  --type-body: 16px;
+  --type-control: 16px;
+  --type-supporting: 14px;
+  --type-meta: 13px;
+  --leading-display: 1.3;
+  --leading-body: 1.65;
+  --leading-supporting: 1.55;
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-emphasis: 600;
+  --weight-strong: 700;
+
   --brand-lime: #B8D68A;
   --brand-leaf: #61AE72;
   --brand-white: #FFFFFF;
   --brand-apricot: #FAD89E;
   --brand-sky: #A6C5D3;
 
-  /* Semantic colors are chosen independently for WCAG 2.2 AA contrast. */
+  /* Default prototype is dark from top bar through artwork and bottom nav. */
   --background: #0C1111;
   --surface: #111B18;
   --surface-soft: #16221D;

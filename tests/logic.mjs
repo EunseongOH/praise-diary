@@ -19,6 +19,7 @@ function load(file, injectedRequire=()=>{throw Error('unexpected require')}){
 }
 const dates=load('lib/date.ts');
 const store=load('data/store.ts',name=>name==='../lib/date'?dates:undefined);
+const art=load('graphics/progress.ts');
 const at=(s)=>new Date(s);
 assert.equal(dates.serviceDate(at('2027-01-01T01:00:00+09:00'),0),'2027-01-01','default midnight begins Jan 1');
 assert.equal(dates.serviceDate(at('2027-01-01T01:00:00+09:00'),3),'2026-12-31','custom 03 boundary attributes to Dec 31');
@@ -34,3 +35,18 @@ assert.equal(store.dateHasEntry([a,b],'2026-12-17'),true);
 assert.equal(store.chooseDifferentEntry([a,b],'a').id,'b','rediscovery avoids immediate repeated entry');
 assert.equal(store.chooseDifferentEntry([a],'a').id,'a','single candidate allowed');
 console.log('PASS — 9 diary date, monthly distinct-day, and rediscovery assertions');
+
+// Shape reveal starts at the actual lower visible edge, not the SVG viewport.
+for (const kind of ['snowflake', 'sheep']) {
+  const empty = art.revealWindow(kind, 0, 15);
+  const first = art.revealWindow(kind, 1, 15);
+  const middle = art.revealWindow(kind, 7, 15);
+  const full = art.revealWindow(kind, 15, 15);
+  assert.equal(empty.height, 0, `${kind} empty shape has no active fill`);
+  assert.ok(first.height > 0, `${kind} first diary day is visible`);
+  assert.ok(first.top > middle.top && middle.top > full.top, `${kind} grows upwards`);
+  assert.equal(full.ratio, 1, `${kind} fully completes only at target`);
+  assert.equal(art.revealWindow(kind, 7, 15).top, middle.top, `${kind} same date additions don't change fill`);
+  assert.ok(art.revealWindow(kind, 15, null).ratio < 1, `${kind} unconfirmed target cannot be displayed as completed`);
+}
+console.log('PASS — bottom-up silhouette growth assertions for both monthly themes');
