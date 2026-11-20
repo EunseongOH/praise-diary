@@ -72,8 +72,8 @@ export function makeSnowflakeClusters(): GlyphCluster[] {
       slots: makeSlots(113, 14, arm + 1).map(slot => ({...slot, x: slot.x + 8})),
     });
     for (let level = 0; level < 3; level++) {
-      const at = [41, 66, 88][level];
-      const length = [28, 24, 19][level];
+      const at = ([41, 66, 88] as const)[level] ?? 88;
+      const length = ([28, 24, 19] as const)[level] ?? 19;
       for (const side of [-1, 1]) {
         const local = 53 * side;
         groups.push({
@@ -113,7 +113,7 @@ export function extractDiaryGlyphs(source: string): string[] {
 /** Stable per-slot selection; never inserts made-up words. */
 export function glyphForSlot(chars: string[], slotIndex: number): string {
   if (!chars.length) return '';
-  return chars[Math.floor(hash(slotIndex, 23) * chars.length) % chars.length];
+  return chars[Math.floor(hash(slotIndex, 23) * chars.length) % chars.length] ?? '';
 }
 
 /**
