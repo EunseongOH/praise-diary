@@ -9,7 +9,7 @@ const source = fs.readFileSync(new URL('../src/graphics/glyphLayout.ts', import.
 const compiled = ts.transpileModule(source, { fileName: 'glyphLayout.ts', compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS } }).outputText;
 const mod = { exports: {} };
 vm.runInNewContext(compiled, { module: mod, exports: mod.exports, Math, Array, Set, String, Number }, {filename:'glyphLayout.ts'});
-const { makeSnowflakeClusters, selectGlyphSlots, extractDiaryGlyphs, glyphForSlot } = mod.exports;
+const { makeSnowflakeClusters, selectGlyphSlots, extractDiaryGlyphs, glyphForSlot, assignDiaryGlyphs } = mod.exports;
 const clusters = makeSnowflakeClusters();
 assert.equal(clusters.length, 42, 'six spines and six paired twigs per arm');
 assert.equal(clusters.filter(g=>g.key.startsWith('snow-spine')).length, 6);
@@ -26,4 +26,16 @@ assert.ok(text.includes('내') && text.includes('N') && !text.includes('🌿'));
 assert.ok(text.includes(glyphForSlot(text,42)));
 assert.deepEqual(makeSnowflakeClusters(),clusters, 'geometry must be stable per render');
 assert.equal(selectGlyphSlots(clusters,0).size,0);
-console.log('PASS — themed snowflake geometry, stable slot growth, text privacy and low-motion boundaries');
+
+const assignments = assignDiaryGlyphs(clusters, selectGlyphSlots(clusters, 6), [
+  { id: 'a', entryDate: '2026-12-01', createdAt: '2026-12-01T09:00:00+09:00', body: '오늘은 내가 먼저 인사를 건넸다' },
+  { id: 'b', entryDate: '2026-12-02', createdAt: '2026-12-02T09:00:00+09:00', body: '어려운 일도 끝까지 해냈다' },
+]);
+const grouped = [...assignments.values()].reduce((acc, item) => {
+  (acc[item.entryId] ||= []).push(item.sequence);
+  return acc;
+}, {});
+assert.ok(assignments.size > 0);
+assert.ok(grouped.a.length > 0 && grouped.b.length > 0, 'each diary receives its own nearby run');
+assert.deepEqual(grouped.a, [...grouped.a].sort((a,b)=>a-b), 'characters for one diary should keep sequence order');
+console.log('PASS — themed snowflake geometry, stable slot growth, contiguous diary glyph runs and text privacy');

@@ -1,7 +1,7 @@
 import { useId, useMemo } from 'react';
-import type { MonthTheme } from '../data/types';
+import type { DiaryEntry, MonthTheme } from '../data/types';
 import { revealWindow } from './progress';
-import { extractDiaryGlyphs, glyphForSlot, makeSnowflakeClusters, selectGlyphSlots } from './glyphLayout';
+import { assignDiaryGlyphs, extractDiaryGlyphs, glyphForSlot, makeSnowflakeClusters, selectGlyphSlots } from './glyphLayout';
 
 type Props = {
   theme: MonthTheme;
@@ -10,19 +10,19 @@ type Props = {
   reducedMotion?: boolean;
   small?: boolean;
   letterSource?: string;
+  entries?: DiaryEntry[];
   fromWrittenDays?: number;
 };
 
 const SNOW_CLUSTERS = makeSnowflakeClusters();
 
 /**
- * Art-direction study v0.4: letter placement follows the snowflake's six
- * radial spines and their paired side branches. Each branch breathes around
- * its OWN root. No noisy independent shaking or premature ghost silhouette.
- *
- * The sheep is still a temporary shape study, pending curved typography paths.
+ * v0.5: zoom-friendly typographic artwork.
+ * - growth still follows writtenDays only
+ * - same diary stays near itself in a stable contiguous run of slots
+ * - zooming can reveal partial readable sequences instead of random glyph soup
  */
-export function GraphicArtwork({ theme, writtenDays, letterCount, reducedMotion = false, small = false, letterSource = '', fromWrittenDays }: Props) {
+export function GraphicArtwork({ theme, writtenDays, letterCount, reducedMotion = false, small = false, letterSource = '', entries = [], fromWrittenDays }: Props) {
   const id = useId().replace(/:/g, '');
   const now = revealWindow(theme.kind, writtenDays, theme.targetDays);
   const before = fromWrittenDays != null ? revealWindow(theme.kind, fromWrittenDays, theme.targetDays) : now;
@@ -31,6 +31,14 @@ export function GraphicArtwork({ theme, writtenDays, letterCount, reducedMotion 
   const shouldBreathe = !reducedMotion && !systemReducedMotion && !small && !shouldGrow && writtenDays > 0;
   const chars = useMemo(() => extractDiaryGlyphs(letterSource), [letterSource]);
   const paintedSlots = useMemo(() => selectGlyphSlots(SNOW_CLUSTERS, chars.length ? letterCount : 0), [letterCount, chars.length]);
+  const assignedSnowGlyphs = useMemo(
+    () => assignDiaryGlyphs(
+      SNOW_CLUSTERS,
+      paintedSlots,
+      entries.map(entry => ({ id: entry.id, entryDate: entry.entryDate, createdAt: entry.createdAt, body: entry.body })),
+    ),
+    [entries, paintedSlots],
+  );
 
   return <svg
     className={`graphic-artwork graphic-artwork--path-type ${small ? 'graphic-artwork--small' : ''} ${reducedMotion ? 'reduce-motion' : ''}`}
@@ -60,13 +68,24 @@ export function GraphicArtwork({ theme, writtenDays, letterCount, reducedMotion 
           {shouldBreathe && <animateTransform attributeName="transform" type="rotate"
             values={`${-group.swayDegrees} 0 0; ${group.swayDegrees} 0 0; ${-group.swayDegrees} 0 0`}
             dur={`${group.periodSeconds}s`} begin={`-${group.phaseSeconds}s`} repeatCount="indefinite" />}
-          {group.slots.filter(slot => paintedSlots.has(slot.index)).map(slot => <text
-            key={slot.index} x={slot.x} y={slot.y}
-            transform={`rotate(${slot.angleJitter} ${slot.x} ${slot.y})`}
-            textAnchor="middle" dominantBaseline="middle"
-            fontSize={small ? slot.size * 0.92 : slot.size} fontWeight="480"
-            opacity={slot.opacity} fill="var(--snow-ink, #C5DBE6)"
-          >{glyphForSlot(chars, slot.index)}</text>)}
+          {group.slots.filter(slot => paintedSlots.has(slot.index)).map(slot => {
+            const assigned = assignedSnowGlyphs.get(slot.index);
+            const glyph = assigned?.glyph ?? glyphForSlot(chars, slot.index);
+            return <text
+              key={slot.index}
+              x={slot.x}
+              y={slot.y}
+              transform={`rotate(${slot.angleJitter} ${slot.x} ${slot.y})`}
+              textAnchor="middle"
+              dominantBaseline="middle"
+              fontSize={small ? slot.size * 0.92 : slot.size}
+              fontWeight="480"
+              opacity={slot.opacity}
+              fill="var(--snow-ink, #C5DBE6)"
+              data-entry-id={assigned?.entryId}
+              data-sequence={assigned?.sequence}
+            >{glyph}</text>;
+          })}
         </g>
       </g>)}
     </g> : <g clipPath={`url(#reveal-${id})`}>

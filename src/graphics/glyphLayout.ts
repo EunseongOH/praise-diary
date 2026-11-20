@@ -3,9 +3,9 @@
  * A glyph follows the tangent of its own piece of the illustration, rather
  * than receiving an arbitrary x/y and a universal random wobble.
  *
- * No synthetic affirmations: every painted character is sampled from the
- * person's own diary body. Repetition is visual texture, not verbatim prose.
- * Never use these glyph layers in a public share export without explicit consent.
+ * v0.5 adds entry-aware slot assignment for zoom mode. Characters from the
+ * same diary stay near one another and keep their reading order so the user
+ * can recognise parts of a sentence when zoomed in.
  */
 export type GlyphSlot = {
   x: number;
@@ -24,6 +24,30 @@ export type GlyphCluster = {
   periodSeconds: number;
   phaseSeconds: number;
   slots: GlyphSlot[];
+};
+
+export type DiaryGlyphEntry = {
+  id: string;
+  entryDate: string;
+  createdAt: string;
+  body: string;
+};
+
+export type AssignedGlyph = {
+  slotIndex: number;
+  glyph: string;
+  entryId: string;
+  sequence: number;
+};
+
+type GlobalSlot = {
+  clusterKey: string;
+  slotIndex: number;
+  localX: number;
+  localY: number;
+  x: number;
+  y: number;
+  angle: number;
 };
 
 const CENTER_X = 170;
@@ -53,8 +77,6 @@ function makeSlots(length: number, count: number, key: number): GlyphSlot[] {
 /**
  * Six snowflake spines, each with three pairs of mirrored ice twigs.
  * Spine and twig heading are also the intended text orientation.
- * The whole shape is geometrically symmetrical; the letters have tiny,
- * seeded differences so it reads as delicate type rather than a type grid.
  */
 export function makeSnowflakeClusters(): GlyphCluster[] {
   const groups: GlyphCluster[] = [];
@@ -69,7 +91,7 @@ export function makeSnowflakeClusters(): GlyphCluster[] {
       swayDegrees: 0.32 + arm * 0.045,
       periodSeconds: 8.4 + (arm % 3) * 0.7,
       phaseSeconds: arm * 0.9,
-      slots: makeSlots(113, 14, arm + 1).map(slot => ({...slot, x: slot.x + 8})),
+      slots: makeSlots(113, 14, arm + 1).map(slot => ({ ...slot, x: slot.x + 8 })),
     });
     for (let level = 0; level < 3; level++) {
       const at = ([41, 66, 88] as const)[level] ?? 88;
@@ -95,13 +117,10 @@ export function makeSnowflakeClusters(): GlyphCluster[] {
 /**
  * Use a stable low-discrepancy order. When another diary is written on the
  * same day, new letters fill more slots without reshuffling old positions.
- * Original diary data may be encrypted server-side; only the authenticated
- * client's approved text should be supplied to this function.
  */
 export function selectGlyphSlots(groups: GlyphCluster[], letterCount: number): Set<number> {
   const indices = groups.flatMap(group => group.slots.map(slot => slot.index));
   const amount = Math.min(indices.length, Math.max(0, letterCount > 0 ? 52 + letterCount * 9 : 0));
-  // Deterministic permutation independent of text and growth phase.
   indices.sort((a, b) => hash(a, 108) - hash(b, 108));
   return new Set(indices.slice(0, amount));
 }
@@ -114,6 +133,68 @@ export function extractDiaryGlyphs(source: string): string[] {
 export function glyphForSlot(chars: string[], slotIndex: number): string {
   if (!chars.length) return '';
   return chars[Math.floor(hash(slotIndex, 23) * chars.length) % chars.length] ?? '';
+}
+
+function flattenGlobalSlots(groups: GlyphCluster[]): GlobalSlot[] {
+  return groups.flatMap(group => {
+    const theta = group.angle * RAD;
+    const cos = Math.cos(theta);
+    const sin = Math.sin(theta);
+    return group.slots.map(slot => ({
+      clusterKey: group.key,
+      slotIndex: slot.index,
+      localX: slot.x,
+      localY: slot.y,
+      x: group.x + slot.x * cos - slot.y * sin,
+      y: group.y + slot.x * sin + slot.y * cos,
+      angle: group.angle + slot.angleJitter,
+    }));
+  });
+}
+
+function orderVisibleSlotsForReading(groups: GlyphCluster[], visibleSlotIds: Set<number>): GlobalSlot[] {
+  return flattenGlobalSlots(groups)
+    .filter(slot => visibleSlotIds.has(slot.slotIndex))
+    .sort((a, b) => {
+      if (Math.abs(a.y - b.y) > 6) return b.y - a.y; // lower part first (bottom-up growth)
+      if (Math.abs(a.x - b.x) > 4) return a.x - b.x;
+      return a.angle - b.angle;
+    });
+}
+
+function preferredSlotCount(charsLength: number): number {
+  if (charsLength <= 0) return 0;
+  return Math.max(10, Math.min(34, Math.ceil(charsLength * 1.2)));
+}
+
+function orderedEntries(entries: DiaryGlyphEntry[]): Array<DiaryGlyphEntry & { chars: string[] }> {
+  return entries
+    .map(entry => ({ ...entry, chars: extractDiaryGlyphs(entry.body) }))
+    .filter(entry => entry.chars.length > 0)
+    .sort((a, b) => a.entryDate.localeCompare(b.entryDate) || a.createdAt.localeCompare(b.createdAt) || a.id.localeCompare(b.id));
+}
+
+/**
+ * Same diary => neighbouring glyph slots, in the original character order.
+ * Earlier diaries take lower / earlier slots and stay visually stable as new
+ * entries append into later available positions.
+ */
+export function assignDiaryGlyphs(groups: GlyphCluster[], visibleSlotIds: Set<number>, entries: DiaryGlyphEntry[]): Map<number, AssignedGlyph> {
+  const slots = orderVisibleSlotsForReading(groups, visibleSlotIds);
+  const queue = orderedEntries(entries);
+  const assignments = new Map<number, AssignedGlyph>();
+  let cursor = 0;
+  for (const entry of queue) {
+    if (cursor >= slots.length) break;
+    const amount = Math.min(preferredSlotCount(entry.chars.length), slots.length - cursor);
+    for (let i = 0; i < amount; i++) {
+      const slot = slots[cursor + i];
+      const glyph = entry.chars[i % entry.chars.length] ?? '';
+      assignments.set(slot.slotIndex, { slotIndex: slot.slotIndex, glyph, entryId: entry.id, sequence: i });
+    }
+    cursor += amount;
+  }
+  return assignments;
 }
 
 /**
@@ -130,4 +211,5 @@ export const ARTWORK_STUDY_NOTES = {
   motion: 'independent slow bending of each twig around its root, not random per-letter jitter',
   motionLimit: 'spines below 0.6°, twigs below 1.4°',
   emptySpace: 'no unrevealed upper outline',
+  zoomReading: 'same diary occupies neighbouring slots in character order',
 } as const;

@@ -274,3 +274,33 @@ body { font-family: var(--font-body); font-size: var(--type-body); line-height: 
 .dialog p { font-size: var(--type-body); line-height: var(--leading-supporting); }
 .graphic-artwork text { font-family: var(--font-body); }
 @media (max-width: 360px) { .page-title { font-size: 24px; } }
+
+
+
+/* v0.6 — optional two-finger pinch: artwork fills the scene without UI chrome. */
+.graphic-detail-art { display: block; }
+.gesture-artwork-viewer {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-height: min(62dvh, 580px);
+  overflow: hidden;
+  background: transparent;
+  border: none;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  overscroll-behavior: contain;
+}
+.gesture-artwork-viewer:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; }
+.gesture-artwork-viewer__content {
+  width: min(100%, 340px);
+  aspect-ratio: 1 / 1;
+  transform-origin: center center;
+  will-change: transform;
+  pointer-events: none;
+}
+.gesture-artwork-viewer__content .graphic-artwork {
+  width: 100%;
+  max-width: none;
+}

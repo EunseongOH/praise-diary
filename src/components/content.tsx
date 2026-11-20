@@ -3,13 +3,13 @@ import { formatDay, formatMonth } from '../lib/date';
 import type { DiaryEntry, MonthTheme } from '../data/types';
 import { GraphicArtwork } from '../graphics/GraphicArtwork';
 
-export function MonthTile({ month, theme, writtenDays, entries, letterSource = '', reducedMotion, onClick, locked }: {
-  month: string; theme?: MonthTheme; writtenDays: number; entries: number; letterSource?: string;
+export function MonthTile({ month, theme, writtenDays, entries, entriesData = [], letterSource = '', reducedMotion, onClick, locked }: {
+  month: string; theme?: MonthTheme; writtenDays: number; entries: number; entriesData?: DiaryEntry[]; letterSource?: string;
   reducedMotion: boolean; onClick: () => void; locked?: boolean;
 }) {
   return <button type="button" className={`month-tile ${locked ? 'month-tile--locked' : ''}`} onClick={onClick}>
     <div className="month-tile__art">
-      {theme && !locked ? <GraphicArtwork theme={theme} writtenDays={writtenDays} letterCount={entries} letterSource={letterSource} reducedMotion={reducedMotion} small /> :
+      {theme && !locked ? <GraphicArtwork theme={theme} writtenDays={writtenDays} letterCount={entries} entries={entriesData} letterSource={letterSource} reducedMotion={reducedMotion} small /> :
         <span className="month-tile__blank" aria-hidden="true">···</span>}
     </div>
     <div className="month-tile__copy">
