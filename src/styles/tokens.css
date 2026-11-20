@@ -1,0 +1,45 @@
+:root {
+  color-scheme: light;
+  font-family: Pretendard, -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', system-ui, sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+
+  /* 2026-11-21: user's color inspiration, NOT final brand specification. */
+  --brand-lime: #B8D68A;
+  --brand-leaf: #61AE72;
+  --brand-white: #FFFFFF;
+  --brand-apricot: #FAD89E;
+  --brand-sky: #A6C5D3;
+
+  /* Semantic colors are chosen independently for WCAG 2.2 AA contrast. */
+  --background: #FFFFFF;
+  --surface: #FFFFFF;
+  --surface-soft: #F7F8F4;
+  --surface-green: #EDF5E7;
+  --line: #DCE5DE;
+  --ink: #273C2F;
+  --muted: #465C4C;
+  --accent: #235C36;
+  --accent-hover: #17472A;
+  --accent-soft: #B8D68A;
+  --danger: #9C3030;
+  --danger-soft: #FFF3F1;
+  --hero: #162A28;
+  --hero-ink: #FFFFFF;
+  --hero-sky: #A6C5D3;
+  --focus: #245D40;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 22px;
+  --content-width: 520px;
+}
