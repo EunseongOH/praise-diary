@@ -26,5 +26,5 @@
 - `node scripts-contrast.mjs`: 중요 6개 semantic text 조합 4.5:1 충족.
 - `node tests/logic.mjs`: 날짜 경계/중복 일기/재추첨 9개 assert 통과.
 - `design-preview.html`은 Chromium에서 홈/도감/꺼내보기 탐색 동작 확인.
-- GitHub repo 연결 앱 쓰기 권한 403. 설정에 저장소 추가 전까지 푸시 불가.
+- GitHub 앱의 선택 저장소 접근 갱신 완료. 소스/기획/디자인 브랜치와 Draft PR #1 생성; merge 전 사용자 검토. GitHub Actions 워크플로 추가(실행 결과 미확인).
 - React 앱에 실제 Toss SDK, 인증, 서버 저장, 발송 기능은 전혀 연동되지 않음.

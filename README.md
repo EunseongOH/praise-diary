@@ -18,7 +18,7 @@ npm run dev
 ## 프리뷰
 
 - `design-preview.html`을 브라우저에서 바로 열면 React 설치 없이 색상·정보 위계의 정적 시안을 확인할 수 있습니다. **실제 앱 동작, 랜덤 추첨, 저장, 토스 연동과는 연결되어 있지 않습니다.**
-- 색상과 레이아웃 시안은 `design-preview.html`에서 볼 수 있어요. PNG 스크린샷은 별도 다운로드 ZIP에 포함했어요.
+- [홈 화면 정적 미리보기](docs/previews/home.png) · [도감 2열 미리보기](docs/previews/collection.png) · [꺼내보기 잠금 화면](docs/previews/rediscover-locked.png)
 
 ## 문서
 
