@@ -48,7 +48,7 @@ Toss WebView/로그인·동의 검증, 영구 데이터 저장/인증/보안, �
 
 ## GitHub 쓰기 권한 (최초 1회)
 
-현재 연결된 GitHub App은 이 새 저장소를 읽을 수 있지만, 설치된 앱의 **선택 저장소에 아직 추가되지 않아** API가 403으로 파일 쓰기를 거부합니다. https://github.com/settings/installations → ChatGPT 관련 앱 → Configure → Repository access → Only select repositories → Select repositories에서 `EunseongOH/praise-diary` 추가 후 Save.
+GitHub 앱의 저장소 쓰기 권한이 연결되어 `feat/design-system-prototype` 브랜치의 Draft PR #1에서 변경 사항을 검토할 수 있습니다.
 
 GitHub 저장소는 현재 **공개(Public)** 상태입니다. 실제 칭찬일기 내용·인증키·사내정보는 업로드하지 마세요.
 
