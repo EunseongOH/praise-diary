@@ -11,7 +11,8 @@
     "check:contrast": "node scripts-contrast.mjs",
     "check:syntax": "node scripts-verify-syntax.mjs",
     "test:logic": "node tests/logic.mjs",
-    "check": "npm run check:syntax && npm run check:contrast && npm run test:logic && npm run build"
+    "check": "npm run check:syntax && npm run check:contrast && npm run test:logic && npm run test:glyph && npm run build",
+    "test:glyph": "node tests/glyph-layout.mjs"
   },
   "dependencies": {
     "react": "^18.3.1",
