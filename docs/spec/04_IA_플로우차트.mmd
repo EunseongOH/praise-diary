@@ -1,0 +1,39 @@
+flowchart TD
+    A[앱인토스 실행] --> B{처음 이용?}
+    B -->|예| C[O-01/O-02 간결한 안내]
+    B -->|아니요| H[H-01 현재 월 홈]
+    C --> H
+    H --> D[D-01 오늘·어제 선택 / 실제 날짜 확인]
+    D --> DAY[기본 자정 또는 S-01 사용자 지정 경계]
+    DAY --> Q{랜덤 질문 2개 선택?}
+    Q -->|선택| W[질문 참고·본문 작성]
+    Q -->|선택 안 함| W
+    W --> SAVE{서버 저장 성공?}
+    SAVE -->|아니요| W
+    SAVE -->|예| ANIM[D-02 신규일 성장 / 추가 글자 / 완성 연출]
+    ANIM --> H
+    H --> LIST[L-03 모든 칭찬 목록 / 10개 잠금과 무관]
+    LIST --> DETAIL[L-04 일기 상세·수정·삭제]
+    DETAIL --> D
+    H --> L[L-01 꺼내보기]
+    L --> U{10개 최초 달성 이력?}
+    U -->|없음| LOCK[잠금 안내 + 칭찬일기 쓰기]
+    LOCK --> D
+    U -->|있음| HAS{현재 일기 존재?}
+    HAS -->|없음| EMPTY[빈 상태 + 칭찬일기 쓰기]
+    EMPTY --> D
+    HAS -->|있음| DRAW[L-02 일기 ID 단위 랜덤 꺼내기]
+    DRAW --> DETAIL
+    H --> COLLECTION[C-01 2열 도감]
+    COLLECTION --> STATUS{월 상태}
+    STATUS -->|기록된 현재·과거 월| C2[C-02 월별 그래픽 감상]
+    C2 --> FILTER[L-03 해당 월 목록]
+    FILTER --> DETAIL
+    STATUS -->|미래 월| C3[C-03 미공개 안내]
+    C3 --> IDEA[C-04 보조 그래픽 제안하기]
+    H --> SETTINGS[S-01 설정]
+    SETTINGS --> BOUNDARY[하루가 바뀌는 시간 변경]
+    BOUNDARY --> SETTINGS
+    SETTINGS --> DEL[S-02 모든 기록 삭제 다단계 확인]
+    SETTINGS --> N[승인된 경우에만 N-01/N-02 알림]
+    SETTINGS --> INFO[S-03 서비스 정보]

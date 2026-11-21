@@ -1,0 +1,66 @@
+:root {
+  /* Visual direction v0.2: one uninterrupted dark canvas, not an artwork card.
+     Soft colors are exploration candidates, not final brand colors. */
+  color-scheme: dark;
+  font-family: var(--font-body);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+
+  /* Type study v0.3: SUIT Variable is a candidate, not final brand type. */
+  --font-body: 'SUIT Variable', 'Pretendard Variable', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', system-ui, sans-serif;
+  --font-display: var(--font-body);
+  --type-hero: clamp(28px, 7vw, 32px);
+  --type-page: 26px;
+  --type-section: 18px;
+  --type-entry-title: 20px;
+  --type-body: 16px;
+  --type-control: 16px;
+  --type-supporting: 14px;
+  --type-meta: 13px;
+  --leading-display: 1.3;
+  --leading-body: 1.65;
+  --leading-supporting: 1.55;
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-emphasis: 600;
+  --weight-strong: 700;
+
+  --brand-lime: #B8D68A;
+  --brand-leaf: #61AE72;
+  --brand-white: #FFFFFF;
+  --brand-apricot: #FAD89E;
+  --brand-sky: #A6C5D3;
+
+  /* Default prototype is dark from top bar through artwork and bottom nav. */
+  --background: #0C1111;
+  --surface: #111B18;
+  --surface-soft: #16221D;
+  --surface-green: #203329;
+  --line: #385044;
+  --ink: #F5F6EF;
+  --muted: #B7C8BA;
+  --accent: #B8D68A;
+  --accent-hover: #D0E8AD;
+  --accent-soft: #B8D68A;
+  --accent-ink: #15221B;
+  --danger: #A63C3C;
+  --danger-soft: #332321;
+  --hero: #0C1111;
+  --hero-ink: #F5F6EF;
+  --hero-sky: #A6C5D3;
+  --focus: #FAD89E;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 22px;
+  --content-width: 520px;
+}
