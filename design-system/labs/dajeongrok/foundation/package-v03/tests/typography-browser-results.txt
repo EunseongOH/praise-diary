@@ -1,0 +1,12 @@
+320 100 False {'page': True, 'phones': [True, True, True, True], 'buttons': True}
+320 100 True {'page': True, 'phones': [True, True, True, True], 'buttons': True}
+320 200 False {'page': True, 'phones': [True, True, True, True], 'buttons': True}
+320 200 True {'page': True, 'phones': [True, True, True, True], 'buttons': True}
+390 100 False {'page': True, 'phones': [True, True, True, True], 'buttons': True}
+390 100 True {'page': True, 'phones': [True, True, True, True], 'buttons': True}
+390 200 False {'page': True, 'phones': [True, True, True, True], 'buttons': True}
+390 200 True {'page': True, 'phones': [True, True, True, True], 'buttons': True}
+1280 100 False {'page': True, 'phones': [True, True, True, True], 'buttons': True}
+1280 100 True {'page': True, 'phones': [True, True, True, True], 'buttons': True}
+1280 200 False {'page': True, 'phones': [True, True, True, True], 'buttons': True}
+1280 200 True {'page': True, 'phones': [True, True, True, True], 'buttons': True}

@@ -1,0 +1,4 @@
+320px: PASS — external gap 8px, target 44×44px, padding 12px, focus/hover/Tab, no overflow, title and prompt removal preserve body, internal clear reserved slot
+390px: PASS — external gap 8px, target 44×44px, padding 12px, focus/hover/Tab, no overflow, title and prompt removal preserve body, internal clear reserved slot
+768px: PASS — external gap 8px, target 44×44px, padding 12px, focus/hover/Tab, no overflow, title and prompt removal preserve body, internal clear reserved slot
+1280px: PASS — external gap 8px, target 44×44px, padding 12px, focus/hover/Tab, no overflow, title and prompt removal preserve body, internal clear reserved slot

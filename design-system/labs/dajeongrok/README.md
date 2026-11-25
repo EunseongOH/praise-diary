@@ -16,3 +16,8 @@
 [검증 필요] 실제 React 통합 빌드, WebView, 모바일 성능, 폰트 실제 렌더링, 앱인토스 정책.
 
 원본 참조 이미지(워터마크 있는 스톡 포함)는 공개 저장소에 추가하지 않는다.
+
+## 2026-11-25 후속 보존
+- `foundation/package-v03/`: v0.3 원본 React/TSX/CSS/JSON 및 검증 스크립트와 보고. 실제 앱 통합 전 검토 필요; 기존 문서의 제안 상태를 최신 DECISIONS.md와 함께 읽는다.
+- `rediscover/scroll-v6.html`: V6 유리·코르크 리파인. 기본 A/A1/B, 기존 풀림 유지, V5 재질과 비교 가능. 미승인 아트워크.
+- `rediscover/scroll-v6-brief.md`: 수정 브리프, 레이어 구성, 타이밍, QA 및 미검증 범위.
