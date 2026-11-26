@@ -21,7 +21,7 @@ const texts=[
 ['작은 약속','미뤄둔 일을 하나 해냈다.'],
 ['다정한 말','친구에게 먼저 안부를 물었다.']];
 const entries=Array.from({length:12},(_,i)=>{const day=dateAt(Math.floor(i/2)),t=texts[i%texts.length];return {id:'review-'+i,entryDate:day,createdAt:day+'T0'+(i%2+1)+':00:00Z',title:t[0],body:t[1]}});
-sessionStorage.setItem(key,JSON.stringify({entries,reflections:[{id:'review-note-1',entryId:'review-0',body:'이때의 내가 고맙다.',reflectionDate:today,createdAt:today+'T03:00:00Z',updatedAt:today+'T03:00:00Z'},{id:'review-note-2',entryId:'review-0',body:'오늘도 나의 속도로 가자.',reflectionDate:today,createdAt:today+'T04:00:00Z',updatedAt:today+'T04:00:00Z'}],letterDrawUnlockedAt:new Date().toISOString(),boundaryHour:0,reducedMotion:false,ideas:[]}));
+sessionStorage.setItem(key,JSON.stringify({entries,reflections:[{id:'review-note-1',entryId:'review-0',body:'이때의 내가 고맙다.',reflectionDate:today,createdAt:today+'T03:00:00Z',updatedAt:today+'T03:00:00Z'},{id:'review-note-2',entryId:'review-0',body:'오늘도 나의 속도로 가자.',reflectionDate:today,createdAt:today+'T04:00:00Z',updatedAt:today+'T04:00:00Z'},{id:'review-note-3',entryId:'review-3',body:'이렇게 작은 일도 기억해 줘서 고마워.',reflectionDate:today,createdAt:today+'T05:00:00Z',updatedAt:today+'T05:00:00Z'}],letterDrawUnlockedAt:new Date().toISOString(),boundaryHour:0,reducedMotion:false,ideas:[]}));
 }catch(e){console.warn('Review session storage unavailable',e)}})();
 </script>`;
 const escapeScript=s=>s.replace(/<\/script/gi,'<\\/script');
