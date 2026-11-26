@@ -1,5 +1,6 @@
 import type { DiaryEntry, DiaryReflection, MonthId, PrototypeState } from './types';
-import { monthOf } from '../lib/date';
+import { currentPreviewTime, monthOf, todayAndYesterday } from '../lib/date';
+import { reviewEntries } from '../graphics/snowflake/reviewScenario';
 
 const STORAGE_KEY = 'praise-diary:prototype:v1';
 
@@ -34,6 +35,9 @@ export function initialState(): PrototypeState {
 }
 
 export function loadState(): PrototypeState {
+  // review builds only (snowflake flag): a fake-data scenario from the URL replaces the session state
+  const review = reviewEntries(sampleEntries(), todayAndYesterday(currentPreviewTime(), 0).today);
+  if (review) return { ...initialState(), entries: review };
   try {
     const saved = sessionStorage.getItem(STORAGE_KEY);
     if (saved) {

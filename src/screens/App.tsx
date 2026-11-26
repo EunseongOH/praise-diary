@@ -139,7 +139,7 @@ export default function App() {
     if (!persist({ ...state, entries: [...state.entries, next], letterDrawUnlockedAt: unlockTime })) return;
     setDraftSaved(true);
     setStack([]);
-    setPage({ screen: 'saved', month, mode, previousWrittenDays: beforeDays, day: writerDate });
+    setPage({ screen: 'saved', month, mode, previousWrittenDays: beforeDays, day: writerDate, entryId: next.id });
     if (unlockTime && !state.letterDrawUnlockedAt) setToast('이제 꺼내보기에서 예전의 칭찬을 만날 수 있어요.');
   };
   const deleteOne = () => {
@@ -225,7 +225,7 @@ export default function App() {
 
       {page.screen === 'saved' && <div className="space-stack immersive-detail">
         <div className="month-detail-title"><span className="eyebrow">{page.day && formatDay(page.day)}</span><h1 className="page-title">{savedMessage(monthTheme,page.mode ?? 'growth')}</h1></div>
-        {<div className="illustration-stage"><ArtworkSlot theme={monthTheme} writtenDays={writtenDays(state.entries,currentMonth)} letterCount={monthEntries(state.entries,currentMonth).length} entries={monthEntries(state.entries,currentMonth)} letterSource={monthEntries(state.entries,currentMonth).map(e => e.body).join(' ')} reducedMotion={state.reducedMotion} fromWrittenDays={page.mode === 'growth' || page.mode === 'complete' ? page.previousWrittenDays : undefined} /></div>}
+        {<div className="illustration-stage"><ArtworkSlot theme={monthTheme} writtenDays={writtenDays(state.entries,currentMonth)} letterCount={monthEntries(state.entries,currentMonth).length} entries={monthEntries(state.entries,currentMonth)} letterSource={monthEntries(state.entries,currentMonth).map(e => e.body).join(' ')} reducedMotion={state.reducedMotion} fromWrittenDays={page.mode === 'growth' || page.mode === 'complete' ? page.previousWrittenDays : undefined} variant="saved" playback={page.entryId ? { kind: page.mode ?? 'growth', eventId: page.entryId } : undefined} /></div>}
         <p className="description text-center">칭찬을 잘 남겼어요.</p>
         <div className="action-stack"><Button onClick={() => startWrite()}>칭찬 하나 더 남기기</Button><Button variant="secondary" onClick={() => { setStack([]); setPage({screen:'home'}); }}>홈으로 돌아가기</Button></div>
       </div>}
