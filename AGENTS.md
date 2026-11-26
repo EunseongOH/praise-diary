@@ -66,3 +66,5 @@
 - v0.10 전수 코드 검토: `docs/handoff/32_design_system_audit.md`. 설정 row 12/8/48, section24/header8, switch/notification/shell 공통 토큰. 중복 CSS는 동등성 확인 후 제거. 현재 소스 검토와 실제 실측/실기 검증을 구분한다.
 
 - v0.11 `foundation/v11-diary-row-rules.md`: 도감 B 확정, 목록은 독립 DiaryRow 조합만 사용. 제목/마음/날짜/표면/구분선 variant, 날짜·숫자 동일 line box 및 icon center. 화면별 행 CSS 금지. C 그룹에서 마음 개수만 메타 행에 표시하는 배치는 검토안.
+
+- 기록 아카이브 E 및 검색/마음 필터/연도·월 탐색/복귀 승인, 즐겨찾기 제외. 구현 계획 `docs/spec/07_archive_implementation_plan.md` (v0.12 검토안, 수치/상태/데이터/검수). 기존 DiaryRow·도감 B·작성 A 유지. 검수는 실제 React 빌드와 동일 fixture 캡처만 사용. 검색어/원문/마음은 로그·분석·URL 전송 금지.
