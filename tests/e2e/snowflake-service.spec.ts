@@ -102,6 +102,43 @@ test('review scenario 14 → 15: completion replay + snowglobe reward, then the 
   expect(errors).toEqual([]);
 });
 
+test('archive F search and the snowflake together: saved entry is searchable, reader round trip, home / detail artwork kept', async ({ page }) => {
+  test.setTimeout(180_000);
+  await page.setViewportSize({ width: 390, height: 860 });
+  const errors = await open(page, 8);
+  await save(page, '눈송이처럼 천천히 해냈다.');
+  await waitDone(page);
+  await page.getByRole('button', { name: '홈으로 돌아가기' }).click();
+  await expect(page.getByText('9일의 칭찬')).toBeVisible();
+  await page.getByRole('button', { name: '내가 남긴 칭찬 보기' }).click();
+  const base = page.locator('.archive-base');
+  await expect(base.locator('.diary-row')).toHaveCount(9);
+  await base.getByRole('button', { name: '칭찬 검색하기' }).click();
+  const overlay = page.getByRole('dialog', { name: '칭찬 검색', exact: true });
+  await overlay.getByRole('searchbox', { name: '칭찬 검색' }).fill('눈송이');
+  const hits = overlay.locator('.diary-row');
+  await expect(hits).toHaveCount(1);
+  await expect(hits.first().locator('mark')).toContainText('눈송이');
+  expect((await attrs(page)).includes('눈송이')).toBe(false); // search term / body never in snowflake data-* or aria
+  await hits.first().click();
+  await expect(page.getByText('눈송이처럼 천천히 해냈다.')).toBeVisible();
+  await page.getByRole('button', { name: '뒤로가기', exact: true }).click();
+  await expect(overlay.getByRole('searchbox', { name: '칭찬 검색' })).toHaveValue('눈송이');
+  await overlay.getByRole('button', { name: '검색 닫기' }).click();
+  await page.getByRole('button', { name: '뒤로가기', exact: true }).click(); // archive has no tab bar: back to home
+  await expect(page.locator('.home-artwork-stage [data-snowflake="static"] canvas')).toBeVisible({ timeout: 20_000 });
+  await expect(page.locator('.home-artwork-stage .artwork-slot')).toHaveAttribute('data-written-days', '9');
+  await page.getByRole('button', { name: '도감', exact: true }).click();
+  await page.locator('.month-tile[data-month="2026-12"]').click();
+  await expect(page.locator('.gesture-artwork-viewer canvas')).toBeVisible({ timeout: 20_000 });
+  await page.getByRole('button', { name: '이달의 칭찬 보기' }).click();
+  await expect(page.locator('.archive-base .diary-row')).toHaveCount(9);
+  await page.getByRole('button', { name: '뒤로가기', exact: true }).click();
+  await expect(page.locator('.gesture-artwork-viewer canvas')).toBeVisible({ timeout: 20_000 });
+  await expect(page.locator('[data-fx]')).toHaveCount(0);
+  expect(errors).toEqual([]);
+});
+
 test('reduced motion (OS or app setting): no replay, no particles, the after-state still', async ({ browser }) => {
   test.setTimeout(180_000);
   const ctx = await browser.newContext({ viewport: { width: 390, height: 860 }, reducedMotion: 'reduce' });
