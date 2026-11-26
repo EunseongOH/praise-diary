@@ -5,7 +5,7 @@ import { FieldShell, IconButton } from './ui';
 export function SearchField({value,onChange,disabled=false,label='칭찬 검색',placeholder='칭찬을 검색해 보세요',variant='outline',onCommit,onFocusInput}:{
  value:string;onChange:(value:string)=>void;disabled?:boolean;label?:string;placeholder?:string;variant?:'outline'|'plain';onCommit?:(v:string)=>void;onFocusInput?:(el:HTMLInputElement|null)=>void;
 }){
- const input=useRef<HTMLInputElement>(null);
+ const input=useRef<HTMLInputElement|null>(null);
  const [composing,setComposing]=useState(false);
  return <div className="ui-search-field" data-variant={variant} role="search">
   <FieldShell variant={variant} disabled={disabled}>
