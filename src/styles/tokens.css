@@ -114,3 +114,6 @@
 
 /* v0.14 search mode — reuse semantic geometry and palette. */
 :root{--search-plain-height:var(--touch);--gap-search-filter:var(--gap-controls);--gap-search-results:var(--space-4);--search-dim:rgba(0,0,0,.45);--period-padding:var(--space-3);--period-cell:var(--touch);--period-width:320px;--period-gap:var(--gap-text);}
+
+/* v0.15 approved A search header. Focus stroke does not change geometry. */
+:root{--search-line-width:1px;--search-line-focus-width:var(--focus-width);--search-filter-column-gap:var(--space-4);--search-filter-narrow-gap:var(--space-3);--search-header-bottom:var(--space-3);--search-filter-underline-offset:var(--space-1);--search-clear-icon:18px;}
