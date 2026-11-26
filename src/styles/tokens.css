@@ -108,3 +108,6 @@
 
 /* v0.11 — diary entry row component contract */
 :root{--record-meta-line:1.5;--record-meta-icon:var(--icon-inline);--record-title-line:1.5;--record-preview-lines:2;--record-untitled-lines:3;}
+
+/* v0.12 — archive/search shared role aliases, no independent palette. */
+:root{--search-height:var(--field-height);--search-inset:var(--field-padding);--search-icon-gap:var(--gap-inline);--filter-height:var(--touch);--gap-archive-controls:var(--gap-component);--gap-archive-sections:var(--gap-section);--gap-archive-header:var(--gap-controls);--search-match-bg:var(--surface-green);--search-match-ink:var(--accent);}
