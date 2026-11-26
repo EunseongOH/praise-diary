@@ -8,7 +8,7 @@ const css=/<link\b[^>]*\bhref="([^"]+\.css)"[^>]*>/g;
 const readAsset=p=>fs.readFileSync(path.join('dist',p.replace(/^\//,'')),'utf8');
 if(!script.test(index))throw Error('Missing compiled entry');
 const seed=`<script>
-(()=>{try{
+(()=>{window.__DAJEONGROK_REVIEW__=true;try{
 const key='praise-diary:prototype:v1';
 if(sessionStorage.getItem(key))return;
 const today=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
@@ -28,5 +28,5 @@ const escapeScript=s=>s.replace(/<\/script/gi,'<\\/script');
 let result=index.replace(script,(_,p)=>seed+'<script type="module">'+escapeScript(readAsset(p))+'</script>');
 result=result.replace(css,(tag,p)=>p.startsWith('https:')?tag:'<style>'+readAsset(p).replace(/<\/style/gi,'<\\/style')+'</style>');
 fs.mkdirSync('review',{recursive:true});fs.writeFileSync('review/다정록-검수.html',result);
-fs.writeFileSync('review/README.txt', '다정록 React 검수 빌드 (가상 일기 12개)\\n1. 압축을 풀고 다정록-검수.html을 Chrome 또는 Edge에서 엽니다.\\n2. 꺼내보기 → 칭찬 하나 꺼내보기 → 오늘의 마음 덧붙이기 → 닫기.\\n3. 홈 달력 및 전체 기록에서 같은 기록을 확인합니다.\\n저장소는 시연용 sessionStorage입니다. 실제 개인정보는 입력하지 마세요.\\n파일 열기가 차단되면 압축을 푼 폴더에서 python -m http.server 8765 실행 후 http://localhost:8765 접속.\\n월간 작품은 공통 슬롯이며 실제 그래픽은 추후 연결합니다.\\n'.replaceAll('\\n','\n'));
+fs.writeFileSync('review/README.txt', '다정록 React 검수 빌드 (가상 일기 12개)\\n1. 압축을 풀고 다정록-검수.html을 Chrome 또는 Edge에서 엽니다.\\n2. 꺼내보기 → 칭찬 하나 꺼내보기 → 오늘의 마음 덧붙이기 → 닫기.\\n3. 홈 달력 및 전체 기록에서 같은 기록을 확인합니다.\\n4. 칭찬 남기기 화면 하단의 검수용 A/B/C 선택에서 날짜 위치를 비교합니다.\\n저장소는 시연용 sessionStorage입니다. 실제 개인정보는 입력하지 마세요.\\n파일 열기가 차단되면 압축을 푼 폴더에서 python -m http.server 8765 실행 후 http://localhost:8765 접속.\\n월간 작품은 공통 슬롯이며 실제 그래픽은 추후 연결합니다.\\n'.replaceAll('\\n','\n'));
 console.log('Review package ready: '+Buffer.byteLength(result)+' bytes');

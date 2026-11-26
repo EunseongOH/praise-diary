@@ -26,7 +26,7 @@ export const COPY = {
     empty: '지금은 꺼내볼 칭찬이 없어요.',
   },
   collection: {
-    title: '그래픽 도감', subtitle: '내가 남긴 칭찬들이 자란 모습',
+    title: '도감', subtitle: '내가 남긴 칭찬들이 자란 모습',
     locked: '아직 공개되지 않았어요.',
     suggest: '이런 그래픽은 어때요? 의견 남기기',
     monthEntries: '이달의 칭찬 보기',

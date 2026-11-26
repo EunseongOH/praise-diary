@@ -89,3 +89,14 @@
   --type-page:1.5rem; --type-section:1.125rem; --type-entry-title:1.25rem; --type-body:1rem; --type-control:1rem;
   --type-supporting:.875rem; --type-meta:.8125rem; --leading-body:1.6; --leading-display:1.4; --leading-reading:1.75;
 }
+
+/* v0.6 review: visual mark and hit target are independent. No arbitrary screen offsets. */
+:root{
+ --select-label-gap:var(--gap-inline); --select-padding-x:var(--action-toolbar-padding-x);
+ --calendar-mark-size:36px; --calendar-mark-gap:var(--gap-controls);
+ --calendar-min-width:calc(7 * var(--touch));
+ --calendar-narrow-inset:calc((320px - var(--calendar-min-width)) / 2);
+ --gap-calendar-header:var(--gap-component);
+ --gap-writer-meta:var(--gap-controls);
+ --gap-tile-column:var(--gap-component); --gap-tile-row:var(--gap-section);
+}

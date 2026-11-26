@@ -84,3 +84,53 @@
 .app-shell[data-drawing=true]>.app-bar{transition:opacity .18s ease}
 @media(max-width:348px){.rediscover-jar{width:min(100%,240px)}.rediscover-screen[data-locked=true] .rediscover-jar{width:min(100%,185px)}}
 @media(prefers-reduced-motion:reduce){.app-shell[data-drawing=true]>.app-bar{transition:none}}
+
+/* v0.6 review — content-sized selector; focus stays inside the whole trigger. */
+.ui-compact-select{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:var(--select-label-gap);min-width:var(--touch);min-height:var(--touch);max-width:100%;width:max-content;flex:0 1 auto;padding:var(--action-padding-y) var(--select-padding-x);border-radius:var(--radius-sm);color:var(--ink);font:500 var(--type-supporting)/1.5 var(--font-body);cursor:pointer}
+.ui-compact-select[data-density=standard]{padding-inline:var(--action-padding-x)}
+.ui-compact-select__label{min-width:0;overflow-wrap:anywhere}
+.ui-compact-select>.dj-icon{flex:none;width:var(--icon-inline);height:var(--icon-inline)}
+.ui-compact-select>select{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;font:inherit}
+.ui-compact-select:focus-within{box-shadow:inset 0 0 0 var(--focus-width) var(--focus)}
+@media(hover:hover){.ui-compact-select:hover{background:var(--surface-green)}}
+@media(forced-colors:active){.ui-compact-select:focus-within{outline:2px solid Highlight;outline-offset:-2px}}
+/* Gutter is owned by a grid, not negative margin. Calendar alone has a narrow-width slot. */
+.app-content.app-content--home-integrated{padding-inline:0}
+.home-integrated{display:grid;grid-template-columns:var(--gutter) minmax(0,1fr) var(--gutter);column-gap:0;row-gap:var(--gap-component)}
+.home-integrated>*{grid-column:2;min-width:0}
+.home-toolbar{flex-wrap:wrap}
+.home-toolbar>.ui-compact-select{flex:0 1 auto}
+.home-toolbar-actions{margin-inline-start:auto}
+.home-calendar-navigation{justify-content:center;gap:var(--gap-toolbar);margin:0}
+.home-calendar-navigation>.ui-compact-select{flex:0 1 auto}
+.home-calendar-area{min-height:0;align-content:start;gap:var(--gap-calendar-header);padding-block:0}
+.home-calendar-grid{grid-template-columns:repeat(7,minmax(var(--touch),1fr));min-width:var(--calendar-min-width);gap:0}
+.home-calendar-day{min-width:var(--touch);min-height:var(--touch);padding-block:var(--space-1);background:transparent;border-radius:var(--radius-sm);font-size:var(--type-supporting)}
+.home-calendar-day__mark{display:grid;place-items:center;box-sizing:border-box;inline-size:min(var(--calendar-mark-size),calc(100% - var(--calendar-mark-gap)));min-block-size:var(--calendar-mark-size);border-radius:var(--radius-sm);color:inherit}
+.home-calendar-day.has-entry .home-calendar-day__mark{background:var(--surface-green);color:var(--ink)}
+.home-calendar-day[aria-current=date] .home-calendar-day__mark{box-shadow:inset 0 0 0 1px var(--line)}
+.home-calendar-day:focus-visible{outline:var(--focus-width) solid var(--focus);outline-offset:calc(-1 * var(--focus-width))}
+.home-calendar-day:not(:disabled):hover .home-calendar-day__mark{background:var(--menu-bg)}
+@media(max-width:348px){.home-integrated>.home-calendar-area{grid-column:1/-1;padding-inline:var(--calendar-narrow-inset);overflow-x:auto}}
+/* Writer uses the same fields and actions in all three review layouts. */
+.app-content--writer{padding-block-start:var(--gap-component)}
+.app-bar{height:auto;min-height:60px;flex-wrap:wrap}
+.app-bar__title{min-width:0;overflow-wrap:anywhere;font:600 var(--type-control)/1.5 var(--font-body)}
+.writer-layout{display:flex;flex-direction:column;gap:var(--gap-section);min-width:0}
+.writer-meta-row{display:flex;align-items:center;justify-content:flex-start;flex-wrap:wrap;gap:var(--gap-writer-meta);min-width:0}
+.writer-meta-row>.ui-text-action{flex:0 1 auto}
+.writer-meta-row>.ui-compact-select+.ui-text-action{margin-inline-start:auto}
+.writer-meta-row--bottom{justify-content:flex-start}
+.writer-date-static{color:var(--muted);font:400 var(--type-meta)/1.5 var(--font-body)}
+.writer-selected-prompt{display:flex;align-items:center;gap:var(--gap-controls)}
+.writer-selected-prompt>span{flex:1;min-width:0;overflow-wrap:anywhere}
+.writer-review-panel{padding:var(--gap-component);border:1px dashed var(--line);border-radius:var(--radius-sm)}
+.writer-review-panel p{margin:0;color:var(--muted);font:400 var(--type-meta)/1.5 var(--font-body)}
+.segmented-choice{gap:var(--gap-text);padding:var(--space-1);background:var(--surface-soft)}
+.segmented-choice__item{font:500 var(--type-supporting)/1.5 var(--font-body);padding:var(--space-2);min-width:0;overflow-wrap:anywhere;border-radius:var(--radius-sm);min-height:var(--touch)}
+.segmented-choice__item:focus-visible{outline:var(--focus-width) solid var(--focus);outline-offset:calc(-1 * var(--focus-width))}
+.collection-description{margin:0;color:var(--muted);font:400 var(--type-supporting)/var(--leading-supporting) var(--font-body)}
+.month-tiles{gap:var(--gap-tile-row) var(--gap-tile-column)}
+.month-tile{border-radius:var(--radius-sm)}
+.month-tile__copy{min-height:0;padding:var(--gap-text) 0 0;gap:var(--gap-text)}
+.month-tile:focus-visible,.setting-row:focus-visible,.diary-row:focus-visible{outline:var(--focus-width) solid var(--focus);outline-offset:calc(-1 * var(--focus-width))}

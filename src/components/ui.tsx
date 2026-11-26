@@ -20,6 +20,19 @@ export function TextAction({ children, onClick, className = '', density = 'stand
 }) {
   return <button type="button" onClick={onClick} disabled={disabled} data-density={density} className={`ui-text-action ${className}`.trim()}>{icon && <Icon name={icon} size="inline"/>}{children}</button>;
 }
+/** Content-sized selection trigger. Native select owns semantics and keyboard input; visual label owns geometry. */
+export function CompactSelect<T extends string>({label,value,options,onChange,density='toolbar'}:{
+  label:string;value:T;options:{label:string;value:T}[];onChange:(value:T)=>void;density?:ActionDensity;
+}){
+  const current=options.find(o=>o.value===value);
+  return <label className="ui-compact-select" data-density={density}>
+    <span className="ui-compact-select__label" aria-hidden="true">{current?.label??value}</span>
+    <Icon name="chevron-down" size="inline"/>
+    <select aria-label={label} value={value} onChange={e=>onChange(e.target.value as T)}>
+      {options.map(o=><option key={o.value} value={o.value}>{o.label}</option>)}
+    </select>
+  </label>;
+}
 type LayoutGap = 'text' | 'inline' | 'controls' | 'toolbar' | 'component' | 'section' | 'field-actions';
 export function Stack({children,gap='component'}:{children:ReactNode;gap?:LayoutGap}) {
   return <div className="ui-stack" style={{'--layout-gap':`var(--gap-${gap})`} as CSSProperties}>{children}</div>;
@@ -70,13 +83,14 @@ export function ActionMenu({label,items,leading}:{label:string;items:ActionMenuI
   </div>;
 }
 
-export function AppBar({ title, onBack, action, onAction }: {
-  title: string; onBack?: () => void; action?: string; onAction?: () => void;
+export function AppBar({ title, onBack, action, onAction, trailing }: {
+  title: string; onBack?: () => void; action?: string; onAction?: () => void; trailing?: ReactNode;
 }) {
   return <header className="app-bar">
     {onBack ? <IconButton icon="arrow-left" label="뒤로가기" onClick={onBack}/> : null}
     <span className="app-bar__title">{title}</span>
     {action && onAction ? <TextAction density="toolbar" onClick={onAction}>{action}</TextAction> : null}
+    {trailing}
   </header>;
 }
 

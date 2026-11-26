@@ -1,4 +1,4 @@
-import { Button, IconButton, TextAction } from '../components/ui';
+import { Button, CompactSelect, IconButton, TextAction } from '../components/ui';
 import { Icon } from '../components/icons';
 import { ArtworkSlot } from '../graphics/ArtworkSlot';
 import type { DiaryEntry, MonthId, MonthTheme } from '../data/types';
@@ -38,11 +38,7 @@ export function HomeShell(p: HomeProps) {
   };
   return <section className="home-integrated">
     <header className="home-toolbar">
-      {p.mode === 'art' ? <label className="home-month-picker">
-        <select aria-label="작품 월 선택" value={p.month} onChange={e => p.onMonth(e.target.value as MonthId)}>
-          {p.months.map(month => <option key={month} value={month}>{formatMonth(month)}</option>)}
-        </select><Icon name="chevron-down" size="inline"/>
-      </label> : <span className="home-toolbar-spacer" aria-hidden="true"/>}
+      {p.mode === 'art' ? <CompactSelect label="작품 월 선택" value={p.month} options={p.months.map(month=>({value:month,label:formatMonth(month)}))} onChange={p.onMonth}/> : <span className="home-toolbar-spacer" aria-hidden="true"/>}
       <div className="home-toolbar-actions">
         <IconButton icon="plus" label="칭찬 남기기" onClick={p.onWrite}/>
         <IconButton icon={p.mode === 'art' ? 'calendar' : 'image'} label={p.mode === 'art' ? '달력으로 보기' : '작품으로 보기'} aria-pressed={p.mode === 'calendar'} onClick={() => p.onMode(p.mode === 'art' ? 'calendar' : 'art')}/>
@@ -51,7 +47,7 @@ export function HomeShell(p: HomeProps) {
     </header>
     {p.mode === 'calendar' && <div className="home-calendar-navigation">
       <IconButton icon="chevron-left" label="이전 달" disabled={monthIndex <= 0} onClick={() => move(-1)}/>
-      <span>{formatMonth(p.month)}</span>
+      <CompactSelect label="달력 월 선택" value={p.month} options={p.months.map(month=>({value:month,label:formatMonth(month)}))} onChange={p.onMonth}/>
       <IconButton icon="chevron-right" label="다음 달" disabled={monthIndex >= p.months.length - 1} onClick={() => move(1)}/>
     </div>}
     {future ? <div className="home-locked">
@@ -71,7 +67,7 @@ export function HomeShell(p: HomeProps) {
     </> : <div className="home-calendar-area">
       <div className="home-calendar-grid" aria-label={`${formatMonth(p.month)} 기록 달력`}>
         {weekdays.map(d => <span className="home-weekday" key={d}>{d}</span>)}
-        {calendarCells(p.month).map((day,i) => day ? <button type="button" key={day} className={`home-calendar-day ${days.has(day) ? 'has-entry' : ''}`} disabled={!days.has(day)} aria-label={`${day}${days.has(day) ? ' 기록 보기' : ' 기록 없음'}`} aria-current={day === p.today ? 'date' : undefined} onClick={() => p.onDay(day)}>{Number(day.slice(-2))}</button> : <span key={`blank-${i}`} aria-hidden="true"/>)}
+        {calendarCells(p.month).map((day,i) => day ? <button type="button" key={day} className={`home-calendar-day ${days.has(day) ? 'has-entry' : ''}`} disabled={!days.has(day)} aria-label={`${day}${days.has(day) ? ' 기록 보기' : ' 기록 없음'}`} aria-current={day === p.today ? 'date' : undefined} onClick={() => p.onDay(day)}><span className="home-calendar-day__mark" aria-hidden="true">{Number(day.slice(-2))}</span></button> : <span key={`blank-${i}`} aria-hidden="true"/>)}
       </div>
     </div>}
     {!future && <Button className="ui-button--full" onClick={current ? p.onWrite : p.onMonthEntries}>{current ? (days.has(p.today) ? '칭찬 하나 더 남기기' : '칭찬 하나 남기기') : '이달의 칭찬 보기'}</Button>}

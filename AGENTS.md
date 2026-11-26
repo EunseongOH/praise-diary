@@ -54,3 +54,5 @@
 - 꺼내보기는 읽은 한 편을 음미하는 경험. 감상에서 다시 뽑기 버튼 제거, 닫힌 병으로 복귀. 오늘의 마음 덧붙이기는 MVP이며 달력/전체 목록/꺼내보기 공통 원문 화면에서 사용; 원본 일기와 별도 1:N, 성장/해제/추첨에 포함하지 않는다. V10 참고.
 
 - 통합 앱의 실제 공통 조작 요소는 `src/components/ui.tsx`, `src/styles/components.css`, `src/styles/tokens.css`에서 관리한다. 새 화면에서는 raw textarea/input 스타일 또는 메뉴 패딩 재정의 금지. 필요한 variant를 공통 소스에 먼저 추가하고 `npm run check:design` 및 실제 브라우저 실측을 수행한다. 구문/정적 검사는 computed layout/접근성 검사를 대체하지 않는다.
+
+- v0.6 검토안: `design-system/labs/dajeongrok/foundation/v06-rules.md`. 조작 영역과 시각 표면을 분리하며 CompactSelect, CalendarDay, WriterLayout 계약을 준수. 신규 역할은 기존 컴포넌트/외부 공식 디자인 시스템 조사와 내부/외부 간격 및 상태 명세·공통 소스·브라우저 검사를 한 변경 단위로 제출. 화면별 raw padding/negative margin 금지. A/B/C 작성 시안은 검수 전용이며 최종 승인 전 확정 아님. 전체 화면의 레거시 여백 검수는 지속.

@@ -7,6 +7,7 @@ import { JarArtwork } from '../components/JarArtwork';
 import { stackCount } from '../graphics/rediscover-motion.mjs';
 import { ArtworkSlot } from '../graphics/ArtworkSlot';
 import { HomeShell, type HomeMode } from './HomeShell';
+import { WriterLayout, WriterDate, type WriterVariant } from './WriterLayout';
 import { GestureArtwork } from '../components/GestureArtwork';
 import { COPY, deleteImpact, savedMessage } from '../content/copy';
 import { pickPrompts, type Prompt } from '../data/prompts';
@@ -43,6 +44,8 @@ export default function App() {
   const [pendingDraw, setPendingDraw] = useState<{id:string;pick:number}|null>(null);
   const [monthIdea, setMonthIdea] = useState('');
   const [writerDate, setWriterDate] = useState('');
+  const [writerVariant,setWriterVariant]=useState<WriterVariant>('A');
+  const reviewMode=Boolean((window as Window & {__DAJEONGROK_REVIEW__?:boolean}).__DAJEONGROK_REVIEW__);
   const [writerTitle, setWriterTitle] = useState('');
   const [writerBody, setWriterBody] = useState('');
   const [writerTitleOpen, setWriterTitleOpen] = useState(false);
@@ -190,8 +193,8 @@ export default function App() {
     onClose={back} onSave={(body,date,id)=>saveReflection(entry.id,body,date,id)} onDelete={id=>persist(removeReflection(state,entry.id,id))}
     onEditEntry={()=>startWrite(entry)} onDeleteEntry={()=>setConfirmDelete(entry.id)}/>;
   return <div className="app-shell" data-drawing={isDrawing}>
-    {page.screen !== 'home' && !isReader && <AppBar title={pageTitle[page.screen]} onBack={showBack ? back : undefined}/>}
-    <main className={`app-content ${!isTabPage ? 'app-content--no-tabs' : ''} ${page.screen === 'home' ? 'app-content--home-integrated' : ''}`} id="main-content">
+    {page.screen !== 'home' && !isReader && <AppBar title={pageTitle[page.screen]} onBack={showBack ? back : undefined} trailing={page.screen==='write'&&!page.editId&&writerVariant==='C'?<WriterDate date={writerDate} today={today} yesterday={yesterday} onChange={setWriterDate}/>:undefined}/>}
+    <main className={`app-content ${!isTabPage ? 'app-content--no-tabs' : ''} ${page.screen === 'home' ? 'app-content--home-integrated' : ''} ${page.screen==='write'?'app-content--writer':''}`} id="main-content">
       {page.screen === 'home' && <HomeShell month={viewMonth} months={homeMonths} mode={homeMode} today={today}
         theme={themeFor(viewMonth)} entries={monthEntries(state.entries, viewMonth)} reducedMotion={state.reducedMotion}
         onMonth={setHomeMonth} onMode={setHomeMode} onWrite={() => startWrite()} onSettings={() => navigate({screen:'settings'})}
@@ -201,23 +204,10 @@ export default function App() {
         onArt={() => navigate({screen:'graphic',month:viewMonth})}
         onIdea={() => navigate({screen:'idea',month:viewMonth})}/>}
 
-      {page.screen === 'write' && <div className="space-stack">
-        {!page.editId && <>
-          <div className="page-intro"><h1 className="page-title">오늘의 나를 칭찬해 볼까요?</h1><p className="description">짧은 한마디도 괜찮아요.</p></div>
-          <SegmentedChoice label="일기를 남길 날짜" value={writerDate} onChange={next => { setWriterDate(next); setToast(COPY.write.changeDay(formatDay(next))); }} options={[{ value: today, label: `오늘 · ${today.slice(5).replace('-', '.')}` }, { value: yesterday, label: `어제 · ${yesterday.slice(5).replace('-', '.')}` }]} />
-          <p className="small-caption" aria-live="polite"><strong>{formatDay(writerDate)}</strong>의 일기로 기록돼요.</p>
-        </>}
-        {page.editId && <div className="info-sheet"><p>{formatDay(writerDate)}에 남긴 칭찬을 수정해요. 기록 날짜는 그대로 유지돼요.</p></div>}
-        <Stack>
-          {!writerTitleOpen ? <TextAction icon="plus" onClick={() => setWriterTitleOpen(true)}>제목 추가</TextAction> : <RemovableField label="제목 제거" onRemove={()=>{setWriterTitle('');setWriterTitleOpen(false)}}><TextInput aria-label="제목 (선택)" value={writerTitle} onChange={event=>setWriterTitle(event.target.value)} placeholder="제목 (선택)" /></RemovableField>}
-          {promptSelected && <div className="ui-inline"><span className="small-caption">{writerPrompts.find(p=>p.category===promptSelected)?.[writerDate===yesterday?'yesterday':'today']}</span><IconButton icon="close" label="선택한 질문 제거" onClick={()=>setPromptSelected(null)}/></div>}
-          <Textarea aria-label="나에게 남길 칭찬" placeholder={COPY.write.bodyHint} value={writerBody} onChange={event=>setWriterBody(event.target.value)}/>
-          {!page.editId && <Collapsible label="어떤 칭찬을 남길지 고민되나요?" open={promptVisible} onOpenChange={setPromptVisible}>
-            <Stack gap="controls">{writerPrompts.map(p=><Button key={p.category} variant="secondary" size="compact" onClick={()=>{setPromptSelected(p.category);setPromptVisible(false)}}>{writerDate===yesterday?p.yesterday:p.today}</Button>)}</Stack>
-          </Collapsible>}
-        </Stack>
-        <div className="write-footer"><Button className="ui-button--full" onClick={saveEntry} disabled={!writerBody.trim()}>{page.editId ? COPY.write.edit : COPY.write.save}</Button></div>
-      </div>}
+      {page.screen === 'write' && <WriterLayout variant={writerVariant} editing={Boolean(page.editId)} date={writerDate} today={today} yesterday={yesterday} onDate={setWriterDate}
+        title={writerTitle} titleOpen={writerTitleOpen} onTitle={setWriterTitle} onTitleOpen={setWriterTitleOpen} body={writerBody} onBody={setWriterBody}
+        prompts={writerPrompts} promptOpen={promptVisible} onPromptOpen={setPromptVisible} selected={promptSelected} onSelect={setPromptSelected} onSave={saveEntry}
+        review={reviewMode} onVariant={setWriterVariant}/>}
 
       {page.screen === 'saved' && <div className="space-stack immersive-detail">
         <div className="month-detail-title"><span className="eyebrow">{page.day && formatDay(page.day)}</span><h1 className="page-title">{savedMessage(monthTheme,page.mode ?? 'growth')}</h1></div>
@@ -247,8 +237,10 @@ export default function App() {
         <DiaryList entries={page.day ? state.entries.filter(e => e.entryDate === page.day) : page.month ? monthEntries(state.entries,page.month) : state.entries} onOpen={entry => navigate({ screen:'detail', entryId:entry.id })} emptyContent={<EmptyState title="아직 남긴 칭찬이 없어요." description="오늘의 작은 칭찬부터 시작해 볼까요?" action={<Button onClick={() => startWrite()}>칭찬일기 남기러 가기</Button>} />} />
       </div>}
       {page.screen === 'collection' && <>
-        <div className="page-intro"><h1 className="page-title">{COPY.collection.title}</h1><p className="description">{COPY.collection.subtitle}</p></div>
+        <Stack gap="component">
+        <p className="collection-description">{COPY.collection.subtitle}</p>
         <div className="month-tiles">{allMonths.map(month => <MonthTile key={month} month={month} theme={themeFor(month)} writtenDays={writtenDays(state.entries,month)} entries={monthEntries(state.entries,month).length} entriesData={monthEntries(state.entries,month)} letterSource={monthEntries(state.entries,month).map(e => e.body).join(' ')} reducedMotion={state.reducedMotion} locked={month > todayMonth || !themeFor(month)} onClick={() => openMonth(month)} />)}</div>
+        </Stack>
       </>}
       {page.screen === 'month' && <div className="space-stack immersive-detail"><div className="month-detail-title"><h1 className="page-title">{monthTheme?.title ?? formatMonth(currentMonth)}</h1><span className="small-caption">{writtenDays(state.entries,currentMonth)}일의 칭찬</span></div>
         {monthTheme && <div className="illustration-stage"><button className="illustration-stage__view" aria-label="그래픽 크게 보기" onClick={() => navigate({ screen:'graphic', month:currentMonth })}><ArtworkSlot theme={monthTheme} writtenDays={writtenDays(state.entries,currentMonth)} letterCount={monthEntries(state.entries,currentMonth).length} entries={monthEntries(state.entries,currentMonth)} letterSource={monthEntries(state.entries,currentMonth).map(e => e.body).join(' ')} reducedMotion={state.reducedMotion}/></button></div>}
