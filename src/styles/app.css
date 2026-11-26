@@ -53,15 +53,6 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-
 @keyframes reveal-pulse { from { opacity: .3; } to { opacity: 1; } }
 .action-stack { display: grid; gap: 4px; margin-top: 22px; }
 .action-stack > * { width: 100%; }
-.month-tiles { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; }
-.month-tile { min-width: 0; border: 1px solid var(--line); border-radius: 16px; padding: 0; background: var(--surface); text-align: left; overflow: hidden; }
-.month-tile__art { height: 185px; background: var(--hero); display: flex; justify-content: center; align-items: center; }
-.month-tile--locked .month-tile__art { background: #EDF1EC; }
-.month-tile__blank { font-size: 38px; color: var(--muted); font-weight: 300; }
-.month-tile__copy { min-height: 108px; display: flex; flex-direction: column; gap: 4px; padding: 12px; line-height: 1.5; }
-.month-tile__date { color: var(--muted); font-size: 12px; }
-.month-tile__copy strong { font-size: 14px; font-weight: 700; }
-.month-tile__copy small { color: var(--muted); font-size: 12px; }
 .month-detail-title { text-align: center; margin-top: 16px; }
 .month-detail-title h1 { margin-bottom: 4px; }
 .record-bar { margin-top: 12px; display: flex; justify-content: center; }
@@ -126,7 +117,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-
 .dialog .ui-button { padding: 10px; }
 .toast { position: fixed; z-index: 40; width: min(calc(100% - 36px),460px); bottom: 84px; left: 50%; transform: translateX(-50%); background: var(--hero); color: white; padding: 12px 15px; border-radius: 12px; text-align: center; font-size: 13px; box-shadow: 0 4px 18px rgba(0,0,0,.2); }
 .prototype-notice { font-size: 11px; color: var(--muted); border-top: 1px solid var(--line); padding: 14px 22px; line-height: 1.6; }
-@media (max-width: 360px) { .app-content { padding-left: 16px; padding-right: 16px; } .month-tile__art { height: 152px; } .app-bar { padding-inline: 16px; } }
+@media (max-width: 360px) { .app-content { padding-left: 16px; padding-right: 16px; } .app-bar { padding-inline: 16px; } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; } }
 .reduce-motion *, .reduce-motion { animation: none !important; transition: none !important; }
 
@@ -211,12 +202,6 @@ html, body { background: var(--background); color: var(--ink); }
 .immersive-detail .month-detail-title { margin: 18px 0 4px; }
 
 /* The collection keeps a 2-column browsing grid without treating each art as a boxed widget. */
-.month-tiles { gap: 14px 10px; }
-.month-tile { background: transparent; border: 0; border-radius: 0; overflow: visible; }
-.month-tile__art { height: 190px; background: transparent; }
-.month-tile--locked .month-tile__art { background: transparent; }
-.month-tile__copy { padding: 4px 0 16px; min-height: 94px; }
-.month-tile__blank { color: var(--muted); }
 
 /* Form and system components remain accessible and functional on a dark base. */
 .letter-art { background: transparent; }
@@ -267,7 +252,6 @@ body { font-family: var(--font-body); font-size: var(--type-body); line-height: 
 .memory-slip h2 { font-size: var(--type-entry-title); font-weight: var(--weight-emphasis); line-height: 1.4; }
 .memory-slip p { font-size: var(--type-body); line-height: 1.8; }
 .month-tile__date, .month-tile__copy small { font-size: var(--type-meta); }
-.month-tile__copy strong { font-size: 15px; font-weight: var(--weight-emphasis); }
 .illustration-stage__title { font-size: var(--type-section); font-weight: var(--weight-emphasis); }
 .illustration-stage__subtitle, .illustration-stage__footer { font-size: var(--type-meta); }
 .dialog h2 { font-size: var(--type-entry-title); font-weight: var(--weight-emphasis); }

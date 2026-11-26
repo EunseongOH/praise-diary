@@ -14,3 +14,6 @@
 ## 남은 검수
 - CI 결과 확인 전 실측 완료로 표기 금지. 새 E2E settings/boundary/records/dialog/saved 320/390/430 + 320 설정 200%; 기존 검사는 유지.
 - app.css에는 미사용 레거시 선택자/중복 선언이 여전히 존재. 삭제는 화면별 동등성 검증 후 진행. 고정 nav의 극단적 글자 확대/짧은 화면, portal/screen reader, 실제 폰트 및 모바일 WebView/키보드, 모든 화면 screenshot 육안 검수 필요. 실제 artwork/splash/월 첫 진입/서체 설정·SDK·DB 미통합. 48×28 switch 규격은 이번 검토안.
+
+## 사용자 보고 회귀 — 2026-11-26
+v0.9 검수판에서 도감 작품/잠금 표면이 세로선으로 축소됨. 기존 테스트는 타일 width≥44와 gap만 검사해 내부 표면 붕괴를 검출하지 못함. 부모의 확정 aspect-ratio box를 단일 크기 기준으로 사용하고 내부 표면은 absolute inset 0으로 채움. 320/390/430/635/1280px의 A/B와 실제 file review 635px에서 grid track, outer/inner width/height, ratio, text range를 검사하고 스크린샷을 저장. 기존 도감 레거시 CSS 제거. 실제 캡처 육안 확인 여부와 CI 통과는 구분. v0.10 CI 45766788853은 숨은 checkbox를 직접 클릭하는 신규 검사 3개 실패(23 통과); 실제 행 클릭과 키보드 Space로 검사 수정. 최신 CI 전 완료로 표현 금지.

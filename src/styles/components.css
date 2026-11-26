@@ -179,13 +179,15 @@
 .collection-screen{display:flex;flex-direction:column;gap:var(--gap-collection-section);min-width:0}
 .month-tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--gap-tile-row) var(--gap-tile-column);align-items:start}
 .month-tile{display:flex;flex-direction:column;align-items:stretch;gap:var(--gap-tile-art-copy);min-width:0;min-height:var(--touch);width:100%;padding:0;background:transparent;border:0;text-align:start;border-radius:var(--collection-art-radius);overflow:hidden}
-.month-tile__art{height:auto;aspect-ratio:1;display:grid;place-items:center;width:100%;min-width:0}
-.month-visual{display:grid;place-items:center;position:relative;min-width:0;width:100%;height:100%;border-radius:var(--collection-art-radius);color:var(--muted)}
+.month-tile__art{position:relative;height:auto;aspect-ratio:1;display:block;width:100%;min-width:0;flex:none}
+.month-visual{display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr);place-items:center;position:relative;min-width:0;min-height:0;width:100%;height:auto;border-radius:var(--collection-art-radius);color:var(--muted)}
+.month-tile__art>.month-visual,.collection-detail-stage>.month-visual{position:absolute;inset:0;width:auto;height:auto;overflow:hidden}
+.month-visual>.artwork-slot{min-width:0;max-width:100%;max-height:100%}
 .month-visual[data-state=locked]{border:1px solid var(--divider);background:var(--surface)}
 .month-visual[data-state=empty]{border:1px dashed var(--line)}
 .month-empty-mark{width:var(--collection-empty-mark);aspect-ratio:1;border:1px dashed var(--quiet);border-radius:50%}
 .month-visual[data-state=recorded],.month-visual[data-state=preparing]{border:1px solid var(--divider)}
-.month-slot-caption{position:absolute;inset-inline:var(--space-2);text-align:center;overflow-wrap:anywhere;font:400 var(--type-meta)/1.5 var(--font-body)}
+.month-slot-caption{position:absolute;inset:0;display:grid;place-items:center;padding:var(--space-2);text-align:center;white-space:normal;word-break:keep-all;overflow-wrap:anywhere;font:400 var(--type-meta)/1.5 var(--font-body)}
 .month-tile__copy{display:grid;min-height:0;padding:0;gap:var(--gap-tile-text);min-width:0;overflow-wrap:anywhere}
 .month-tile__date,.month-tile__copy small,.collection-meta{font:400 var(--type-meta)/1.5 var(--font-body);color:var(--muted)}
 .month-tile__copy .month-tile__name{font:400 var(--type-supporting)/var(--leading-supporting) var(--font-body);color:var(--muted)}
@@ -199,7 +201,7 @@
 .collection-detail-heading{display:grid;gap:var(--gap-text);min-width:0}
 .collection-artwork-title{margin:0;font:400 var(--type-page)/1.4 var(--font-artwork);letter-spacing:.015em;overflow-wrap:anywhere}
 .collection-meta,.collection-locked p,.collection-idea p,.collection-locked h2,.collection-idea h2{margin:0;overflow-wrap:anywhere}
-.collection-detail-stage{width:min(100%,var(--collection-detail-art-max));aspect-ratio:1}
+.collection-detail-stage{position:relative;width:min(100%,var(--collection-detail-art-max));aspect-ratio:1;flex:none}
 .collection-detail-stage .month-visual{border:0}
 .collection-detail-stage .month-visual[data-state=empty]{border:1px dashed var(--line)}
 .collection-locked{padding-block:var(--gap-section)}

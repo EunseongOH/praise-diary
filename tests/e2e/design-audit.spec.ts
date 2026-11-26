@@ -7,7 +7,7 @@ for(const width of [320,390,430])test('settings, saved, dialog and shell geometr
  await page.getByRole('button',{name:'설정',exact:true}).click();
  const rows=page.locator('.setting-row,.setting-switch-row');
  for(const row of await rows.all()){const m=await row.evaluate(e=>({padding:getComputedStyle(e).paddingLeft,gap:getComputedStyle(e).gap,h:e.getBoundingClientRect().height}));expect(m.padding).toBe('12px');expect(m.gap).toBe('8px');expect(m.h).toBeGreaterThanOrEqual(48)}
- const sw=page.getByRole('switch',{name:'그래픽 움직임 줄이기'});await expect(sw).toBeChecked();await sw.uncheck();await expect(sw).not.toBeChecked();await sw.check();
+ const sw=page.getByRole('switch',{name:'그래픽 움직임 줄이기'});await expect(sw).toBeChecked();await page.locator('.setting-switch-row').click();await expect(sw).not.toBeChecked();await sw.focus();await page.keyboard.press('Space');await expect(sw).toBeChecked();
  await page.getByRole('button',{name:/하루가 바뀌는 시간/}).click();const radio=page.getByRole('radio',{name:'오전 1:00',exact:true});await radio.check();await expect(radio).toBeChecked();
  expect(await radio.locator('..').evaluate(e=>getComputedStyle(e).paddingLeft)).toBe('12px');
  await page.getByRole('button',{name:'뒤로가기'}).click();await page.getByRole('button',{name:'기록 관리',exact:true}).click();
