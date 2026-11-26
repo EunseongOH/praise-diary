@@ -64,3 +64,23 @@
 .dialog h2{font-weight:500;line-height:1.5}
 .dialog .ui-button[data-size=compact]{padding:var(--action-padding-y) var(--action-padding-x)}
 .dialog{max-height:calc(100dvh - 2 * var(--gutter));overflow-y:auto}
+
+/* V10 approved illustration and motion, independent from the monthly artwork slot.
+   Interactive geometry belongs to the shared Button/TextAction and layout tokens. */
+.rediscover-screen{display:flex;flex-direction:column;align-items:center;gap:var(--gap-section);min-width:0;padding-block:var(--gap-component);text-align:center}
+.rediscover-jar{width:min(100%,310px);aspect-ratio:320/330;flex:none;pointer-events:none}
+.rediscover-screen[data-locked=true]{gap:var(--gap-component)}
+.rediscover-screen[data-locked=true] .rediscover-jar{width:min(100%,248px)}
+.rediscover-jar svg{display:block;width:100%;height:100%;overflow:visible}
+.rediscover-jar .jar-lid{transform-origin:160px var(--lid-y)}
+.rediscover-jar .note-pos{transform-origin:0 0}
+.rediscover-copy{display:flex;flex-direction:column;align-items:center;gap:var(--gap-component);width:100%;min-width:0}
+.rediscover-copy p{margin:0;white-space:pre-line;overflow-wrap:anywhere}
+.rediscover-lead{font:400 var(--type-body)/var(--leading-reading) var(--font-body);color:var(--ink)}
+.rediscover-actions{display:flex;flex-direction:column;gap:var(--gap-component);width:100%}
+.rediscover-handoff{position:absolute;inset:0 var(--gutter) auto;z-index:11;padding-block:var(--gutter);pointer-events:none;opacity:0;text-align:start}
+.rediscover-handoff .diary-paper{will-change:transform,opacity}
+.app-shell[data-drawing=true]{overflow-x:clip}
+.app-shell[data-drawing=true]>.app-bar{transition:opacity .18s ease}
+@media(max-width:348px){.rediscover-jar{width:min(100%,240px)}.rediscover-screen[data-locked=true] .rediscover-jar{width:min(100%,185px)}}
+@media(prefers-reduced-motion:reduce){.app-shell[data-drawing=true]>.app-bar{transition:none}}

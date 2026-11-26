@@ -3,6 +3,8 @@ import { AppBar, BottomNavigation, Button, Collapsible, Dialog, EmptyState, Icon
 import type { MainTab } from '../components/ui';
 import { DiaryList, MonthTile } from '../components/content';
 import { DiaryContent } from '../components/DiaryContent';
+import { JarArtwork } from '../components/JarArtwork';
+import { stackCount } from '../graphics/rediscover-motion.mjs';
 import { ArtworkSlot } from '../graphics/ArtworkSlot';
 import { HomeShell, type HomeMode } from './HomeShell';
 import { GestureArtwork } from '../components/GestureArtwork';
@@ -38,6 +40,7 @@ export default function App() {
   const [deleteAllStage, setDeleteAllStage] = useState<0 | 1 | 2 | 3>(0);
   const [deletePhrase, setDeletePhrase] = useState('');
   const [drawnId, setDrawnId] = useState<string | null>(null);
+  const [pendingDraw, setPendingDraw] = useState<{id:string;pick:number}|null>(null);
   const [monthIdea, setMonthIdea] = useState('');
   const [writerDate, setWriterDate] = useState('');
   const [writerTitle, setWriterTitle] = useState('');
@@ -87,6 +90,7 @@ export default function App() {
     window.scrollTo(0, 0);
   };
   const toTab = (tab: MainTab) => {
+    setPendingDraw(null);
     if (page.screen === 'write' && writerBody.trim()) { setLeaveWriting(true); return; }
     setStack([]); setPage({ screen: tab }); window.scrollTo(0, 0);
   };
@@ -134,7 +138,19 @@ export default function App() {
   const lastOnDate = entryToDelete ? state.entries.filter(e => e.entryDate === entryToDelete.entryDate).length === 1 : false;
   const eligibleForRediscovery = state.entries; // Prototype: recently written eligible; minimum age is not yet agreed.
   const drawn = eligibleForRediscovery.find(e => e.id === drawnId);
-  const selectNext = () => setDrawnId(chooseDifferentEntry(eligibleForRediscovery, drawnId)?.id ?? null);
+  const completeDraw = (id:string) => {
+    setPendingDraw(null);
+    setDrawnId(id);
+    navigate({screen:'memory'});
+  };
+  const startDraw = () => {
+    if(pendingDraw||!isUnlocked)return;
+    const entry=chooseDifferentEntry(eligibleForRediscovery,drawnId);
+    if(!entry)return;
+    if(state.reducedMotion||window.matchMedia('(prefers-reduced-motion: reduce)').matches){completeDraw(entry.id);return}
+    setPendingDraw({id:entry.id,pick:Math.floor(Math.random()*stackCount(state.entries.length))});
+    window.scrollTo(0,0);
+  };
   const openMonth = (month: MonthId) => navigate({ screen: month > todayMonth || !themeFor(month) ? 'locked-month' : 'month', month });
   const confirmLeave = () => {
     setLeaveWriting(false);
@@ -168,7 +184,12 @@ export default function App() {
     return next?persist(next):false;
   };
 
-  return <div className="app-shell">
+  const pendingEntry = pendingDraw ? state.entries.find(e=>e.id===pendingDraw.id) : undefined;
+  const isDrawing = page.screen==='rediscover'&&Boolean(pendingEntry);
+  const renderReader=(entry:DiaryEntry,mode:'random'|'direct')=><DiaryContent key={entry.id} entry={entry} reflections={reflectionsFor(state,entry.id)} mode={mode} date={koreanClock(nowForPreview).date}
+    onClose={back} onSave={(body,date,id)=>saveReflection(entry.id,body,date,id)} onDelete={id=>persist(removeReflection(state,entry.id,id))}
+    onEditEntry={()=>startWrite(entry)} onDeleteEntry={()=>setConfirmDelete(entry.id)}/>;
+  return <div className="app-shell" data-drawing={isDrawing}>
     {page.screen !== 'home' && !isReader && <AppBar title={pageTitle[page.screen]} onBack={showBack ? back : undefined}/>}
     <main className={`app-content ${!isTabPage ? 'app-content--no-tabs' : ''} ${page.screen === 'home' ? 'app-content--home-integrated' : ''}`} id="main-content">
       {page.screen === 'home' && <HomeShell month={viewMonth} months={homeMonths} mode={homeMode} today={today}
@@ -205,22 +226,22 @@ export default function App() {
         <div className="action-stack"><Button onClick={() => startWrite()}>칭찬 하나 더 남기기</Button><Button variant="secondary" onClick={() => { setStack([]); setPage({screen:'home'}); }}>홈으로 돌아가기</Button></div>
       </div>}
 
-      {page.screen === 'rediscover' && <>
-        {!isUnlocked ? <div className="locked-intro">
-          <div className="letter-art" aria-hidden="true"><div className="letter-art__envelope" /></div>
-          <p>{COPY.rediscover.locked}</p>
-          <Button className="ui-button--full" onClick={() => startWrite()}>{COPY.rediscover.lockedCta}</Button>
-        </div> : state.entries.length === 0 ? <EmptyState title={COPY.rediscover.empty} description="다시 일기를 남기면 언제든 꺼내볼 수 있어요." action={<Button onClick={() => startWrite()}>{COPY.rediscover.lockedCta}</Button>} /> : <div className="space-stack">
-          <div className="memory-intro"><h1 className="page-title">{COPY.rediscover.prompt}</h1><p className="description">전에 썼던 나의 말이 기다리고 있어요.</p></div>
-          <div className="letter-art" aria-hidden="true"><div className="letter-art__envelope" /></div>
-          <Button className="ui-button--full" onClick={() => { selectNext(); navigate({ screen:'memory' }); }}>{COPY.rediscover.draw}</Button>
-          <TextAction onClick={() => navigate({ screen:'list' })}>모든 칭찬 보기</TextAction>
-        </div>}
-      </>}
+      {page.screen === 'rediscover' && <section className="rediscover-screen" data-locked={!isUnlocked} aria-busy={isDrawing}>
+        <JarArtwork entryCount={state.entries.length} pick={isDrawing?pendingDraw!.pick:-1} reducedMotion={state.reducedMotion}
+          onComplete={()=>{if(pendingEntry)completeDraw(pendingEntry.id)}}
+          preview={pendingEntry?renderReader(pendingEntry,'random'):undefined}/>
+        <div className="rediscover-copy">
+          {!isUnlocked?<><p className="rediscover-lead">{COPY.rediscover.locked}</p><p className="description">10개의 칭찬이 모이면, 하나씩 꺼내볼 수 있어요.</p>{state.entries.length>0&&<p className="small-caption">지금까지 {state.entries.length}개의 칭찬이 쌓였어요.</p>}</>:state.entries.length===0?<><h1 className="section-title">{COPY.rediscover.empty}</h1><p className="description">다시 일기를 남기면 언제든 꺼내볼 수 있어요.</p></>:<p className="rediscover-lead">{COPY.rediscover.prompt}</p>}
+        </div>
+        <div className="rediscover-actions">
+          {!isUnlocked||!state.entries.length?<Button className="ui-button--full" onClick={()=>startWrite()}>{COPY.rediscover.lockedCta}</Button>:<>
+            <Button className="ui-button--full" disabled={isDrawing} onClick={startDraw}>{COPY.rediscover.draw}</Button>
+            <TextAction disabled={isDrawing} onClick={()=>navigate({screen:'list'})}>모든 칭찬 보기</TextAction>
+          </>}
+        </div>
+      </section>}
 
-      {isReader && (readerEntry ? <DiaryContent key={readerEntry.id} entry={readerEntry} reflections={reflectionsFor(state,readerEntry.id)} mode={page.screen==='memory'?'random':'direct'} date={koreanClock(nowForPreview).date}
-        onClose={back} onSave={(body,date,id)=>saveReflection(readerEntry.id,body,date,id)} onDelete={id=>persist(removeReflection(state,readerEntry.id,id))}
-        onEditEntry={()=>startWrite(readerEntry)} onDeleteEntry={()=>setConfirmDelete(readerEntry.id)}/> : <Stack><EmptyState title="기록이 없어요."/><Button onClick={back}>돌아가기</Button></Stack>)}
+      {isReader && (readerEntry ? renderReader(readerEntry,page.screen==='memory'?'random':'direct') : <Stack><EmptyState title="기록이 없어요."/><Button onClick={back}>돌아가기</Button></Stack>)}
 
       {page.screen === 'list' && <div className="space-stack"><div className="page-intro"><h1 className="page-title">{page.day ? `${formatDay(page.day)}에 남긴 칭찬` : page.month ? `${formatMonth(page.month)}에 남긴 칭찬` : '내가 남긴 칭찬들'}</h1></div>
         <DiaryList entries={page.day ? state.entries.filter(e => e.entryDate === page.day) : page.month ? monthEntries(state.entries,page.month) : state.entries} onOpen={entry => navigate({ screen:'detail', entryId:entry.id })} emptyContent={<EmptyState title="아직 남긴 칭찬이 없어요." description="오늘의 작은 칭찬부터 시작해 볼까요?" action={<Button onClick={() => startWrite()}>칭찬일기 남기러 가기</Button>} />} />
