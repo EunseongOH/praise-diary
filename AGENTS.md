@@ -52,3 +52,5 @@
 - 월간 그래픽 렌더러는 통합 후 연결한다. 실제 아트워크 연구 소스는 변경하지 말고 `ArtworkSlot`을 화면 공통 계약으로 사용한다.
 - 최신 디자인 규격은 `design-system/labs/dajeongrok/foundation/v05-rules.md` 및 `v04-rules.md`. 화면 구현 전 컴포넌트 인벤토리·역할·padding/gap/focus 규격을 확인하고 부족한 경우 공통 variant를 먼저 보강. 메뉴는 TextAction 대신 ActionMenu/MenuItem을 사용한다.
 - 꺼내보기는 읽은 한 편을 음미하는 경험. 감상에서 다시 뽑기 버튼 제거, 닫힌 병으로 복귀. 오늘의 마음 덧붙이기는 MVP이며 달력/전체 목록/꺼내보기 공통 원문 화면에서 사용; 원본 일기와 별도 1:N, 성장/해제/추첨에 포함하지 않는다. V10 참고.
+
+- 통합 앱의 실제 공통 조작 요소는 `src/components/ui.tsx`, `src/styles/components.css`, `src/styles/tokens.css`에서 관리한다. 새 화면에서는 raw textarea/input 스타일 또는 메뉴 패딩 재정의 금지. 필요한 variant를 공통 소스에 먼저 추가하고 `npm run check:design` 및 실제 브라우저 실측을 수행한다. 구문/정적 검사는 computed layout/접근성 검사를 대체하지 않는다.

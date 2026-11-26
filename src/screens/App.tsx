@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { AppBar, BottomNavigation, Button, Dialog, EmptyState, SegmentedChoice, SettingRow, TextAction, Toast, Toggle } from '../components/ui';
+import { AppBar, BottomNavigation, Button, Collapsible, Dialog, EmptyState, IconButton, RemovableField, SegmentedChoice, SettingRow, Stack, TextAction, Textarea, TextInput, Toast, Toggle } from '../components/ui';
 import type { MainTab } from '../components/ui';
 import { DiaryList, MemorySlip, MonthTile } from '../components/content';
 import { ArtworkSlot } from '../graphics/ArtworkSlot';
@@ -43,7 +43,7 @@ export default function App() {
   const [writerBody, setWriterBody] = useState('');
   const [writerTitleOpen, setWriterTitleOpen] = useState(false);
   const [writerPrompts, setWriterPrompts] = useState<Prompt[]>(() => pickPrompts());
-  const [promptVisible, setPromptVisible] = useState(true);
+  const [promptVisible, setPromptVisible] = useState(false);
   const [promptSelected, setPromptSelected] = useState<string | null>(null);
   const [leaveWriting, setLeaveWriting] = useState(false);
   const [draftSaved, setDraftSaved] = useState(false);
@@ -91,7 +91,7 @@ export default function App() {
     setWriterTitle(edit?.title ?? '');
     setWriterBody(edit?.body ?? '');
     setWriterTitleOpen(Boolean(edit?.title));
-    setPromptVisible(!edit);
+    setPromptVisible(false);
     setPromptSelected(null);
     setWriterPrompts(pickPrompts());
     setDraftSaved(false);
@@ -174,18 +174,16 @@ export default function App() {
           <div className="page-intro"><h1 className="page-title">오늘의 나를 칭찬해 볼까요?</h1><p className="description">짧은 한마디도 괜찮아요.</p></div>
           <SegmentedChoice label="일기를 남길 날짜" value={writerDate} onChange={next => { setWriterDate(next); setToast(COPY.write.changeDay(formatDay(next))); }} options={[{ value: today, label: `오늘 · ${today.slice(5).replace('-', '.')}` }, { value: yesterday, label: `어제 · ${yesterday.slice(5).replace('-', '.')}` }]} />
           <p className="small-caption" aria-live="polite"><strong>{formatDay(writerDate)}</strong>의 일기로 기록돼요.</p>
-          {promptVisible && <section className="prompt-section" aria-label="칭찬일기 질문">
-            <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', gap:8 }}><h2 className="section-title">{COPY.write.promptHeading}</h2><TextAction onClick={() => { setWriterPrompts(pickPrompts(writerPrompts)); setPromptSelected(null); }}>{COPY.write.shuffle}</TextAction></div>
-            {writerPrompts.map(p => { const content = writerDate === today ? p.today : p.yesterday; return <button key={p.category} type="button" className={`prompt-row ${promptSelected === p.category ? 'is-active' : ''}`} aria-pressed={promptSelected === p.category} onClick={() => setPromptSelected(previous => previous === p.category ? null : p.category)}>{content}</button>; })}
-            <span className="small-caption">질문을 고르지 않고 바로 작성해도 괜찮아요.</span>
-          </section>}
-          {!promptVisible && <div><TextAction onClick={() => setPromptVisible(true)}>질문 다시 보기</TextAction></div>}
         </>}
         {page.editId && <div className="info-sheet"><p>{formatDay(writerDate)}에 남긴 칭찬을 수정해요. 기록 날짜는 그대로 유지돼요.</p></div>}
-        <div className="form-group"><label className="form-label" htmlFor="diary-body">나에게 남길 칭찬</label>
-          <textarea id="diary-body" className="form-textarea" placeholder={COPY.write.bodyHint} value={writerBody} onChange={event => { setWriterBody(event.target.value); if (event.target.value && !page.editId) setPromptVisible(false); }} />
-        </div>
-        {!writerTitleOpen ? <TextAction onClick={() => setWriterTitleOpen(true)}>{COPY.write.titleOptional}</TextAction> : <div className="form-group"><label className="form-label" htmlFor="diary-title">제목 (선택)</label><input id="diary-title" className="form-input" value={writerTitle} onChange={event => setWriterTitle(event.target.value)} placeholder="이 날을 기억할 제목" /></div>}
+        <Stack>
+          {!writerTitleOpen ? <TextAction icon="plus" onClick={() => setWriterTitleOpen(true)}>제목 추가</TextAction> : <RemovableField label="제목 제거" onRemove={()=>{setWriterTitle('');setWriterTitleOpen(false)}}><TextInput aria-label="제목 (선택)" value={writerTitle} onChange={event=>setWriterTitle(event.target.value)} placeholder="제목 (선택)" /></RemovableField>}
+          {promptSelected && <div className="ui-inline"><span className="small-caption">{writerPrompts.find(p=>p.category===promptSelected)?.[writerDate===yesterday?'yesterday':'today']}</span><IconButton icon="close" label="선택한 질문 제거" onClick={()=>setPromptSelected(null)}/></div>}
+          <Textarea aria-label="나에게 남길 칭찬" placeholder={COPY.write.bodyHint} value={writerBody} onChange={event=>setWriterBody(event.target.value)}/>
+          {!page.editId && <Collapsible label="어떤 칭찬을 남길지 고민되나요?" open={promptVisible} onOpenChange={setPromptVisible}>
+            <Stack gap="controls">{writerPrompts.map(p=><Button key={p.category} variant="secondary" size="compact" onClick={()=>{setPromptSelected(p.category);setPromptVisible(false)}}>{writerDate===yesterday?p.yesterday:p.today}</Button>)}</Stack>
+          </Collapsible>}
+        </Stack>
         <div className="write-footer"><Button className="ui-button--full" onClick={saveEntry} disabled={!writerBody.trim()}>{page.editId ? COPY.write.edit : COPY.write.save}</Button></div>
       </div>}
 
@@ -242,7 +240,7 @@ export default function App() {
         <TextAction onClick={() => navigate({screen:'list',month:currentMonth})}>{COPY.collection.monthEntries}</TextAction>
       </div>}
       {page.screen === 'locked-month' && <div className="locked-intro"><div className="locked-shape" aria-hidden="true"><div className="locked-shape__bar" /></div><h1 className="page-title">{COPY.collection.locked}</h1><p>어떤 그래픽이 등장할지 기대해 주세요.</p><TextAction onClick={() => navigate({screen:'idea',month:currentMonth})}>{COPY.collection.suggest}</TextAction></div>}
-      {page.screen === 'idea' && <div className="space-stack"><div className="page-intro"><h1 className="page-title">어떤 그래픽을 보고 싶나요?</h1><p className="description">떠오르는 모양이나 장면이 있다면 편하게 남겨 주세요.</p></div><div className="form-group"><label htmlFor="graphic-idea" className="form-label">그래픽 아이디어</label><textarea id="graphic-idea" className="form-textarea" placeholder="예: 봄에는 글자로 자라는 벚꽃나무가 있으면 좋겠어요." value={monthIdea} onChange={e => setMonthIdea(e.target.value)} /></div><Button disabled={!monthIdea.trim()} onClick={saveIdeas}>의견 남기기</Button><p className="small-caption">프로토타입에서는 의견이 운영자에게 전송되지 않고 이 브라우저 세션에만 저장돼요.</p></div>}
+      {page.screen === 'idea' && <div className="space-stack"><div className="page-intro"><h1 className="page-title">어떤 그래픽을 보고 싶나요?</h1><p className="description">떠오르는 모양이나 장면이 있다면 편하게 남겨 주세요.</p></div><div className="form-group"><label htmlFor="graphic-idea" className="form-label">그래픽 아이디어</label><Textarea id="graphic-idea" variant="outline" placeholder="예: 봄에는 글자로 자라는 벚꽃나무가 있으면 좋겠어요." value={monthIdea} onChange={e => setMonthIdea(e.target.value)} /></div><Button disabled={!monthIdea.trim()} onClick={saveIdeas}>의견 남기기</Button><p className="small-caption">프로토타입에서는 의견이 운영자에게 전송되지 않고 이 브라우저 세션에만 저장돼요.</p></div>}
 
       {page.screen === 'settings' && <>
         <div className="setting-section"><h2>기록 설정</h2><SettingRow title={COPY.settings.boundary} detail={`${state.boundaryHour === 0 ? '자정' : `오전 ${state.boundaryHour}시`}`} onClick={() => navigate({screen:'boundary'})} /></div>
@@ -267,7 +265,7 @@ export default function App() {
     {confirmDelete && <Dialog title="이 일기를 삭제할까요?" description={`${deleteImpact(themeFor(monthOf(entryToDelete?.entryDate ?? today)),lastOnDate)} 삭제한 일기는 되돌릴 수 없어요.`} confirmLabel="삭제하기" danger onConfirm={deleteOne} onCancel={() => setConfirmDelete(null)} />}
     {leaveWriting && <Dialog title="작성을 그만할까요?" description="아직 저장하지 않은 내용이 사라질 수 있어요." confirmLabel="작성 그만하기" danger onConfirm={confirmLeave} onCancel={() => setLeaveWriting(false)} />}
     {deleteAllStage===1 && <Dialog title="모든 칭찬일기를 삭제할까요?" description={COPY.deletion.impact} confirmLabel="계속" danger onConfirm={() => setDeleteAllStage(2)} onCancel={() => setDeleteAllStage(0)} />}
-    {deleteAllStage===2 && <Dialog title="삭제를 확인해 주세요" description={`정말 삭제하려면 '${COPY.deletion.typePhrase}'를 그대로 입력해 주세요.`} confirmLabel="다음" confirmDisabled={deletePhrase!==COPY.deletion.typePhrase} danger onConfirm={() => setDeleteAllStage(3)} onCancel={() => setDeleteAllStage(0)}><label className="form-label" htmlFor="delete-all-phrase">확인 문구</label><input id="delete-all-phrase" className="form-input" value={deletePhrase} onChange={event => setDeletePhrase(event.target.value)} /></Dialog>}
+    {deleteAllStage===2 && <Dialog title="삭제를 확인해 주세요" description={`정말 삭제하려면 '${COPY.deletion.typePhrase}'를 그대로 입력해 주세요.`} confirmLabel="다음" confirmDisabled={deletePhrase!==COPY.deletion.typePhrase} danger onConfirm={() => setDeleteAllStage(3)} onCancel={() => setDeleteAllStage(0)}><label className="form-label" htmlFor="delete-all-phrase">확인 문구</label><TextInput id="delete-all-phrase" variant="outline" value={deletePhrase} onChange={event => setDeletePhrase(event.target.value)} /></Dialog>}
     {deleteAllStage===3 && <Dialog title={COPY.deletion.lastStep} description="모든 일기와 일기에서 만든 그래픽이 사라져요. 다시 되돌릴 수 없어요." confirmLabel="모두 삭제하기" danger onConfirm={() => {setState(previous => ({...previous,entries:[]}));setDeleteAllStage(0);setDeletePhrase('');setToast('모든 칭찬일기를 삭제했어요.');}} onCancel={() => setDeleteAllStage(0)} />}
   </div>;
 }

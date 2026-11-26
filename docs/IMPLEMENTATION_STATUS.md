@@ -60,3 +60,8 @@
 - 실제 앱: 공통 ArtworkSlot을 홈·저장·도감·상세에 연결, 기존 그래픽 엔진 변경 없음. HomeShell에서 월 전환/달력·작품 전환/+·설정·기록일 목록/3탭 연결. 그래픽 유무와 신규 기록 저장을 분리. 감상에서 연속 뽑기 버튼 제거. Pretendard/Gowun Batang 및 보라 후보 토큰을 통합 브랜치에 적용.
 - 임시 선택: 네이티브 월 선택 select, 320px 7열 날짜 타깃을 위해 달력만 6px 외곽 여백(검토안). 실제 홈/도감/설정 레이아웃과 컴포넌트 전부를 최신으로 통합했다는 의미가 아님.
 - 미완료: V10 기억병/애니메이션/Reflection CRUD의 실제 React 이식, v0.5 전체 공통 컴포넌트 패키지 적용·회귀, 첫 진입/새 달 연출, 도감·설정 최신 별도 시안, 인증/DB/SDK, 실제 빌드 및 브라우저 검증. 기존 sessionStorage와 가상 데이터는 시연용. main은 검증 전 병합 금지.
+
+### 통합 1차 — 공통 조작 요소와 작성 화면
+- 기존 CI의 glyphLayout TS18048 배열 접근 방어 추가(아트 알고리즘 변경 없음).
+- 실제 앱의 Button/TextAction/IconButton, FieldShell/TextInput/Textarea, RemovableField, Stack/Inline/ActionGroup, Collapsible, ActionMenu/MenuItem 통합. 작성 화면 제목/질문/입력과 기타 폼을 공통 규격으로 전환. v0.5 소스 계약 검사 추가, 대비 검사의 CSS alias 해석 수정.
+- CI와 브라우저 검증은 새 커밋 결과로 확인할 것. V10 기억병과 마음 기록, 전체 구형 CSS 정리, SDK/백엔드는 별도.

@@ -189,6 +189,7 @@ export function assignDiaryGlyphs(groups: GlyphCluster[], visibleSlotIds: Set<nu
     const amount = Math.min(preferredSlotCount(entry.chars.length), slots.length - cursor);
     for (let i = 0; i < amount; i++) {
       const slot = slots[cursor + i];
+      if (!slot) break;
       const glyph = entry.chars[i % entry.chars.length] ?? '';
       assignments.set(slot.slotIndex, { slotIndex: slot.slotIndex, glyph, entryId: entry.id, sequence: i });
     }

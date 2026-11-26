@@ -75,3 +75,17 @@
   --touch:44px; --touch-comfort:48px; --icon-inline:16px; --icon-control:20px; --icon-nav:24px; --icon-stroke:1.8;
   --gutter:var(--space-5); --gap-toolbar:var(--space-1); --gap-component:var(--space-3); --gap-controls:var(--space-2); --gap-section:var(--space-6); --focus-width:2px;
 }
+
+/* v0.5 role-based interaction contract. All new screen controls use these tokens. */
+:root {
+  --gap-text:var(--space-1); --gap-inline:var(--space-2);
+  --gap-field-actions:var(--gap-component); --gap-action-group:var(--gap-controls);
+  --field-height:52px; --field-padding:var(--space-3); --field-compact-height:112px; --field-area-height:260px;
+  --field-border:#82778F; --disabled:#756E81; --paper:#302A3A; --divider:#403849;
+  --cta-height:52px; --action-padding-x:var(--space-3); --action-padding-y:var(--space-2);
+  --action-toolbar-padding-x:var(--space-1); --menu-min-width:144px; --menu-inset:var(--space-1);
+  --menu-gap:var(--gap-text); --menu-row-height:var(--touch-comfort); --menu-row-padding-x:var(--space-3);
+  --menu-row-padding-y:var(--space-2); --menu-bg:#393342; --menu-border:#685A77;
+  --type-page:1.5rem; --type-section:1.125rem; --type-entry-title:1.25rem; --type-body:1rem; --type-control:1rem;
+  --type-supporting:.875rem; --type-meta:.8125rem; --leading-body:1.6; --leading-display:1.4; --leading-reading:1.75;
+}

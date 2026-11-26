@@ -4,7 +4,7 @@ on:
   pull_request:
     branches: [main]
   push:
-    branches: [main, feat/design-system-prototype]
+    branches: [main, feat/design-system-prototype, feat/mvp-integration]
 
 jobs:
   check:
