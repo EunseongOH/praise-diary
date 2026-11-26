@@ -20,3 +20,7 @@ console.log('PASS — v0.6 selection, calendar surface, writer layout source con
 
 for(const f of ['--select-trigger-padding-x:var(--space-3)','--gap-disclosure-panel:var(--gap-controls)','--list-row-padding-x:var(--space-3)','--list-group-gap:var(--gap-section)'])assert.ok(tokens.includes(f),f);
 console.log('PASS — v0.7 select, disclosure, record rows');
+
+for(const f of ['--gap-record-meta:var(--gap-inline)','--gap-meta-icon:var(--gap-text)','--gap-reference-prompt:var(--gap-component)'])assert.ok(tokens.includes(f),f);
+assert.ok(read('src/screens/WriterLayout.tsx').includes('icon="refresh"'),'Reuse TextAction refresh');
+console.log('PASS — v0.8 metadata contract');

@@ -112,3 +112,6 @@
  --list-group-gap:var(--gap-section); --list-group-label-gap:var(--gap-controls);
  --list-row-min-height:var(--touch-comfort);
 }
+
+/* v0.8 review — passive record metadata. No new interactive targets. */
+:root{--gap-record-meta:var(--gap-inline);--gap-meta-icon:var(--gap-text);--gap-reference-prompt:var(--gap-component);--gap-reference-text:var(--gap-text);}

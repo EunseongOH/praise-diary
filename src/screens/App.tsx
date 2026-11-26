@@ -11,8 +11,8 @@ import { WriterLayout } from './WriterLayout';
 import { GestureArtwork } from '../components/GestureArtwork';
 import { COPY, deleteImpact, savedMessage } from '../content/copy';
 import { pickPrompts, type Prompt } from '../data/prompts';
-import { loadState, saveState, writtenDays, dateHasEntry, monthEntries, chooseDifferentEntry, reflectionsFor, upsertReflection, removeReflection, removeDiary } from '../data/store';
-import { MONTH_THEMES, UPCOMING_MONTHS, themeFor } from '../data/themes';
+import { loadState, saveState, writtenDays, dateHasEntry, monthEntries, chooseDifferentEntry, reflectionsFor, upsertReflection, removeReflection, removeDiary, reflectionCounts } from '../data/store';
+import { MONTH_THEMES, UPCOMING_MONTHS, themeFor, collectionMonths } from '../data/themes';
 import type { DiaryEntry, MonthId, PrototypeState } from '../data/types';
 import { currentPreviewTime, formatDay, formatMonth, koreanClock, monthOf, todayAndYesterday } from '../lib/date';
 
@@ -51,12 +51,14 @@ export default function App() {
   const [writerTitleOpen, setWriterTitleOpen] = useState(false);
   const [writerPrompts, setWriterPrompts] = useState<Prompt[]>(() => pickPrompts());
   const [promptVisible, setPromptVisible] = useState(false);
-  const [promptSelected, setPromptSelected] = useState<string | null>(null);
+  const [promptSelected, setPromptSelected] = useState<Prompt | null>(null);
+  const [existingPrompt,setExistingPrompt]=useState<string|undefined>();
   const [leaveWriting, setLeaveWriting] = useState(false);
   const [draftSaved, setDraftSaved] = useState(false);
 
   const { today, yesterday } = todayAndYesterday(nowForPreview, state.boundaryHour);
   const todayMonth = monthOf(today);
+  const selectedPromptText=promptSelected?.[writerDate===yesterday?'yesterday':'today'] ?? existingPrompt;
   const viewMonth = homeMonth ?? todayMonth;
   const isUnlocked = Boolean(state.letterDrawUnlockedAt);
   const currentEntry = page.entryId ? state.entries.find(e => e.id === page.entryId) : undefined;
@@ -104,6 +106,7 @@ export default function App() {
     setWriterTitleOpen(Boolean(edit?.title));
     setPromptVisible(false);
     setPromptSelected(null);
+    setExistingPrompt(edit?.referencePrompt);
     setWriterPrompts(pickPrompts());
     setDraftSaved(false);
     navigate({ screen: 'write', editId: edit?.id });
@@ -111,7 +114,7 @@ export default function App() {
   const saveEntry = () => {
     if (!writerBody.trim()) return;
     if (page.editId) {
-      if (!persist({ ...state, entries: state.entries.map(entry => entry.id === page.editId ? { ...entry, title: writerTitle.trim() || undefined, body: writerBody.trim() } : entry) })) return;
+      if (!persist({ ...state, entries: state.entries.map(entry => entry.id === page.editId ? { ...entry, title: writerTitle.trim() || undefined, body: writerBody.trim(), referencePrompt: selectedPromptText } : entry) })) return;
       setDraftSaved(true);
       setPage(stack.at(-1) ?? { screen: 'detail', entryId: page.editId }); setStack(previous => previous.slice(0,-1));
       setToast('수정한 내용을 저장했어요.'); return;
@@ -120,7 +123,7 @@ export default function App() {
     const theme = themeFor(month);
     // A diary can be saved independently of the monthly renderer/theme availability.
     const beforeDays = writtenDays(state.entries, month);
-    const next: DiaryEntry = { id: makeId(), createdAt: new Date().toISOString(), entryDate: writerDate, title: writerTitle.trim() || undefined, body: writerBody.trim() };
+    const next: DiaryEntry = { id: makeId(), createdAt: new Date().toISOString(), entryDate: writerDate, title: writerTitle.trim() || undefined, body: writerBody.trim(), referencePrompt: selectedPromptText };
     const newCount = state.entries.length + 1;
     const unlockTime = !state.letterDrawUnlockedAt && newCount >= 10 ? new Date().toISOString() : state.letterDrawUnlockedAt;
     const afterDays = beforeDays + (dateHasEntry(state.entries, writerDate) ? 0 : 1);
@@ -154,7 +157,7 @@ export default function App() {
     setPendingDraw({id:entry.id,pick:Math.floor(Math.random()*stackCount(state.entries.length))});
     window.scrollTo(0,0);
   };
-  const openMonth = (month: MonthId) => navigate({ screen: month > todayMonth || !themeFor(month) ? 'locked-month' : 'month', month });
+  const openMonth = (month: MonthId) => navigate({ screen: month > todayMonth ? 'locked-month' : 'month', month });
   const confirmLeave = () => {
     setLeaveWriting(false);
     setDraftSaved(true);
@@ -164,6 +167,8 @@ export default function App() {
   };
   const allMonths = Array.from(new Set([...MONTH_THEMES.map(m => m.month), ...UPCOMING_MONTHS, todayMonth, ...state.entries.map(e => monthOf(e.entryDate))])).sort().reverse();
   const homeMonths = [...new Set([...allMonths, viewMonth])].sort();
+  const orderedCollection=collectionMonths(allMonths,todayMonth);
+  const noteCounts=reflectionCounts(state.reflections);
   const saveIdeas = () => {
     if (!monthIdea.trim() || !page.month) return;
     if (!persist({ ...state, ideas: [...state.ideas, { id: makeId(), month: page.month!, text: monthIdea.trim(), createdAt: new Date().toISOString() }] })) return;
@@ -206,7 +211,7 @@ export default function App() {
 
       {page.screen === 'write' && <WriterLayout editing={Boolean(page.editId)} date={writerDate} today={today} yesterday={yesterday} onDate={setWriterDate}
         title={writerTitle} titleOpen={writerTitleOpen} onTitle={setWriterTitle} onTitleOpen={setWriterTitleOpen} body={writerBody} onBody={setWriterBody}
-        prompts={writerPrompts} promptOpen={promptVisible} onPromptOpen={setPromptVisible} selected={promptSelected} onSelect={setPromptSelected} onSave={saveEntry}/>}
+        prompts={writerPrompts} promptOpen={promptVisible} onPromptOpen={setPromptVisible} selectedText={selectedPromptText} onSelect={setPromptSelected} onClearPrompt={()=>{setPromptSelected(null);setExistingPrompt(undefined)}} onRefreshPrompts={()=>setWriterPrompts(previous=>pickPrompts(previous))} onSave={saveEntry}/>}
 
       {page.screen === 'saved' && <div className="space-stack immersive-detail">
         <div className="month-detail-title"><span className="eyebrow">{page.day && formatDay(page.day)}</span><h1 className="page-title">{savedMessage(monthTheme,page.mode ?? 'growth')}</h1></div>
@@ -234,11 +239,11 @@ export default function App() {
 
       {page.screen === 'list' && <Stack>
         {reviewMode&&<aside className="writer-review-panel" aria-label="검수용 기록 목록 비교"><Stack gap="controls"><p>검수용 · 기록 목록 비교</p><SegmentedChoice label="기록 목록 시안" value={listVariant} onChange={setListVariant} options={[{value:"A",label:"A 구분선"},{value:"B",label:"B 카드"},{value:"C",label:"C 날짜별"}]}/></Stack></aside>}
-        <DiaryList variant={listVariant} entries={page.day ? state.entries.filter(e => e.entryDate === page.day) : page.month ? monthEntries(state.entries,page.month) : state.entries} onOpen={entry => navigate({ screen:'detail', entryId:entry.id })} emptyContent={<EmptyState title="아직 남긴 칭찬이 없어요." description="오늘의 작은 칭찬부터 시작해 볼까요?" action={<Button onClick={() => startWrite()}>칭찬일기 남기러 가기</Button>} />} />
+        <DiaryList variant={listVariant} reflectionCounts={noteCounts} entries={page.day ? state.entries.filter(e => e.entryDate === page.day) : page.month ? monthEntries(state.entries,page.month) : state.entries} onOpen={entry => navigate({ screen:'detail', entryId:entry.id })} emptyContent={<EmptyState title="아직 남긴 칭찬이 없어요." description="오늘의 작은 칭찬부터 시작해 볼까요?" action={<Button onClick={() => startWrite()}>칭찬일기 남기러 가기</Button>} />} />
       </Stack>}
       {page.screen === 'collection' && <>
         <Stack gap="component">
-        <div className="month-tiles">{allMonths.map(month => <MonthTile key={month} month={month} theme={themeFor(month)} writtenDays={writtenDays(state.entries,month)} entries={monthEntries(state.entries,month).length} entriesData={monthEntries(state.entries,month)} letterSource={monthEntries(state.entries,month).map(e => e.body).join(' ')} reducedMotion={state.reducedMotion} locked={month > todayMonth || !themeFor(month)} onClick={() => openMonth(month)} />)}</div>
+        <div className="month-tiles">{orderedCollection.map(month => <MonthTile key={month} month={month} theme={themeFor(month)} writtenDays={writtenDays(state.entries,month)} entries={monthEntries(state.entries,month).length} entriesData={monthEntries(state.entries,month)} letterSource={monthEntries(state.entries,month).map(e => e.body).join(' ')} reducedMotion={state.reducedMotion} locked={month > todayMonth} onClick={() => openMonth(month)} />)}</div>
         </Stack>
       </>}
       {page.screen === 'month' && <div className="space-stack immersive-detail"><div className="month-detail-title"><h1 className="page-title">{monthTheme?.title ?? formatMonth(currentMonth)}</h1><span className="small-caption">{writtenDays(state.entries,currentMonth)}일의 칭찬</span></div>

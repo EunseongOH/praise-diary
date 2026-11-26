@@ -11,3 +11,9 @@ export const UPCOMING_MONTHS: MonthId[] = ['2027-02', '2027-03'];
 export function themeFor(month: string): MonthTheme | undefined {
   return MONTH_THEMES.find((theme) => theme.month === month);
 }
+
+/** Review policy: current month, past descending, then upcoming ascending. */
+export function collectionMonths(months: MonthId[],current:MonthId):MonthId[] {
+ const unique=[...new Set(months)];
+ return [current,...unique.filter(m=>m<current).sort().reverse(),...unique.filter(m=>m>current).sort()];
+}

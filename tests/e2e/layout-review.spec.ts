@@ -42,10 +42,10 @@ for(const width of [320,390,430]){
  await date.click();await page.getByRole('option',{name:/어제/}).click();const yesterday=await date.getAttribute('data-value');
  const body=page.getByRole('textbox',{name:'나에게 남길 칭찬'});await body.fill('검수 기록');
  const disclosure=page.getByRole('button',{name:'어떤 칭찬을 남길지 고민되나요?'});await disclosure.click();
- const prompt=page.locator('.ui-prompt-option').first();await expect(prompt).toBeVisible();
+ const questions=page.locator('.ui-prompt-option');await expect(questions).toHaveCount(2);const initial=await questions.allTextContents();await page.getByRole('button',{name:'다른 질문 보기'}).click();await expect(questions).toHaveCount(2);const refreshed=await questions.allTextContents();expect(refreshed.every(q=>!initial.includes(q))).toBeTruthy();const prompt=questions.first();await expect(prompt).toBeVisible();
  const before=await prompt.boundingBox();await prompt.hover();expect(await prompt.boundingBox()).toEqual(before);
  expect(before!.y-((await disclosure.boundingBox())!.y+(await disclosure.boundingBox())!.height)).toBeGreaterThanOrEqual(7.9);
- await prompt.click();await expect(body).toHaveValue('검수 기록');await expect(date).toHaveAttribute('data-value',yesterday!);
+ const chosen=await prompt.innerText();await prompt.click();await expect(body).toHaveValue('검수 기록');await expect(date).toHaveAttribute('data-value',yesterday!);
  await page.getByRole('button',{name:'칭찬 남기기',exact:true}).click();await expect(page.getByText('칭찬을 잘 남겼어요.')).toBeVisible();
  expect(await page.evaluate(()=>JSON.parse(sessionStorage.getItem('praise-diary:prototype:v1')!).entries.at(-1).entryDate)).toBe(yesterday);
  await page.getByRole('button',{name:'홈으로 돌아가기'}).click();await page.getByRole('button',{name:'내가 남긴 칭찬 보기'}).click();
@@ -55,13 +55,14 @@ for(const width of [320,390,430]){
   const row=page.locator('.diary-row').first();expect(await row.evaluate(el=>getComputedStyle(el).paddingLeft)).toBe('12px');
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBeTruthy();
  }
- await page.getByRole('button').filter({hasText:'검수 기록'}).click();await expect(page.getByText('검수 기록',{exact:true})).toBeVisible();
+ await page.getByRole('button').filter({hasText:'검수 기록'}).click();await expect(page.getByText('검수 기록',{exact:true})).toBeVisible();await expect(page.locator('.diary-reference-prompt')).toContainText(chosen);
+ await page.getByRole('button',{name:'오늘의 마음 덧붙이기'}).click();await page.getByRole('textbox',{name:'오늘의 마음'}).fill('마음 하나');await page.getByRole('button',{name:'남기기',exact:true}).click();await page.getByRole('button',{name:'뒤로가기',exact:true}).click();const savedRow=page.locator('.diary-row').filter({hasText:'검수 기록'});await expect(savedRow.locator('.diary-reflection-count')).toContainText('1');
  });
 }
 test('production layout hides review switch and collection duplicate title',async({page})=>{
  await seed(page);await page.getByRole('button',{name:'도감',exact:true}).click();
  await expect(page.getByText('그래픽 도감',{exact:true})).toHaveCount(0);await expect(page.getByText('내가 남긴 칭찬들이 자란 모습',{exact:true})).toHaveCount(0);
- await expect(page.locator('.app-bar__title')).toHaveText('도감');
+ await expect(page.locator('.app-bar__title')).toHaveText('도감');await expect(page.locator('.month-tile').first()).toHaveAttribute('data-month',month);
  await page.getByRole('button',{name:'홈',exact:true}).click();await page.getByRole('button',{name:'칭찬 남기기',exact:true}).click();
  await expect(page.locator('.writer-review-panel')).toHaveCount(0);
  await expect(page.getByRole('combobox',{name:'일기를 남길 날짜'})).toHaveCount(1);

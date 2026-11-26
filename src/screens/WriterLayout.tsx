@@ -10,7 +10,7 @@ export function WriterDate({date,today,yesterday,onChange}:{date:string;today:st
 }
 type Props={editing:boolean;date:string;today:string;yesterday:string;onDate:(v:string)=>void;
  title:string;titleOpen:boolean;onTitle:(v:string)=>void;onTitleOpen:(v:boolean)=>void;body:string;onBody:(v:string)=>void;
- prompts:Prompt[];promptOpen:boolean;onPromptOpen:(v:boolean)=>void;selected:string|null;onSelect:(v:string|null)=>void;onSave:()=>void;
+ prompts:Prompt[];promptOpen:boolean;onPromptOpen:(v:boolean)=>void;selectedText:string|undefined;onSelect:(v:Prompt)=>void;onClearPrompt:()=>void;onRefreshPrompts:()=>void;onSave:()=>void;
 };
 export function WriterLayout(p:Props){
  const dateControl=<WriterDate date={p.date} today={p.today} yesterday={p.yesterday} onChange={p.onDate}/>;
@@ -24,10 +24,10 @@ export function WriterLayout(p:Props){
       {titleAction}
     </div>}
     {p.titleOpen&&<RemovableField label="제목 제거" onRemove={()=>{p.onTitle('');p.onTitleOpen(false)}}><TextInput aria-label="제목 (선택)" value={p.title} onChange={e=>p.onTitle(e.target.value)} placeholder="제목 (선택)"/></RemovableField>}
-    {p.selected&&<div className="writer-selected-prompt"><span className="small-caption">{p.prompts.find(x=>x.category===p.selected)?.[p.date===p.yesterday?'yesterday':'today']}</span><IconButton icon="close" label="선택한 질문 제거" onClick={()=>p.onSelect(null)}/></div>}
+    {p.selectedText&&<div className="writer-selected-prompt"><span className="small-caption">{p.selectedText}</span><IconButton icon="close" label="선택한 질문 제거" onClick={p.onClearPrompt}/></div>}
     <Textarea aria-label="나에게 남길 칭찬" placeholder={COPY.write.bodyHint} value={p.body} onChange={e=>p.onBody(e.target.value)}/>
     {!p.editing&&<Collapsible label="어떤 칭찬을 남길지 고민되나요?" open={p.promptOpen} onOpenChange={p.onPromptOpen}>
-      <Stack gap="controls">{p.prompts.map(x=><Button className="ui-prompt-option" key={x.category} variant="secondary" size="compact" onClick={()=>{p.onSelect(x.category);p.onPromptOpen(false)}}>{p.date===p.yesterday?x.yesterday:x.today}</Button>)}</Stack>
+      <Stack gap="controls">{p.prompts.map(x=><Button className="ui-prompt-option" key={x.category} variant="secondary" size="compact" onClick={()=>{p.onSelect(x);p.onPromptOpen(false)}}>{p.date===p.yesterday?x.yesterday:x.today}</Button>)}<div className="ui-trailing-action"><TextAction icon="refresh" onClick={p.onRefreshPrompts}>다른 질문 보기</TextAction></div></Stack>
     </Collapsible>}
     <Button className="ui-button--full" onClick={p.onSave} disabled={!p.body.trim()}>{p.editing?COPY.write.edit:COPY.write.save}</Button>
   </Stack>

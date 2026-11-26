@@ -50,6 +50,7 @@ export function DiaryContent({entry,reflections,mode,date,onClose,onSave,onDelet
         <time className="diary-paper-date" dateTime={entry.entryDate}>{formatDay(entry.entryDate)}</time>
         {entry.title&&<h2>{entry.title}</h2>}
         <p>{entry.body}</p>
+        {entry.referencePrompt&&<aside className="diary-reference-prompt" aria-label="글을 쓸 때 참고한 질문"><span>글을 쓸 때 참고한 질문</span><span>{entry.referencePrompt}</span></aside>}
       </section>
       {reflections.map(r=>composer?.id===r.id?<div key={r.id}>{editor}</div>:<section className="reflection-section" key={r.id}>
         <div className="diary-paper-text">

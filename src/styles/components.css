@@ -165,3 +165,11 @@
 .diary-group-rows{display:grid;min-width:0}
 @media(hover:hover){.diary-row:hover{background:var(--surface-green)}}
 .diary-row:focus-visible{outline:var(--focus-width) solid var(--focus);outline-offset:calc(-1 * var(--focus-width))}
+
+/* v0.8 review — existing TextAction and existing SVG, passive metadata only. */
+.ui-trailing-action{display:flex;justify-content:flex-end;min-width:0}
+.diary-row-meta,.diary-row-heading{display:flex;align-items:baseline;gap:var(--gap-record-meta);min-width:0;flex-wrap:wrap}
+.diary-row-heading>strong,.diary-row-heading>.diary-row__untitled{min-width:0;max-width:100%;overflow-wrap:anywhere}
+.diary-reflection-count{display:inline-flex;align-items:center;gap:var(--gap-meta-icon);flex:none;color:var(--muted);font:400 var(--type-meta)/1.5 var(--font-body)}
+.diary-reference-prompt{display:flex;flex-direction:column;gap:var(--gap-reference-text);padding-block-start:var(--gap-reference-prompt);font:400 var(--type-meta)/1.5 var(--font-body);color:var(--muted);overflow-wrap:anywhere}
+.diary-reference-prompt>span:first-child{color:var(--quiet)}

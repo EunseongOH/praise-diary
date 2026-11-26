@@ -58,3 +58,5 @@
 - v0.6 검토안: `design-system/labs/dajeongrok/foundation/v06-rules.md`. 조작 영역과 시각 표면을 분리하며 CompactSelect, CalendarDay, WriterLayout 계약을 준수. 신규 역할은 기존 컴포넌트/외부 공식 디자인 시스템 조사와 내부/외부 간격 및 상태 명세·공통 소스·브라우저 검사를 한 변경 단위로 제출. 화면별 raw padding/negative margin 금지. A/B/C 작성 시안은 검수 전용이며 최종 승인 전 확정 아님. 전체 화면의 레거시 여백 검수는 지속.
 
 - v0.7 검토안 `design-system/labs/dajeongrok/foundation/v07-rules.md`: 날짜/월 선택은 custom CompactSelect, 펼침 panel 자체 8px gap, 기록 목록 공통 row. 작성 A 확정; 목록 A/B/C 검수 전용, A 임시 기본. 신규 역할/간격/상태/실측 게이트 유지.
+
+- v0.8 검토안 `design-system/labs/dajeongrok/foundation/v08-rules.md`: 질문 재추출과 선택 문장 별도 속성, 마음 개수 파생 표시 및 도감 정렬 제안. 기존 토큰/컴포넌트 재사용, 정책 승인 전 확정 금지.

@@ -13,7 +13,8 @@ const PROMPTS = [
 export type Prompt = (typeof PROMPTS)[number];
 
 export function pickPrompts(previous: Prompt[] = []): Prompt[] {
-  const sorted = [...PROMPTS].sort(() => Math.random() - 0.5);
+  const sorted = [...PROMPTS];
+  for (let i=sorted.length-1;i>0;i--) { const j=Math.floor(Math.random()*(i+1)); [sorted[i],sorted[j]]=[sorted[j]!,sorted[i]!]; }
   const filtered = sorted.filter((p) => !previous.some((old) => old.category === p.category));
   const choices = filtered.length >= 2 ? filtered : sorted;
   const first = choices[0];

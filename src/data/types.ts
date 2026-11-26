@@ -6,6 +6,7 @@ export type DiaryEntry = {
   createdAt: string; // 실제 저장 시각
   title?: string;
   body: string;
+  referencePrompt?: string; // selected question snapshot, independent from original body
 };
 
 export type DiaryReflection = {

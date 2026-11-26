@@ -93,3 +93,10 @@ export function removeReflection(state: PrototypeState, entryId: string, id: str
 export function removeDiary(state: PrototypeState, entryId: string): PrototypeState {
   return {...state,entries:state.entries.filter(e=>e.id!==entryId),reflections:state.reflections.filter(r=>r.entryId!==entryId)};
 }
+
+/** Derived from live notes, never stored as a denormalized counter. */
+export function reflectionCounts(reflections: DiaryReflection[]): Map<string,number> {
+ const counts=new Map<string,number>();
+ for(const note of reflections) counts.set(note.entryId,(counts.get(note.entryId)??0)+1);
+ return counts;
+}

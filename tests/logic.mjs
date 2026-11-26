@@ -65,3 +65,9 @@ assert.equal(store.removeReflection(withNote,'a','r').reflections.length,0);
 assert.equal(store.removeDiary(withNote,'a').reflections.length,0);
 assert.equal(store.removeDiary(withNote,'a').letterDrawUnlockedAt,oldState.letterDrawUnlockedAt);
 console.log('PASS — reflection independence, edit date, ownership by entry ID, cascade');
+
+const prompts=load('data/prompts.ts');const themes=load('data/themes.ts');
+for(let i=0;i<50;i++){const pair=prompts.pickPrompts();assert.equal(pair.length,2);assert.notEqual(pair[0].category,pair[1].category);const next=prompts.pickPrompts(pair);assert.equal(next.length,2);assert.ok(next.every(p=>!pair.some(q=>q.category===p.category)));}
+assert.equal(store.reflectionCounts(withNote.reflections).get('a'),1);assert.equal(store.reflectionCounts(store.removeReflection(withNote,'a','r').reflections).get('a'),undefined);
+assert.equal(JSON.stringify(themes.collectionMonths(['2027-03','2026-11','2027-01','2026-12','2026-12'],'2026-12')),JSON.stringify(['2026-12','2026-11','2027-01','2027-03']));
+console.log('PASS — prompt refresh, derived reflection counts, collection ordering');
