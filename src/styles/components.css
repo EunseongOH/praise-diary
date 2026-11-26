@@ -284,3 +284,13 @@
 .archive-more{align-items:center;gap:var(--gap-text)}
 .archive-more .ui-button{width:100%}
 @media(hover:hover){.ui-filter-toggle:hover:not(:disabled){background:var(--surface-green)}}
+
+/* v0.13 — one period control and one stable toggle, shared menu surface. */
+.archive-filters{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);align-items:stretch;gap:var(--gap-controls)}
+.archive-filters[data-scoped=true]{grid-template-columns:minmax(0,1fr)}
+.archive-filters>.ui-compact-select{width:100%;max-width:none;min-width:0}
+.archive-filters .ui-compact-select__trigger,.archive-filters>.ui-filter-toggle{width:100%;height:100%;min-height:var(--filter-height);padding-inline:var(--space-2);gap:var(--gap-text);border:1px solid var(--line);border-radius:var(--radius-sm);font-weight:500;justify-content:center}
+.archive-filters .ui-compact-select__label,.archive-filters>.ui-filter-toggle>span{min-width:0;overflow-wrap:anywhere;text-align:center}
+.archive-filters .ui-compact-select__trigger[data-value]:not([data-value=all]),.archive-filters>.ui-filter-toggle[aria-pressed=true]{background:var(--surface-green);color:var(--accent);border-color:var(--accent)}
+.archive-filters .ui-compact-select__trigger:not(:focus-visible):not([aria-expanded=true]){outline:none}
+.archive-filters[data-scoped=true]>.ui-filter-toggle{width:max-content;max-width:100%}
