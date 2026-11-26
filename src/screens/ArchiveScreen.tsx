@@ -20,7 +20,7 @@ export function ArchiveScreen({entries,reflectionCounts,scopeMonth,heading,initi
  const [baseLimit,setBaseLimit]=useState(initial?.baseLimit??ARCHIVE_PAGE_SIZE);
  const base=useRef<HTMLDivElement>(null),modal=useRef<HTMLDivElement>(null),results=useRef<HTMLDivElement>(null);
  const input=useRef<HTMLInputElement|null>(null),baseScroll=useRef(initial?.baseScroll??0),restored=useRef(false);
- const focusNew=useRef(false);
+ const focusNew=useRef(false),skipDim=useRef(false);
  const [viewport,setViewport]=useState<{height:number;top:number}>();
  const scoped=useMemo(()=>selectArchive(entries,{scopeMonth}),[entries,scopeMonth]);
  const periods=useMemo(()=>archivePeriods(scoped),[scoped]);
@@ -32,6 +32,7 @@ export function ArchiveScreen({entries,reflectionCounts,scopeMonth,heading,initi
  const isFiltered=Boolean(searchKey(committed)||year!=='all'||month!=='all'||withReflection);
  const resetLimit=()=>{setLimit(ARCHIVE_PAGE_SIZE);if(results.current)results.current.scrollTop=0};
  const clear=()=>{setQuery('');setCommitted('');setYear('all');setMonth('all');setWithReflection(false);resetLimit()};
+ const resetSearch=()=>{clear();input.current?.focus({preventScroll:true})};
  const changePeriod=(v:string)=>{setYear(v==='all'?'all':v.slice(0,4));setMonth(v.length===7?v:'all');resetLimit()};
  const rowFor=(id:string,search:boolean)=>Array.from((search?results.current:base.current)?.querySelectorAll<HTMLButtonElement>('.diary-row')??[]).find(el=>el.dataset.entryId===id);
  const searchButton=()=>base.current?.querySelector<HTMLButtonElement>('button[aria-label="칭찬 검색하기"]');
@@ -81,6 +82,7 @@ export function ArchiveScreen({entries,reflectionCounts,scopeMonth,heading,initi
    </>}
   </div>
   {searchOpen&&<div ref={modal} role="dialog" aria-modal="true" aria-label="칭찬 검색" className="archive-search-overlay" data-results={isFiltered} style={viewport?{height:viewport.height,top:viewport.top}:undefined}
+   onPointerDownCapture={e=>{skipDim.current=Boolean((e.target as HTMLElement).closest('.archive-search-dim')&&modal.current?.querySelector('.ui-period-popup'))}}
    onKeyDown={e=>{
     if(e.key==='Escape'&&!e.nativeEvent.isComposing){e.preventDefault();closeSearch();return}
     if(e.key!=='Tab')return;
@@ -99,12 +101,12 @@ export function ArchiveScreen({entries,reflectionCounts,scopeMonth,heading,initi
     </div>
    </header>
    {isFiltered?<div ref={results} className="archive-search-results">
-    <div className="archive-results"><span role="status" aria-live="polite">칭찬 {filtered.length}개</span><TextAction onClick={clear} density="toolbar">초기화</TextAction></div>
-    {!filtered.length?<EmptyState title="찾는 칭찬이 없어요." description="검색어나 선택한 조건을 바꿔 보세요." action={<Button variant="secondary" onClick={clear}>검색 조건 초기화</Button>}/>:<>
+    <div className="archive-results"><span role="status" aria-live="polite">칭찬 {filtered.length}개</span><TextAction onClick={resetSearch} density="toolbar">초기화</TextAction></div>
+    {!filtered.length?<EmptyState title="찾는 칭찬이 없어요." description="검색어나 선택한 조건을 바꿔 보세요." action={<Button variant="secondary" onClick={resetSearch}>검색 조건 초기화</Button>}/>:<>
      <div className="diary-list" data-variant="A">{filtered.slice(0,limit).map((entry,i)=><DiaryRow key={entry.id} entry={entry} reflectionCount={reflectionCounts.get(entry.id)??0} query={committed} divider={i<Math.min(limit,filtered.length)-1} onOpen={e=>open(e,true)}/>)}</div>
      {more(limit,filtered.length,()=>setLimit(v=>v+ARCHIVE_PAGE_SIZE))}
     </>}
-   </div>:<div className="archive-search-dim" onClick={closeSearch} aria-hidden="true"/>}
+   </div>:<div className="archive-search-dim" onClick={()=>{if(skipDim.current){skipDim.current=false;return}closeSearch()}} aria-hidden="true"/>}
   </div>}
  </section>;
 }
