@@ -19,7 +19,9 @@ export function ArchiveScreen({entries,reflectionCounts,scopeMonth,initial,onOpe
  const periods=useMemo(()=>archivePeriods(scoped),[scoped]);
  const visibleYear=periods.years.includes(year)?year:'all';
  const visibleMonth=periods.months.includes(month)&&(visibleYear==='all'||month.startsWith(visibleYear+'-'))?month:'all';
- const monthOptions=periods.months.filter(m=>visibleYear==='all'||m.startsWith(visibleYear+'-'));
+ const periodValue=visibleMonth!=='all'?visibleMonth:visibleYear;
+ const periodOptions=[{value:'all',label:'전체 기간'},...periods.years.flatMap(y=>[{value:y,label:y+'년 전체'},...periods.months.filter(m=>m.startsWith(y+'-')).map(m=>({value:m,label:formatMonth(m)}))])];
+ const changePeriod=(v:string)=>{setYear(v==='all'?'all':v.slice(0,4));setMonth(v.length===7?v:'all');setLimit(ARCHIVE_PAGE_SIZE)};
  const filtered=useMemo(()=>selectArchive(scoped,{year:visibleYear,month:visibleMonth,query,withReflection,counts:reflectionCounts}),[scoped,visibleYear,visibleMonth,query,withReflection,reflectionCounts]);
  const groups=useMemo(()=>groupArchive(filtered.slice(0,limit)),[filtered,limit]);
  const isFiltered=Boolean(searchKey(query)||visibleYear!=='all'||visibleMonth!=='all'||withReflection);
@@ -40,11 +42,8 @@ export function ArchiveScreen({entries,reflectionCounts,scopeMonth,initial,onOpe
  return <section className="archive-screen" ref={section} aria-label="칭찬 기록">
   <div className="archive-controls">
    <SearchField value={query} onChange={v=>{setQuery(v);resetLimit()}}/>
-   <div className="archive-filters">
-    {!scopeMonth&&<div className="archive-periods">
-     <CompactSelect label="연도 선택" value={visibleYear} options={[{value:'all',label:'전체 연도'},...periods.years.map(y=>({value:y,label:y+'년'}))]} onChange={v=>{setYear(v);setMonth('all');resetLimit()}}/>
-     <CompactSelect label="월 선택" value={visibleMonth} options={[{value:'all',label:'전체 월'},...monthOptions.map(m=>({value:m,label:visibleYear==='all'?formatMonth(m):Number(m.slice(5))+'월'}))]} onChange={v=>{setMonth(v);resetLimit()}}/>
-    </div>}
+   <div className="archive-filters" data-scoped={Boolean(scopeMonth)}>
+    {!scopeMonth&&<CompactSelect label="기간 선택" value={periodValue} options={periodOptions} onChange={changePeriod}/>}
     <FilterToggle label="마음이 담긴 칭찬" pressed={withReflection} onChange={v=>{setWithReflection(v);resetLimit()}}/>
    </div>
   </div>
