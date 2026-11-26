@@ -23,3 +23,14 @@
 **v0.3:** `GraphicArtwork`의 성장 계산은 `graphics/progress.ts`로 분리. CSS 타이포는 `--type-*` 및 `--font-*` 토큰을 모든 화면에서 재사용.
 
 **v0.4 그래픽 구조:** `GraphicArtwork`(스크린/상태별 컨테이너) → `glyphLayout`(테마별 구조 좌표·글자 기준각·모션 위상) → `progress`(날짜별 세로 리빌)로 분리. 눈꽃의 각 줄기/가지가 로컬 회전축을 갖는다. 붉은 양의 곡선 전용 배치 엔진은 후속 구현.
+
+## v0.15 — 기록 검색 (확정)
+| 컴포넌트 | 주요 props / 상태 | 역할 |
+|---|---|---|
+| DiaryRow | entry, reflectionCount, surface, date, divider, query | 기본/검색 목록 공통 행 |
+| SearchField | value, onChange, onCommit, variant, disabled | plain 직선 밑줄 / outline 범용, IME 처리, clear |
+| FilterToggle | label, pressed, onChange, variant | text 상태는 강조색/밑줄, 44px, 위치 고정 |
+| PeriodPicker | value, months, years, onChange | 공통 연도/월 12칸 그리드, custom dialog |
+| ListSectionHeader | label, id | 기본 월별 목록 제목 |
+| ArchiveScreen | scopeMonth, initial, onOpen, onWrite | 기본 기록 목록 + 검색 모드, 상태 복원 |
+상세: `labs/dajeongrok/archive-f.md` · `labs/dajeongrok/foundation/v13-native-popup-rules.md`.

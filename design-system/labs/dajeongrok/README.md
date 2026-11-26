@@ -27,3 +27,9 @@
 - `foundation/v04-rules.md`, `v05-rules.md`: 입력/간격/메뉴 규격 최신 기준.
 - `rediscover/scroll-v7.html`, `rediscover-v8.html`, `rediscover-v9.html`, `rediscover-v10.html`, `rediscover-v8-spec.md`: V10까지의 시안.
 - 실제 앱 통합 기준: `docs/handoff/31_MVP_통합_작업기준_2026-11-26.md`. 월간 그래픽은 나중에 연결.
+
+## 기록 아카이브 최신 기준 (v0.15)
+- [확정] `archive-f.md`: F안 + A안 검색 헤더. 현재 구현 우선 기준.
+- `archive-e.md`: 이전 E안 검수 이력. 최종 화면으로 재사용하지 않는다.
+- `foundation/v13-native-popup-rules.md`: 전 화면 커스텀 팝업 및 검수 정책.
+- 실제 React 소스와 CI 결과를 기준으로 병합. 독립 HTML은 사용자 디자인 비교 용도.
