@@ -1,16 +1,17 @@
 import { useEffect, useState } from 'react';
 import { AppBar, BottomNavigation, Button, Collapsible, Dialog, EmptyState, IconButton, RemovableField, SegmentedChoice, SettingRow, Stack, TextAction, Textarea, TextInput, Toast, Toggle } from '../components/ui';
 import type { MainTab } from '../components/ui';
-import { DiaryList, MemorySlip, MonthTile } from '../components/content';
+import { DiaryList, MonthTile } from '../components/content';
+import { DiaryContent } from '../components/DiaryContent';
 import { ArtworkSlot } from '../graphics/ArtworkSlot';
 import { HomeShell, type HomeMode } from './HomeShell';
 import { GestureArtwork } from '../components/GestureArtwork';
 import { COPY, deleteImpact, savedMessage } from '../content/copy';
 import { pickPrompts, type Prompt } from '../data/prompts';
-import { loadState, saveState, writtenDays, dateHasEntry, monthEntries, chooseDifferentEntry } from '../data/store';
+import { loadState, saveState, writtenDays, dateHasEntry, monthEntries, chooseDifferentEntry, reflectionsFor, upsertReflection, removeReflection, removeDiary } from '../data/store';
 import { MONTH_THEMES, UPCOMING_MONTHS, themeFor } from '../data/themes';
 import type { DiaryEntry, MonthId, PrototypeState } from '../data/types';
-import { currentPreviewTime, formatDay, formatMonth, monthOf, todayAndYesterday } from '../lib/date';
+import { currentPreviewTime, formatDay, formatMonth, koreanClock, monthOf, todayAndYesterday } from '../lib/date';
 
 type Screen = 'home' | 'rediscover' | 'memory' | 'collection' | 'month' | 'graphic' | 'list' | 'detail' | 'write' | 'saved' | 'settings' | 'boundary' | 'locked-month' | 'idea' | 'records' | 'information';
 type Page = { screen: Screen; month?: MonthId; entryId?: string; editId?: string; mode?: 'growth' | 'addition' | 'complete'; previousWrittenDays?: number; day?: string; from?: Screen };
@@ -57,7 +58,10 @@ export default function App() {
   const monthTheme = themeFor(currentMonth);
   const activeMainTab: MainTab = mainScreens.includes(page.screen) ? page.screen as MainTab : 'home';
 
-  useEffect(() => { saveState(state); }, [state]);
+  const persist = (next: PrototypeState) => {
+    if (!saveState(next)) { setToast('저장하지 못했어요. 다시 시도해 주세요.'); return false; }
+    setState(next); return true;
+  };
   useEffect(() => {
     document.body.classList.toggle('reduce-motion', state.reducedMotion);
     return () => document.body.classList.remove('reduce-motion');
@@ -100,9 +104,9 @@ export default function App() {
   const saveEntry = () => {
     if (!writerBody.trim()) return;
     if (page.editId) {
-      setState(previous => ({ ...previous, entries: previous.entries.map(entry => entry.id === page.editId ? { ...entry, title: writerTitle.trim() || undefined, body: writerBody.trim() } : entry) }));
+      if (!persist({ ...state, entries: state.entries.map(entry => entry.id === page.editId ? { ...entry, title: writerTitle.trim() || undefined, body: writerBody.trim() } : entry) })) return;
       setDraftSaved(true);
-      setStack([]); setPage({ screen: 'detail', entryId: page.editId });
+      setPage(stack.at(-1) ?? { screen: 'detail', entryId: page.editId }); setStack(previous => previous.slice(0,-1));
       setToast('수정한 내용을 저장했어요.'); return;
     }
     const month = monthOf(writerDate);
@@ -114,7 +118,7 @@ export default function App() {
     const unlockTime = !state.letterDrawUnlockedAt && newCount >= 10 ? new Date().toISOString() : state.letterDrawUnlockedAt;
     const afterDays = beforeDays + (dateHasEntry(state.entries, writerDate) ? 0 : 1);
     const mode = theme?.targetDays && afterDays >= theme.targetDays && beforeDays < theme.targetDays ? 'complete' : afterDays > beforeDays ? 'growth' : 'addition';
-    setState(previous => ({ ...previous, entries: [...previous.entries, next], letterDrawUnlockedAt: unlockTime }));
+    if (!persist({ ...state, entries: [...state.entries, next], letterDrawUnlockedAt: unlockTime })) return;
     setDraftSaved(true);
     setStack([]);
     setPage({ screen: 'saved', month, mode, previousWrittenDays: beforeDays, day: writerDate });
@@ -122,8 +126,8 @@ export default function App() {
   };
   const deleteOne = () => {
     if (!confirmDelete) return;
-    setState(previous => ({ ...previous, entries: previous.entries.filter(e => e.id !== confirmDelete) }));
-    setConfirmDelete(null); setStack([]); setPage({ screen: 'list' });
+    if (!persist(removeDiary(state,confirmDelete))) return;
+    setConfirmDelete(null); back();
     setToast('일기를 삭제했어요.');
   };
   const entryToDelete = confirmDelete ? state.entries.find(e => e.id === confirmDelete) : undefined;
@@ -143,7 +147,7 @@ export default function App() {
   const homeMonths = [...new Set([...allMonths, viewMonth])].sort();
   const saveIdeas = () => {
     if (!monthIdea.trim() || !page.month) return;
-    setState(previous => ({ ...previous, ideas: [...previous.ideas, { id: makeId(), month: page.month!, text: monthIdea.trim(), createdAt: new Date().toISOString() }] }));
+    if (!persist({ ...state, ideas: [...state.ideas, { id: makeId(), month: page.month!, text: monthIdea.trim(), createdAt: new Date().toISOString() }] })) return;
     setMonthIdea(''); setToast('시연용으로 의견을 보관했어요.'); back();
   };
 
@@ -156,9 +160,16 @@ export default function App() {
   };
   const isTabPage = mainScreens.includes(page.screen);
   const showBack = !isTabPage;
+  const readerEntry = page.screen==='memory'?drawn:page.screen==='detail'?currentEntry:undefined;
+  const isReader = page.screen==='memory'||page.screen==='detail';
+  const saveReflection = (entryId:string, body:string, date:string, id?:string) => {
+    const now=new Date().toISOString();
+    const next=upsertReflection(state,{id:id??makeId(),entryId,body,reflectionDate:date,createdAt:now,updatedAt:now});
+    return next?persist(next):false;
+  };
 
   return <div className="app-shell">
-    {page.screen !== 'home' && <AppBar title={pageTitle[page.screen]} onBack={showBack ? back : undefined}/>}
+    {page.screen !== 'home' && !isReader && <AppBar title={pageTitle[page.screen]} onBack={showBack ? back : undefined}/>}
     <main className={`app-content ${!isTabPage ? 'app-content--no-tabs' : ''} ${page.screen === 'home' ? 'app-content--home-integrated' : ''}`} id="main-content">
       {page.screen === 'home' && <HomeShell month={viewMonth} months={homeMonths} mode={homeMode} today={today}
         theme={themeFor(viewMonth)} entries={monthEntries(state.entries, viewMonth)} reducedMotion={state.reducedMotion}
@@ -189,7 +200,7 @@ export default function App() {
 
       {page.screen === 'saved' && <div className="space-stack immersive-detail">
         <div className="month-detail-title"><span className="eyebrow">{page.day && formatDay(page.day)}</span><h1 className="page-title">{savedMessage(monthTheme,page.mode ?? 'growth')}</h1></div>
-        {monthTheme && <div className="illustration-stage"><ArtworkSlot theme={monthTheme} writtenDays={writtenDays(state.entries,currentMonth)} letterCount={monthEntries(state.entries,currentMonth).length} entries={monthEntries(state.entries,currentMonth)} letterSource={monthEntries(state.entries,currentMonth).map(e => e.body).join(' ')} reducedMotion={state.reducedMotion} fromWrittenDays={page.mode === 'growth' || page.mode === 'complete' ? page.previousWrittenDays : undefined} /></div>}
+        {<div className="illustration-stage"><ArtworkSlot theme={monthTheme} writtenDays={writtenDays(state.entries,currentMonth)} letterCount={monthEntries(state.entries,currentMonth).length} entries={monthEntries(state.entries,currentMonth)} letterSource={monthEntries(state.entries,currentMonth).map(e => e.body).join(' ')} reducedMotion={state.reducedMotion} fromWrittenDays={page.mode === 'growth' || page.mode === 'complete' ? page.previousWrittenDays : undefined} /></div>}
         <p className="description text-center">칭찬을 잘 남겼어요.</p>
         <div className="action-stack"><Button onClick={() => startWrite()}>칭찬 하나 더 남기기</Button><Button variant="secondary" onClick={() => { setStack([]); setPage({screen:'home'}); }}>홈으로 돌아가기</Button></div>
       </div>}
@@ -207,20 +218,13 @@ export default function App() {
         </div>}
       </>}
 
-      {page.screen === 'memory' && <div className="space-stack">
-        {drawn ? <MemorySlip entry={drawn} /> : <EmptyState title="꺼내볼 칭찬이 없어요." />}
-        {/* Return to the jar before drawing again; no continuous redraw. */}
-        {/* Shared reflection reader replaces this legacy slip in the next integration step. */}
-      </div>}
+      {isReader && (readerEntry ? <DiaryContent key={readerEntry.id} entry={readerEntry} reflections={reflectionsFor(state,readerEntry.id)} mode={page.screen==='memory'?'random':'direct'} date={koreanClock(nowForPreview).date}
+        onClose={back} onSave={(body,date,id)=>saveReflection(readerEntry.id,body,date,id)} onDelete={id=>persist(removeReflection(state,readerEntry.id,id))}
+        onEditEntry={()=>startWrite(readerEntry)} onDeleteEntry={()=>setConfirmDelete(readerEntry.id)}/> : <Stack><EmptyState title="기록이 없어요."/><Button onClick={back}>돌아가기</Button></Stack>)}
 
       {page.screen === 'list' && <div className="space-stack"><div className="page-intro"><h1 className="page-title">{page.day ? `${formatDay(page.day)}에 남긴 칭찬` : page.month ? `${formatMonth(page.month)}에 남긴 칭찬` : '내가 남긴 칭찬들'}</h1></div>
         <DiaryList entries={page.day ? state.entries.filter(e => e.entryDate === page.day) : page.month ? monthEntries(state.entries,page.month) : state.entries} onOpen={entry => navigate({ screen:'detail', entryId:entry.id })} emptyContent={<EmptyState title="아직 남긴 칭찬이 없어요." description="오늘의 작은 칭찬부터 시작해 볼까요?" action={<Button onClick={() => startWrite()}>칭찬일기 남기러 가기</Button>} />} />
       </div>}
-      {page.screen === 'detail' && currentEntry && <div className="space-stack">
-        <MemorySlip entry={currentEntry} />
-        <div className="action-stack"><Button onClick={() => startWrite(currentEntry)} variant="secondary">수정하기</Button><Button onClick={() => setConfirmDelete(currentEntry.id)} variant="quiet">일기 삭제하기</Button></div>
-      </div>}
-
       {page.screen === 'collection' && <>
         <div className="page-intro"><h1 className="page-title">{COPY.collection.title}</h1><p className="description">{COPY.collection.subtitle}</p></div>
         <div className="month-tiles">{allMonths.map(month => <MonthTile key={month} month={month} theme={themeFor(month)} writtenDays={writtenDays(state.entries,month)} entries={monthEntries(state.entries,month).length} entriesData={monthEntries(state.entries,month)} letterSource={monthEntries(state.entries,month).map(e => e.body).join(' ')} reducedMotion={state.reducedMotion} locked={month > todayMonth || !themeFor(month)} onClick={() => openMonth(month)} />)}</div>
@@ -244,13 +248,13 @@ export default function App() {
 
       {page.screen === 'settings' && <>
         <div className="setting-section"><h2>기록 설정</h2><SettingRow title={COPY.settings.boundary} detail={`${state.boundaryHour === 0 ? '자정' : `오전 ${state.boundaryHour}시`}`} onClick={() => navigate({screen:'boundary'})} /></div>
-        <div className="setting-section"><h2>그래픽</h2><Toggle label={COPY.settings.reduceMotion} checked={state.reducedMotion} onChange={checked => setState(previous => ({...previous,reducedMotion:checked}))} /></div>
+        <div className="setting-section"><h2>그래픽</h2><Toggle label={COPY.settings.reduceMotion} checked={state.reducedMotion} onChange={checked => {persist({...state,reducedMotion:checked})}} /></div>
         <div className="setting-section"><h2>알림</h2><div className="setting-row" style={{cursor:'default'}}><span>{COPY.settings.notification}</span><span className="setting-row__value">{COPY.settings.notificationNotReady}</span></div><p className="small-caption">알림 기능은 앱인토스 정책 확인과 승인 이후 제공할 예정이에요.</p></div>
         <div className="setting-section"><h2>내 기록</h2><SettingRow title="기록 관리" onClick={() => navigate({screen:'records'})} /></div>
         <div className="setting-section"><h2>서비스 정보</h2><SettingRow title="이용 안내 및 문의" onClick={() => navigate({screen:'information'})} /></div>
       </>}
       {page.screen === 'boundary' && <div className="space-stack"><div className="page-intro"><h1 className="page-title">하루를 언제 마무리할까요?</h1><p className="description">{COPY.settings.boundaryHelp}</p></div>
-        <div className="radio-list">{[0,1,2,3,4].map(hour => <label className="radio-row" key={hour}><input type="radio" name="boundary" checked={state.boundaryHour===hour} onChange={() => {setState(previous => ({...previous,boundaryHour:hour}));setToast('하루가 바뀌는 시간을 변경했어요.');}} />{hour===0?'오전 12:00 (기본)':`오전 ${hour}:00`}</label>)}</div>
+        <div className="radio-list">{[0,1,2,3,4].map(hour => <label className="radio-row" key={hour}><input type="radio" name="boundary" checked={state.boundaryHour===hour} onChange={() => {if(persist({...state,boundaryHour:hour}))setToast('하루가 바뀌는 시간을 변경했어요.');}} />{hour===0?'오전 12:00 (기본)':`오전 ${hour}:00`}</label>)}</div>
         <p className="small-caption">{COPY.settings.boundarySaved}</p>
       </div>}
       {page.screen === 'records' && <div className="space-stack"><div className="page-intro"><h1 className="page-title">기록 관리</h1><p className="description">기록 삭제는 되돌릴 수 없으니 신중하게 선택해 주세요.</p></div>
@@ -262,10 +266,10 @@ export default function App() {
     </main>
     {isTabPage && <BottomNavigation active={activeMainTab} onChange={toTab} />}
     {toast && <Toast message={toast} />}
-    {confirmDelete && <Dialog title="이 일기를 삭제할까요?" description={`${deleteImpact(themeFor(monthOf(entryToDelete?.entryDate ?? today)),lastOnDate)} 삭제한 일기는 되돌릴 수 없어요.`} confirmLabel="삭제하기" danger onConfirm={deleteOne} onCancel={() => setConfirmDelete(null)} />}
+    {confirmDelete && <Dialog title="이 일기를 삭제할까요?" description={`${deleteImpact(themeFor(monthOf(entryToDelete?.entryDate ?? today)),lastOnDate)} 덧붙인 마음도 함께 삭제되며, 되돌릴 수 없어요.`} confirmLabel="삭제하기" danger onConfirm={deleteOne} onCancel={() => setConfirmDelete(null)} />}
     {leaveWriting && <Dialog title="작성을 그만할까요?" description="아직 저장하지 않은 내용이 사라질 수 있어요." confirmLabel="작성 그만하기" danger onConfirm={confirmLeave} onCancel={() => setLeaveWriting(false)} />}
     {deleteAllStage===1 && <Dialog title="모든 칭찬일기를 삭제할까요?" description={COPY.deletion.impact} confirmLabel="계속" danger onConfirm={() => setDeleteAllStage(2)} onCancel={() => setDeleteAllStage(0)} />}
     {deleteAllStage===2 && <Dialog title="삭제를 확인해 주세요" description={`정말 삭제하려면 '${COPY.deletion.typePhrase}'를 그대로 입력해 주세요.`} confirmLabel="다음" confirmDisabled={deletePhrase!==COPY.deletion.typePhrase} danger onConfirm={() => setDeleteAllStage(3)} onCancel={() => setDeleteAllStage(0)}><label className="form-label" htmlFor="delete-all-phrase">확인 문구</label><TextInput id="delete-all-phrase" variant="outline" value={deletePhrase} onChange={event => setDeletePhrase(event.target.value)} /></Dialog>}
-    {deleteAllStage===3 && <Dialog title={COPY.deletion.lastStep} description="모든 일기와 일기에서 만든 그래픽이 사라져요. 다시 되돌릴 수 없어요." confirmLabel="모두 삭제하기" danger onConfirm={() => {setState(previous => ({...previous,entries:[]}));setDeleteAllStage(0);setDeletePhrase('');setToast('모든 칭찬일기를 삭제했어요.');}} onCancel={() => setDeleteAllStage(0)} />}
+    {deleteAllStage===3 && <Dialog title={COPY.deletion.lastStep} description="모든 일기, 덧붙인 마음과 일기에서 만든 그래픽이 사라져요. 다시 되돌릴 수 없어요." confirmLabel="모두 삭제하기" danger onConfirm={() => {if(!persist({...state,entries:[],reflections:[]}))return;setDeleteAllStage(0);setDeletePhrase('');setToast('모든 칭찬일기를 삭제했어요.');}} onCancel={() => setDeleteAllStage(0)} />}
   </div>;
 }

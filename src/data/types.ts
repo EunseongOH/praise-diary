@@ -8,10 +8,20 @@ export type DiaryEntry = {
   body: string;
 };
 
+export type DiaryReflection = {
+  id: string;
+  entryId: string;
+  body: string;
+  reflectionDate: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
 export type GraphicIdea = { id: string; month: MonthId; text: string; createdAt: string };
 
 export type PrototypeState = {
   entries: DiaryEntry[];
+  reflections: DiaryReflection[];
   letterDrawUnlockedAt: string | null;
   boundaryHour: number;
   reducedMotion: boolean;

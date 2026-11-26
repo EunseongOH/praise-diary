@@ -36,3 +36,18 @@
 /* Reading and composing share the 12px paper inset and 24px section gap. */
 .memory-slip{min-height:auto;aspect-ratio:auto;padding:var(--space-3);background:var(--paper);border:1px solid var(--line);border-radius:var(--space-1)}
 .memory-slip p{font:400 var(--type-body)/var(--leading-reading) var(--font-body);white-space:pre-wrap;overflow-wrap:anywhere}
+
+/* Shared diary reader: presentation differs only by navigation mode. */
+.diary-reader{display:flex;flex-direction:column;gap:var(--gap-component);min-width:0}
+.diary-reader-header{display:flex;align-items:center;gap:var(--gap-toolbar);min-height:var(--touch);font-size:var(--type-supporting)}
+.diary-reader-header:has(button[aria-label="닫기"]){justify-content:flex-end}
+.diary-paper{display:flex;flex-direction:column;gap:var(--gap-section);min-width:0;min-height:calc((100vw - 2 * var(--gutter)) * .75);padding:var(--space-3);border:1px solid var(--line);border-radius:var(--space-1);background:var(--paper);overflow-wrap:anywhere}
+@media(min-width:520px){.diary-paper{min-height:360px}}
+.diary-paper-text{display:flex;flex-direction:column;gap:var(--gap-component);padding-inline:var(--field-padding);min-width:0}
+.diary-paper-date{display:block;color:var(--quiet);font:400 var(--type-meta)/1.5 var(--font-body)}
+.diary-paper h2{margin:0;font:500 var(--type-entry-title)/1.5 var(--font-body)}
+.diary-paper p{margin:0;white-space:pre-wrap;overflow-wrap:anywhere;font:400 var(--type-body)/var(--leading-reading) var(--font-body)}
+.reflection-section{display:flex;flex-direction:column;gap:var(--gap-component);border-top:1px solid var(--divider);padding-block-start:var(--gap-section);min-width:0}
+.reflection-section .ui-field-shell[data-density=compact] .ui-field{resize:none;overflow:hidden}
+.reflection-error{padding-inline:var(--field-padding);color:var(--danger)}
+.diary-add-action{display:flex;justify-content:center}

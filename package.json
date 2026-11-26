@@ -13,7 +13,8 @@
     "test:logic": "node tests/logic.mjs",
     "check": "npm run check:syntax && npm run check:contrast && npm run check:design && npm run test:logic && npm run test:glyph && npm run build",
     "test:glyph": "node tests/glyph-layout.mjs",
-    "check:design": "node tests/design-contract.mjs"
+    "check:design": "node tests/design-contract.mjs",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "react": "^18.3.1",
@@ -24,6 +25,7 @@
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.4.1",
     "typescript": "^5.8.3",
-    "vite": "^6.0.0"
+    "vite": "^6.0.0",
+    "@playwright/test": "1.56.1"
   }
 }

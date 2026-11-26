@@ -19,10 +19,10 @@ export const COPY = {
     changeDay: (date: string) => `${date}의 일기로 기록돼요.`,
   },
   rediscover: {
-    locked: '나에게 남겼던 칭찬 중 하나를 되새겨볼 수 있는 공간이에요.\n남겨진 칭찬이 많아지면 볼 수 있어요.',
-    lockedCta: '칭찬일기 남기러 가기',
-    prompt: '예전의 내가 남긴 칭찬을 꺼내볼까요?',
-    draw: '칭찬 하나 꺼내보기', another: '다른 칭찬 꺼내기',
+    locked: '하루하루 나에게 다정한 말을 모아두어요.\n문득 하나를 꺼내 읽는 날,\n잊고 있던 좋은 순간들이\n다시 나에게 힘이 되어 줄지도 몰라요.',
+    lockedCta: '칭찬 하나 남기러 가기',
+    prompt: '오늘은 어떤 쪽지를 꺼내게 될까요?',
+    draw: '칭찬 하나 꺼내보기',
     empty: '지금은 꺼내볼 칭찬이 없어요.',
   },
   collection: {

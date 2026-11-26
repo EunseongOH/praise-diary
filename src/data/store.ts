@@ -1,4 +1,4 @@
-import type { DiaryEntry, MonthId, PrototypeState } from './types';
+import type { DiaryEntry, DiaryReflection, MonthId, PrototypeState } from './types';
 import { monthOf } from '../lib/date';
 
 const STORAGE_KEY = 'praise-diary:prototype:v1';
@@ -25,6 +25,7 @@ export function initialState(): PrototypeState {
   return {
     // 가상 날짜 지정 시에만 가상 데이터로 시작. 일반 실행은 빈 기록 상태.
     entries: import.meta.env.VITE_DEMO_DATE ? sampleEntries() : [],
+    reflections: [],
     letterDrawUnlockedAt: null,
     boundaryHour: 0,
     reducedMotion: false,
@@ -40,6 +41,7 @@ export function loadState(): PrototypeState {
       if (Array.isArray(value.entries) && Array.isArray(value.ideas)) {
         return {
           entries: value.entries,
+          reflections: Array.isArray(value.reflections) ? value.reflections.filter(r => r && typeof r.id === 'string' && typeof r.body === 'string' && typeof r.reflectionDate === 'string' && typeof r.createdAt === 'string' && typeof r.updatedAt === 'string' && value.entries?.some(e => e.id === r.entryId)) : [],
           letterDrawUnlockedAt: value.letterDrawUnlockedAt ?? null,
           boundaryHour: [0, 1, 2, 3, 4].includes(Number(value.boundaryHour)) ? Number(value.boundaryHour) : 0,
           reducedMotion: Boolean(value.reducedMotion),
@@ -54,7 +56,7 @@ export function loadState(): PrototypeState {
 }
 
 export function saveState(state: PrototypeState) {
-  try { sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch { /* quota/private mode */ }
+  try { sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state)); return true; } catch { return false; }
 }
 
 export function monthEntries(entries: DiaryEntry[], month: MonthId): DiaryEntry[] {
@@ -72,4 +74,22 @@ export function dateHasEntry(entries: DiaryEntry[], date: string): boolean {
 export function chooseDifferentEntry(entries: DiaryEntry[], previousId: string | null): DiaryEntry | undefined {
   const pool = entries.length > 1 ? entries.filter((entry) => entry.id !== previousId) : entries;
   return pool[Math.floor(Math.random() * pool.length)];
+}
+
+/** Reflection mutations never change original-entry counts, dates or unlock history. */
+export function reflectionsFor(state: PrototypeState, entryId: string): DiaryReflection[] {
+  return state.reflections.filter(r=>r.entryId===entryId).sort((a,b)=>a.createdAt.localeCompare(b.createdAt)||a.id.localeCompare(b.id));
+}
+export function upsertReflection(state: PrototypeState, note: DiaryReflection): PrototypeState | null {
+  if (!note.body.trim() || !state.entries.some(e=>e.id===note.entryId)) return null;
+  const old=state.reflections.find(r=>r.id===note.id);
+  if(old&&old.entryId!==note.entryId)return null;
+  const saved=old?{...old,body:note.body,updatedAt:note.updatedAt}:note;
+  return {...state,reflections:old?state.reflections.map(r=>r.id===note.id?saved:r):[...state.reflections,saved]};
+}
+export function removeReflection(state: PrototypeState, entryId: string, id: string): PrototypeState {
+  return {...state,reflections:state.reflections.filter(r=>r.id!==id||r.entryId!==entryId)};
+}
+export function removeDiary(state: PrototypeState, entryId: string): PrototypeState {
+  return {...state,entries:state.entries.filter(e=>e.id!==entryId),reflections:state.reflections.filter(r=>r.entryId!==entryId)};
 }

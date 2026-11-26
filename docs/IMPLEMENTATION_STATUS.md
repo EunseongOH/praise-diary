@@ -65,3 +65,8 @@
 - 기존 CI의 glyphLayout TS18048 배열 접근 방어 추가(아트 알고리즘 변경 없음).
 - 실제 앱의 Button/TextAction/IconButton, FieldShell/TextInput/Textarea, RemovableField, Stack/Inline/ActionGroup, Collapsible, ActionMenu/MenuItem 통합. 작성 화면 제목/질문/입력과 기타 폼을 공통 규격으로 전환. v0.5 소스 계약 검사 추가, 대비 검사의 CSS alias 해석 수정.
 - CI와 브라우저 검증은 새 커밋 결과로 확인할 것. V10 기억병과 마음 기록, 전체 구형 CSS 정리, SDK/백엔드는 별도.
+
+### 통합 2차 — 공통 원문 감상 및 마음 기록
+- 원본과 독립된 DiaryReflection 데이터 계약, 세 진입점에서 같은 DiaryContent 사용. 작성/수정/삭제, 원본 삭제 연동, 날짜 보존, 미저장 확인, 세션 저장 실패 입력 유지. 기존 sessionStorage 데이터에는 reflections 기본 빈 배열 마이그레이션. 세션 저장을 먼저 확인하고 상태를 변경. 서버/인증 아님.
+- v0.5 ActionMenu, FieldShell/Textarea, ActionGroup 사용. CI에 실제 빌드 결과를 대상으로 Playwright Chromium 320/390/430px 및 입력/메뉴 실측, 세 경로 CRUD, 저장 실패·미저장 확인을 추가. 현재 커밋의 실행 결과 확인 필요.
+- 실제 기억병/곡면·지지 모션, 모바일 키보드/WebView, 전체 200% 확대, 최신 도감/설정/스플래시, DB/SDK 미완료. 원문 관리 버튼 위치·날짜 정책(KST 실제 날짜)은 검토안. 월간 그래픽은 슬롯 유지.

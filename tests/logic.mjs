@@ -50,3 +50,18 @@ for (const kind of ['snowflake', 'sheep']) {
   assert.ok(art.revealWindow(kind, 15, null).ratio < 1, `${kind} unconfirmed target cannot be displayed as completed`);
 }
 console.log('PASS — bottom-up silhouette growth assertions for both monthly themes');
+
+const oldState={entries:[a,b],reflections:[],letterDrawUnlockedAt:'2026-12-18',boundaryHour:0,reducedMotion:false,ideas:[]};
+const reflection={id:'r',entryId:'a',body:'다시 만난 마음',reflectionDate:'2026-12-20',createdAt:'2026-12-20T00:00:00Z',updatedAt:'2026-12-20T00:00:00Z'};
+const withNote=store.upsertReflection(oldState,reflection);
+assert.equal(withNote.entries.length,2);assert.equal(store.writtenDays(withNote.entries,'2026-12'),1);assert.equal(withNote.letterDrawUnlockedAt,oldState.letterDrawUnlockedAt);
+assert.equal(store.reflectionsFor(withNote,'a').length,1);assert.equal(store.reflectionsFor(withNote,'b').length,0);
+const edited=store.upsertReflection(withNote,{...reflection,body:'수정',reflectionDate:'2026-12-21',createdAt:'changed',updatedAt:'2026-12-21T00:00:00Z'});
+assert.equal(edited.reflections[0].reflectionDate,reflection.reflectionDate);assert.equal(edited.reflections[0].createdAt,reflection.createdAt);assert.equal(edited.reflections[0].body,'수정');
+assert.equal(store.upsertReflection(withNote,{...reflection,entryId:'b'}),null);
+assert.equal(store.upsertReflection(withNote,{...reflection,body:'  '}),null);
+assert.equal(store.removeReflection(withNote,'b','r').reflections.length,1);
+assert.equal(store.removeReflection(withNote,'a','r').reflections.length,0);
+assert.equal(store.removeDiary(withNote,'a').reflections.length,0);
+assert.equal(store.removeDiary(withNote,'a').letterDrawUnlockedAt,oldState.letterDrawUnlockedAt);
+console.log('PASS — reflection independence, edit date, ownership by entry ID, cascade');
