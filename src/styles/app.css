@@ -20,8 +20,8 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-
 .bottom-navigation__item { border: 0; background: none; color: var(--muted); font-size: 14px; font-weight: 500; min-height: 52px; position: relative; }
 .bottom-navigation__item.is-active { color: var(--ink); font-weight: 800; }
 .bottom-navigation__item.is-active::after { position: absolute; content: ''; width: 22px; height: 3px; border-radius: 3px; bottom: 7px; left: 50%; transform: translateX(-50%); background: var(--accent); }
-.ui-button { border: 1.5px solid transparent; border-radius: var(--radius-md); min-height: 52px; padding: 12px 18px; font-weight: 700; font-size: 15px; transition: background-color .18s ease, transform .18s ease; }
-.ui-button:active:not(:disabled) { transform: scale(.992); }
+.ui-button { border: 1px solid transparent; border-radius: var(--radius-md); min-height: 52px; padding: 12px 18px; font-weight: 700; font-size: 15px; transition: background-color .18s ease, transform .18s ease; }
+.ui-button:active:not(:disabled) { background: var(--surface-green); }
 .ui-button--primary { background: var(--accent); color: var(--brand-white); }
 .ui-button--primary:hover:not(:disabled) { background: var(--accent-hover); }
 .ui-button--secondary { border-color: #B8C7BB; background: white; color: var(--ink); }
@@ -101,7 +101,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-
 .setting-switch-row { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 14px 0; gap: 14px; min-height: 64px; }
 .setting-switch-row__copy { display: grid; gap: 2px; }
 .setting-switch-row__copy small { color: var(--muted); }
-.switch { display: grid; align-items: center; min-width: 50px; width: 50px; height: 30px; padding: 3px; border-radius: 30px; background: #8B9E90; transition: background .2s ease; }
+.switch { display: grid; align-items: center; min-width: 50px; width: 50px; height: 30px; padding: 3px; border-radius: 30px; background: var(--switch-off); transition: background .2s ease; }
 .switch__thumb { width: 24px; height: 24px; border-radius: 50%; background: white; transition: transform .2s ease; box-shadow: 0 2px 3px rgba(0,0,0,.15); }
 .switch--active { background: var(--accent); }
 .switch--active .switch__thumb { transform: translateX(20px); }
@@ -231,7 +231,7 @@ html, body { background: var(--background); color: var(--ink); }
 .prompt-row { background: var(--surface-soft); color: var(--ink); }
 .prompt-row.is-active { border-color: var(--accent); background: var(--surface-green); }
 .write-footer { background: var(--background); }
-.switch { background: #607567; }
+.switch { background: var(--switch-off); }
 .switch__thumb { background: #FFFFFF; }
 .switch--active { background: var(--brand-lime); }
 .radio-row input { accent-color: var(--brand-lime); }
@@ -273,7 +273,7 @@ body { font-family: var(--font-body); font-size: var(--type-body); line-height: 
 .dialog h2 { font-size: var(--type-entry-title); font-weight: var(--weight-emphasis); }
 .dialog p { font-size: var(--type-body); line-height: var(--leading-supporting); }
 .graphic-artwork text { font-family: var(--font-body); }
-@media (max-width: 360px) { .page-title { font-size: 24px; } }
+
 
 
 
@@ -334,8 +334,8 @@ body { font-family: var(--font-body); font-size: var(--type-body); line-height: 
 .home-toolbar-actions{display:flex;align-items:center;gap:var(--gap-toolbar)}
 .home-toolbar-spacer{flex:1}
 .home-calendar-navigation{display:flex;align-items:center;justify-content:center;gap:var(--gap-controls)}
-.home-calendar-navigation span{font:500 1rem/1.5 var(--font-body);min-width:0;text-align:center}
-.home-artwork-title{font:400 1.5rem/1.4 var(--font-artwork);letter-spacing:.015em;text-align:center;margin:var(--space-3) 0 0}
+
+.home-artwork-title{font:400 var(--type-page)/var(--leading-display) var(--font-artwork);letter-spacing:.015em;text-align:center;margin:0}
 .home-artwork-stage{display:grid;place-items:center;min-height:clamp(240px,42dvh,450px)}
 .home-artwork-stage .illustration-stage__view{display:grid;place-items:center;min-height:inherit}
 .home-artwork-count,.home-empty-copy{margin:0;text-align:center;color:var(--muted);font:400 .875rem/1.55 var(--font-body)}

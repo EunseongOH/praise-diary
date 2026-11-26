@@ -62,3 +62,5 @@
 - v0.8 검토안 `design-system/labs/dajeongrok/foundation/v08-rules.md`: 질문 재추출과 선택 문장 별도 속성, 마음 개수 파생 표시 및 도감 정렬 제안. 기존 토큰/컴포넌트 재사용, 정책 승인 전 확정 금지.
 
 - 도감 V02 원본 `design-system/labs/dajeongrok/collection/` 보존. 최신 실제 통합 규칙 `foundation/v09-collection-rules.md`; A/B는 검토안. 2열·공통 월 상세·미래 잠금·원본 기록 기반 일수 유지. 그래픽 렌더러는 후속, 임시 글자 그래픽/시연 fixture를 제품에 이식하지 않는다.
+
+- v0.10 전수 코드 검토: `docs/handoff/32_design_system_audit.md`. 설정 row 12/8/48, section24/header8, switch/notification/shell 공통 토큰. 중복 CSS는 동등성 확인 후 제거. 현재 소스 검토와 실제 실측/실기 검증을 구분한다.

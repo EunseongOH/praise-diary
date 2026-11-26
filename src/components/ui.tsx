@@ -167,7 +167,7 @@ export function Toggle({ label, description, checked, onChange }: {
 }) {
   return <label className="setting-switch-row">
     <span className="setting-switch-row__copy"><strong>{label}</strong>{description && <small>{description}</small>}</span>
-    <input className="sr-only switch-native" type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} />
+    <input className="sr-only switch-native" type="checkbox" role="switch" checked={checked} onChange={(e) => onChange(e.target.checked)} />
     <span className={`switch ${checked ? 'switch--active' : ''}`} aria-hidden="true"><span className="switch__thumb" /></span>
   </label>;
 }
@@ -175,7 +175,7 @@ export function Toggle({ label, description, checked, onChange }: {
 export function SettingRow({ title, detail, onClick }: { title: string; detail?: string; onClick: () => void }) {
   return <button type="button" className="setting-row" onClick={onClick}>
     <span>{title}</span>
-    <span className="setting-row__value">{detail ? detail : <span aria-hidden="true">›</span>}</span>
+    <span className="setting-row__value">{detail && <span>{detail}</span>}<Icon name="chevron-right" size="inline"/></span>
   </button>;
 }
 

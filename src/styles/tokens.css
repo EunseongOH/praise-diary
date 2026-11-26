@@ -7,19 +7,9 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
 
-  /* Type study v0.3: SUIT Variable is a candidate, not final brand type. */
-  --font-body: 'SUIT Variable', 'Pretendard Variable', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', system-ui, sans-serif;
+  /* Shared foundation; final UI font is declared in the integration block. */
   --font-display: var(--font-body);
   --type-hero: clamp(28px, 7vw, 32px);
-  --type-page: 26px;
-  --type-section: 18px;
-  --type-entry-title: 20px;
-  --type-body: 16px;
-  --type-control: 16px;
-  --type-supporting: 14px;
-  --type-meta: 13px;
-  --leading-display: 1.3;
-  --leading-body: 1.65;
   --leading-supporting: 1.55;
   --weight-regular: 400;
   --weight-medium: 500;
@@ -32,24 +22,9 @@
   --brand-apricot: #FAD89E;
   --brand-sky: #A6C5D3;
 
-  /* Default prototype is dark from top bar through artwork and bottom nav. */
-  --background: #0C1111;
-  --surface: #111B18;
-  --surface-soft: #16221D;
-  --surface-green: #203329;
-  --line: #385044;
-  --ink: #F5F6EF;
-  --muted: #B7C8BA;
-  --accent: #B8D68A;
-  --accent-hover: #D0E8AD;
+  /* Artwork palette and remaining foundation tokens. */
   --accent-soft: #B8D68A;
-  --accent-ink: #15221B;
-  --danger: #A63C3C;
-  --danger-soft: #332321;
-  --hero: #0C1111;
-  --hero-ink: #F5F6EF;
   --hero-sky: #A6C5D3;
-  --focus: #FAD89E;
 
   --space-1: 4px;
   --space-2: 8px;
@@ -118,3 +93,15 @@
 
 /* v0.9 collection review: semantic aliases, no screen-local spacing scale. */
 :root{--gap-collection-section:var(--gap-section);--gap-tile-art-copy:var(--gap-component);--gap-tile-text:var(--gap-text);--collection-art-radius:var(--radius-sm);--collection-empty-mark:32px;--collection-detail-art-max:400px;}
+
+/* v0.10 audit: shared shell and settings geometry. */
+:root{
+ --type-nav:.75rem; --nav-height:68px; --app-bar-height:60px;
+ --page-bottom-with-tabs:calc(var(--nav-height) + var(--space-6) + env(safe-area-inset-bottom));
+ --page-bottom-without-tabs:calc(var(--gap-section) + env(safe-area-inset-bottom));
+ --gap-setting-section:var(--gap-section); --gap-setting-heading:var(--gap-controls);
+ --setting-row-padding:var(--space-3); --setting-row-gap:var(--gap-controls);
+ --switch-width:48px; --switch-height:28px; --switch-thumb:20px;
+ --switch-inset:var(--space-1); --switch-off:var(--field-border);
+ --toast-surface:var(--menu-bg); --toast-padding:var(--space-3);
+}

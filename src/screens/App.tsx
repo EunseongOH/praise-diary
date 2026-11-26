@@ -257,18 +257,18 @@ export default function App() {
       {page.screen === 'locked-month' && <LockedMonthDetail onIdea={()=>{setMonthIdea('');navigate({screen:'idea',month:currentMonth})}}/>}
       {page.screen === 'idea' && <GraphicIdeaForm month={currentMonth} value={monthIdea} onChange={setMonthIdea} onSave={saveIdeas}/>}
 
-      {page.screen === 'settings' && <>
+      {page.screen === 'settings' && <Stack gap="section">
         <div className="setting-section"><h2>기록 설정</h2><SettingRow title={COPY.settings.boundary} detail={`${state.boundaryHour === 0 ? '자정' : `오전 ${state.boundaryHour}시`}`} onClick={() => navigate({screen:'boundary'})} /></div>
         <div className="setting-section"><h2>그래픽</h2><Toggle label={COPY.settings.reduceMotion} checked={state.reducedMotion} onChange={checked => {persist({...state,reducedMotion:checked})}} /></div>
-        <div className="setting-section"><h2>알림</h2><div className="setting-row" style={{cursor:'default'}}><span>{COPY.settings.notification}</span><span className="setting-row__value">{COPY.settings.notificationNotReady}</span></div><p className="small-caption">알림 기능은 앱인토스 정책 확인과 승인 이후 제공할 예정이에요.</p></div>
+        <div className="setting-section"><h2>알림</h2><div className="setting-row" data-static="true"><span>{COPY.settings.notification}</span><span className="setting-row__value">{COPY.settings.notificationNotReady}</span></div><p className="small-caption">알림 기능은 앱인토스 정책 확인과 승인 이후 제공할 예정이에요.</p></div>
         <div className="setting-section"><h2>내 기록</h2><SettingRow title="기록 관리" onClick={() => navigate({screen:'records'})} /></div>
         <div className="setting-section"><h2>서비스 정보</h2><SettingRow title="이용 안내 및 문의" onClick={() => navigate({screen:'information'})} /></div>
-      </>}
+      </Stack>}
       {page.screen === 'boundary' && <div className="space-stack"><div className="page-intro"><h1 className="page-title">하루를 언제 마무리할까요?</h1><p className="description">{COPY.settings.boundaryHelp}</p></div>
-        <div className="radio-list">{[0,1,2,3,4].map(hour => <label className="radio-row" key={hour}><input type="radio" name="boundary" checked={state.boundaryHour===hour} onChange={() => {if(persist({...state,boundaryHour:hour}))setToast('하루가 바뀌는 시간을 변경했어요.');}} />{hour===0?'오전 12:00 (기본)':`오전 ${hour}:00`}</label>)}</div>
+        <div className="radio-list" role="radiogroup" aria-label="하루가 바뀌는 시간">{[0,1,2,3,4].map(hour => <label className="radio-row" key={hour}><input type="radio" name="boundary" checked={state.boundaryHour===hour} onChange={() => {if(persist({...state,boundaryHour:hour}))setToast('하루가 바뀌는 시간을 변경했어요.');}} />{hour===0?'오전 12:00 (기본)':`오전 ${hour}:00`}</label>)}</div>
         <p className="small-caption">{COPY.settings.boundarySaved}</p>
       </div>}
-      {page.screen === 'records' && <div className="space-stack"><div className="page-intro"><h1 className="page-title">기록 관리</h1><p className="description">기록 삭제는 되돌릴 수 없으니 신중하게 선택해 주세요.</p></div>
+      {page.screen === 'records' && <div className="space-stack"><p className="description">기록 삭제는 되돌릴 수 없으니 신중하게 선택해 주세요.</p>
         <div className="info-sheet"><p>저장된 칭찬일기 {state.entries.length}개 · 꺼내보기 {isUnlocked ? '열림' : '잠김'}</p></div>
         <Button className="ui-button--full" variant="secondary" disabled={state.entries.length===0} onClick={() => {setDeleteAllStage(1);setDeletePhrase('');}}>모든 칭찬일기 삭제</Button>
         <p className="small-caption">모든 일기를 삭제해도 이미 열린 꺼내보기 기능은 계속 이용할 수 있어요.</p>
@@ -280,7 +280,7 @@ export default function App() {
     {confirmDelete && <Dialog title="이 일기를 삭제할까요?" description={`${deleteImpact(themeFor(monthOf(entryToDelete?.entryDate ?? today)),lastOnDate)} 덧붙인 마음도 함께 삭제되며, 되돌릴 수 없어요.`} confirmLabel="삭제하기" danger onConfirm={deleteOne} onCancel={() => setConfirmDelete(null)} />}
     {leaveWriting && <Dialog title="작성을 그만할까요?" description="아직 저장하지 않은 내용이 사라질 수 있어요." confirmLabel="작성 그만하기" danger onConfirm={confirmLeave} onCancel={() => setLeaveWriting(false)} />}
     {deleteAllStage===1 && <Dialog title="모든 칭찬일기를 삭제할까요?" description={COPY.deletion.impact} confirmLabel="계속" danger onConfirm={() => setDeleteAllStage(2)} onCancel={() => setDeleteAllStage(0)} />}
-    {deleteAllStage===2 && <Dialog title="삭제를 확인해 주세요" description={`정말 삭제하려면 '${COPY.deletion.typePhrase}'를 그대로 입력해 주세요.`} confirmLabel="다음" confirmDisabled={deletePhrase!==COPY.deletion.typePhrase} danger onConfirm={() => setDeleteAllStage(3)} onCancel={() => setDeleteAllStage(0)}><label className="form-label" htmlFor="delete-all-phrase">확인 문구</label><TextInput id="delete-all-phrase" variant="outline" value={deletePhrase} onChange={event => setDeletePhrase(event.target.value)} /></Dialog>}
+    {deleteAllStage===2 && <Dialog title="삭제를 확인해 주세요" description={`정말 삭제하려면 '${COPY.deletion.typePhrase}'를 그대로 입력해 주세요.`} confirmLabel="다음" confirmDisabled={deletePhrase!==COPY.deletion.typePhrase} danger onConfirm={() => setDeleteAllStage(3)} onCancel={() => setDeleteAllStage(0)}><Stack gap="text"><label className="form-label" htmlFor="delete-all-phrase">확인 문구</label><TextInput id="delete-all-phrase" variant="outline" value={deletePhrase} onChange={event => setDeletePhrase(event.target.value)} /></Stack></Dialog>}
     {deleteAllStage===3 && <Dialog title={COPY.deletion.lastStep} description="모든 일기, 덧붙인 마음과 일기에서 만든 그래픽이 사라져요. 다시 되돌릴 수 없어요." confirmLabel="모두 삭제하기" danger onConfirm={() => {if(!persist({...state,entries:[],reflections:[]}))return;setDeleteAllStage(0);setDeletePhrase('');setToast('모든 칭찬일기를 삭제했어요.');}} onCancel={() => setDeleteAllStage(0)} />}
   </div>;
 }
