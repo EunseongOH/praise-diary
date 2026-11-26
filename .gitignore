@@ -6,3 +6,5 @@ dist/
 .DS_Store
 *.log
 coverage/
+dist-snowflake/
+artifacts/snowflake-service-review/

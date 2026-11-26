@@ -66,6 +66,21 @@ assert.equal(store.removeDiary(withNote,'a').reflections.length,0);
 assert.equal(store.removeDiary(withNote,'a').letterDrawUnlockedAt,oldState.letterDrawUnlockedAt);
 console.log('PASS — reflection independence, edit date, ownership by entry ID, cascade');
 
+// A restored/review history with 10+ entries must be permanently unlocked, even if
+// the historical unlock timestamp was missing. Same-date entries count separately.
+const unlockEntries=Array.from({length:10},(_,i)=>({ ...a, id:'unlock-'+i, createdAt:`2026-12-17T${String(i).padStart(2,'0')}:00:00Z` }));
+const lockedAtNine=store.reconcileRediscoveryUnlock({...oldState,entries:unlockEntries.slice(0,9),letterDrawUnlockedAt:null});
+assert.equal(lockedAtNine.letterDrawUnlockedAt,null,'9 diary entries stay locked');
+const unlockedAtTen=store.reconcileRediscoveryUnlock({...oldState,entries:unlockEntries,letterDrawUnlockedAt:null});
+assert.equal(unlockedAtTen.letterDrawUnlockedAt,unlockEntries[9].createdAt,'10 entries unlock, even on one date');
+const afterDelete=store.removeDiary(unlockedAtTen,unlockEntries[9].id);
+assert.equal(afterDelete.entries.length,9);
+assert.equal(afterDelete.letterDrawUnlockedAt,unlockedAtTen.letterDrawUnlockedAt,'unlock remains after deletion');
+const preservedUnlock=store.reconcileRediscoveryUnlock(afterDelete);
+assert.equal(preservedUnlock.letterDrawUnlockedAt,unlockedAtTen.letterDrawUnlockedAt,'historical unlock stays stable');
+console.log('PASS — rediscovery 9/10 entry threshold, legacy recovery, permanent unlock');
+
+
 const prompts=load('data/prompts.ts');const themes=load('data/themes.ts');
 for(let i=0;i<50;i++){const pair=prompts.pickPrompts();assert.equal(pair.length,2);assert.notEqual(pair[0].category,pair[1].category);const next=prompts.pickPrompts(pair);assert.equal(next.length,2);assert.ok(next.every(p=>!pair.some(q=>q.category===p.category)));}
 assert.equal(store.reflectionCounts(withNote.reflections).get('a'),1);assert.equal(store.reflectionCounts(store.removeReflection(withNote,'a','r').reflections).get('a'),undefined);
