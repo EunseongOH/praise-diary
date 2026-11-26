@@ -111,3 +111,6 @@
 
 /* v0.12 — archive/search shared role aliases, no independent palette. */
 :root{--search-height:var(--field-height);--search-inset:var(--field-padding);--search-icon-gap:var(--gap-inline);--filter-height:var(--touch);--gap-archive-controls:var(--gap-component);--gap-archive-sections:var(--gap-section);--gap-archive-header:var(--gap-controls);--search-match-bg:var(--surface-green);--search-match-ink:var(--accent);}
+
+/* v0.14 search mode — reuse semantic geometry and palette. */
+:root{--search-plain-height:var(--touch);--gap-search-filter:var(--gap-controls);--gap-search-results:var(--space-4);--search-dim:rgba(0,0,0,.45);--period-padding:var(--space-3);--period-cell:var(--touch);--period-width:320px;--period-gap:var(--gap-text);}
