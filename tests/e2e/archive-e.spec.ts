@@ -1,0 +1,50 @@
+import { test, expect } from '@playwright/test';
+
+test('E archive: 30-item increments, combined filters, detail return, empty result and reset',async({page})=>{
+ await page.setViewportSize({width:390,height:844});
+ await page.addInitScript(()=>{
+  const entries=Array.from({length:65},(_,i)=>{
+   const entryDate=i<40?'2026-10-01':'2025-12-01';
+   return {id:'archive-'+i,entryDate,createdAt:entryDate+'T12:'+String(i%60).padStart(2,'0')+':00Z',title:'기록 '+i,body:'나에게 건넨 용기 '+i};
+  });
+  const reflections=[{id:'r1',entryId:'archive-45',body:'다시 읽은 마음',reflectionDate:'2026-11-01',createdAt:'2026-11-01T00:00:00Z',updatedAt:'2026-11-01T00:00:00Z'}];
+  sessionStorage.setItem('praise-diary:prototype:v1',JSON.stringify({entries,reflections,ideas:[],letterDrawUnlockedAt:'2026-11-01',boundaryHour:0,reducedMotion:true}));
+ });
+ await page.goto('/');
+ await page.getByRole('button',{name:'내가 남긴 칭찬 보기'}).click();
+ const rows=page.locator('.diary-row');
+ await expect(rows).toHaveCount(30);
+ await page.getByRole('button',{name:'더 보기',exact:true}).click();
+ await expect(rows).toHaveCount(60);
+ const target=rows.nth(45);
+ const id=await target.getAttribute('data-entry-id');
+ await target.scrollIntoViewIfNeeded();
+ const before=await target.evaluate(el=>el.getBoundingClientRect().top);
+ await target.click();
+ await page.getByRole('button',{name:'뒤로가기',exact:true}).click();
+ await expect(rows).toHaveCount(60);
+ const returned=page.locator('.diary-row[data-entry-id="'+id+'"]');
+ await expect(returned).toBeFocused();
+ expect(Math.abs(await returned.evaluate(el=>el.getBoundingClientRect().top)-before)).toBeLessThan(80);
+ const search=page.getByRole('searchbox',{name:'칭찬 검색'});
+ await search.fill('용기');
+ await expect(rows).toHaveCount(30);
+ await expect(rows.first().locator('mark')).toContainText('용기');
+ await page.getByRole('combobox',{name:'연도 선택'}).click();
+ await page.getByRole('option',{name:'2025년',exact:true}).click();
+ await expect(rows).toHaveCount(25);
+ await page.getByRole('button',{name:'마음이 담긴 칭찬'}).click();
+ await expect(rows).toHaveCount(1);
+ await rows.first().click();
+ await page.getByRole('button',{name:'뒤로가기',exact:true}).click();
+ await expect(search).toHaveValue('용기');
+ await expect(rows).toHaveCount(1);
+ await search.fill('없는 검색어');
+ await expect(page.getByText('찾는 칭찬이 없어요.')).toBeVisible();
+ await page.getByRole('button',{name:'전체 칭찬 보기'}).click();
+ await expect(search).toHaveValue('');
+ await expect(rows).toHaveCount(30);
+ await page.setViewportSize({width:320,height:720});
+ await expect(search).toBeVisible();
+ expect(await page.locator('.archive-screen').evaluate(el=>el.scrollWidth<=el.clientWidth+1)).toBeTruthy();
+});
