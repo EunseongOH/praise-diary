@@ -12,7 +12,7 @@ import { CollectionScreen, MonthlyGraphicDetail, LockedMonthDetail, GraphicIdeaF
 import { COPY, deleteImpact, savedMessage } from '../content/copy';
 import { pickPrompts, type Prompt } from '../data/prompts';
 import { loadState, saveState, writtenDays, dateHasEntry, monthEntries, chooseDifferentEntry, reflectionsFor, upsertReflection, removeReflection, removeDiary, reflectionCounts } from '../data/store';
-import { MONTH_THEMES, UPCOMING_MONTHS, themeFor, type CollectionLayout } from '../data/themes';
+import { MONTH_THEMES, UPCOMING_MONTHS, themeFor } from '../data/themes';
 import type { DiaryEntry, MonthId, PrototypeState } from '../data/types';
 import { currentPreviewTime, formatDay, formatMonth, koreanClock, monthOf, todayAndYesterday } from '../lib/date';
 
@@ -45,7 +45,6 @@ export default function App() {
   const [monthIdea, setMonthIdea] = useState('');
   const [writerDate, setWriterDate] = useState('');
   const collectionReturn=useRef<{month:MonthId;scroll:number}|null>(null);
-  const [collectionLayout,setCollectionLayout]=useState<CollectionLayout>('A');
   const [listVariant,setListVariant]=useState<DiaryListVariant>('A');
   const reviewMode=Boolean((window as Window & {__DAJEONGROK_REVIEW__?:boolean}).__DAJEONGROK_REVIEW__);
   const [writerTitle, setWriterTitle] = useState('');
@@ -252,7 +251,7 @@ export default function App() {
         {reviewMode&&<aside className="writer-review-panel" aria-label="검수용 기록 목록 비교"><Stack gap="controls"><p>검수용 · 기록 목록 비교</p><SegmentedChoice label="기록 목록 시안" value={listVariant} onChange={setListVariant} options={[{value:"A",label:"A 구분선"},{value:"B",label:"B 카드"},{value:"C",label:"C 날짜별"}]}/></Stack></aside>}
         <DiaryList variant={listVariant} reflectionCounts={noteCounts} entries={page.day ? state.entries.filter(e => e.entryDate === page.day) : page.month ? monthEntries(state.entries,page.month) : state.entries} onOpen={entry => navigate({ screen:'detail', entryId:entry.id })} emptyContent={<EmptyState title="아직 남긴 칭찬이 없어요." description="오늘의 작은 칭찬부터 시작해 볼까요?" action={<Button onClick={() => startWrite()}>칭찬일기 남기러 가기</Button>} />} />
       </Stack>}
-      {page.screen === 'collection' && <CollectionScreen months={allMonths} current={todayMonth} entries={state.entries} reducedMotion={state.reducedMotion} layout={collectionLayout} onLayout={setCollectionLayout} review={reviewMode} onOpen={openMonth}/>}
+      {page.screen === 'collection' && <CollectionScreen months={allMonths} current={todayMonth} entries={state.entries} reducedMotion={state.reducedMotion} onOpen={openMonth}/>}
       {(page.screen === 'month'||page.screen === 'graphic') && <MonthlyGraphicDetail month={currentMonth} entries={state.entries} reducedMotion={state.reducedMotion} onList={()=>navigate({screen:'list',month:currentMonth})}/>}
       {page.screen === 'locked-month' && <LockedMonthDetail onIdea={()=>{setMonthIdea('');navigate({screen:'idea',month:currentMonth})}}/>}
       {page.screen === 'idea' && <GraphicIdeaForm month={currentMonth} value={monthIdea} onChange={setMonthIdea} onSave={saveIdeas}/>}

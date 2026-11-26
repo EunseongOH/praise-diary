@@ -24,3 +24,8 @@ console.log('PASS — v0.7 select, disclosure, record rows');
 for(const f of ['--gap-record-meta:var(--gap-inline)','--gap-meta-icon:var(--gap-text)','--gap-reference-prompt:var(--gap-component)'])assert.ok(tokens.includes(f),f);
 assert.ok(read('src/screens/WriterLayout.tsx').includes('icon="refresh"'),'Reuse TextAction refresh');
 console.log('PASS — v0.8 metadata contract');
+
+assert.ok(read('src/components/content.tsx').includes('<DiaryRow'),'All diary lists use the independent row');
+assert.ok(!/^\.diary-(?:list|row)/m.test(read('src/styles/app.css')),'Legacy row declarations removed');
+assert.ok(css.includes('.diary-row-meta{display:flex;align-items:center;'),'Metadata centered, not baseline');
+console.log('PASS — DiaryRow ownership and metadata contract');

@@ -1,22 +1,20 @@
 import { MonthTile, MonthVisual, type MonthVisualState } from '../components/content';
-import { Button, SegmentedChoice, Stack, TextAction, Textarea } from '../components/ui';
+import { Button, Stack, TextAction, Textarea } from '../components/ui';
 import { ArtworkSlot } from '../graphics/ArtworkSlot';
-import { collectionGroups, themeFor, type CollectionLayout } from '../data/themes';
+import { collectionGroups, themeFor } from '../data/themes';
 import { monthEntries, writtenDays } from '../data/store';
 import type { DiaryEntry, MonthId } from '../data/types';
 import { formatMonth, monthOf } from '../lib/date';
 import { COPY } from '../content/copy';
 
-export function CollectionScreen({months,current,entries,reducedMotion,layout,onLayout,review,onOpen}:{
- months:MonthId[];current:MonthId;entries:DiaryEntry[];reducedMotion:boolean;layout:CollectionLayout;onLayout:(v:CollectionLayout)=>void;review:boolean;onOpen:(m:MonthId)=>void;
+export function CollectionScreen({months,current,entries,reducedMotion,onOpen}:{
+ months:MonthId[];current:MonthId;entries:DiaryEntry[];reducedMotion:boolean;onOpen:(m:MonthId)=>void;
 }){
  const recorded=new Set(entries.map(e=>monthOf(e.entryDate)));
- const {archived,upcoming}=collectionGroups(months,current,recorded,layout);
+ const {archived,upcoming}=collectionGroups(months,current,recorded,'B');
  const tile=(month:MonthId)=>{const records=monthEntries(entries,month);return <MonthTile key={month} month={month} theme={themeFor(month)} writtenDays={writtenDays(entries,month)} entries={records.length} entriesData={records} letterSource={records.map(e=>e.body).join(' ')} reducedMotion={reducedMotion} locked={month>current} onClick={()=>onOpen(month)}/>};
- return <section className="collection-screen" data-layout={layout}>
-  <div className="month-tiles" aria-label="나의 월별 작품">{archived.map(tile)}{layout==='B'&&upcoming.map(tile)}</div>
-  {layout==='A'&&<section className="collection-future" aria-labelledby="collection-future-heading"><h2 id="collection-future-heading">다가오는 달</h2><div className="month-tiles">{upcoming.map(tile)}</div></section>}
-  {review&&<aside className="writer-review-panel" aria-label="검수용 도감 배치 비교"><Stack gap="controls"><p>검수용 · 도감 배치 비교</p><SegmentedChoice label="도감 배치" value={layout} onChange={onLayout} options={[{value:'A',label:'A 작품과 미래 분리'},{value:'B',label:'B 연속 2열'}]}/></Stack></aside>}
+ return <section className="collection-screen" data-layout="B">
+  <div className="month-tiles" aria-label="나의 월별 작품">{archived.map(tile)}{upcoming.map(tile)}</div>
  </section>;
 }
 /** Shared C-02 / graphic route. The real renderer and gesture viewer are connected later. */

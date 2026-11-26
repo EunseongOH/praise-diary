@@ -6,13 +6,12 @@ for(const width of [320,390,430])test('collection V02 shared UI '+width,async({p
  await page.clock.install({time:new Date('2027-01-15T04:00:00Z')});
  await page.addInitScript(s=>{sessionStorage.setItem('praise-diary:prototype:v1',JSON.stringify(s));Object.defineProperty(window,'__DAJEONGROK_REVIEW__',{value:true})},fixtures);
  await page.goto('/');await page.getByRole('button',{name:'도감',exact:true}).click();
- const tiles=page.locator('.month-tile');await expect(tiles).toHaveCount(3);await expect(tiles.first()).toHaveAttribute('data-month',month);
- await expect(page.locator('.collection-future .month-tile')).toHaveAttribute('data-month','2027-02');
+ const tiles=page.locator('.month-tile');await expect(tiles).toHaveCount(4);await expect(tiles.first()).toHaveAttribute('data-month',month);
+ await expect(page.locator('.collection-screen')).toHaveAttribute('data-layout','B');await expect(page.locator('.collection-future')).toHaveCount(0);await expect(tiles.last()).toHaveAttribute('data-month','2027-03');
  const grid=page.locator('.collection-screen>.month-tiles');expect(await grid.evaluate(e=>getComputedStyle(e).columnGap)).toBe('12px');expect(await grid.evaluate(e=>getComputedStyle(e).rowGap)).toBe('24px');
  const tile=tiles.first();const metrics=await tile.evaluate(e=>({gap:getComputedStyle(e).gap,w:e.getBoundingClientRect().width}));expect(metrics.gap).toBe('12px');expect(metrics.w).toBeGreaterThanOrEqual(44);
  await page.keyboard.press('Tab');await tile.focus();expect(await tile.evaluate(e=>getComputedStyle(e).outlineOffset)).toBe('-2px');
- await page.getByRole('button',{name:'B 연속 2열'}).click();await expect(tiles).toHaveCount(4);await expect(page.locator('.collection-future')).toHaveCount(0);
- await page.getByRole('button',{name:'A 작품과 미래 분리'}).click();await expect(tiles).toHaveCount(3);
+ await expect(page.getByRole('button',{name:'A 작품과 미래 분리'})).toHaveCount(0);
  await tiles.first().click();await expect(page.getByRole('heading',{name:'붉은 양과 해'})).toBeVisible();await page.getByRole('button',{name:'이달의 칭찬 보기'}).click();
  await expect(page.getByText('이번 달의 기록',{exact:true})).toBeVisible();await expect(page.getByText('지난달의 기록',{exact:true})).toHaveCount(0);
  await page.getByRole('button',{name:'뒤로가기'}).click();await page.getByRole('button',{name:'뒤로가기'}).click();await expect(tiles.first()).toBeFocused();

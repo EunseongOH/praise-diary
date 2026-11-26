@@ -11,7 +11,7 @@ async function measure(page:Page){
   const grid=tile.parentElement!.getBoundingClientRect(),gap=parseFloat(getComputedStyle(tile.parentElement!).columnGap);
   let textWidth=0,textHeight=0;
   if(caption){const range=document.createRange();range.selectNodeContents(caption);const r=range.getBoundingClientRect();textWidth=r.width;textHeight=r.height}
-  return {month:(tile as HTMLElement).dataset.month,state:(tile as HTMLElement).dataset.state,expected:(grid.width-gap)/2,tileWidth:t.width,artWidth:a.width,artHeight:a.height,visualWidth:v.width,visualHeight:v.height,dx:v.x-a.x,dy:v.y-a.y,ratio:tile.closest('.collection-future')?0.74:1,textWidth,textHeight};
+  return {month:(tile as HTMLElement).dataset.month,state:(tile as HTMLElement).dataset.state,expected:(grid.width-gap)/2,tileWidth:t.width,artWidth:a.width,artHeight:a.height,visualWidth:v.width,visualHeight:v.height,dx:v.x-a.x,dy:v.y-a.y,ratio:1,textWidth,textHeight};
  }));
  expect(values.length).toBeGreaterThan(0);
  for(const m of values){
@@ -32,8 +32,7 @@ for(const width of [320,390,430,635,1280])test('collection artwork surface fills
  await page.addInitScript(s=>{sessionStorage.setItem('praise-diary:prototype:v1',JSON.stringify(s));Object.defineProperty(window,'__DAJEONGROK_REVIEW__',{value:true})}, {...fixture,entries:fixture.entries.slice(0,1)});
  await page.goto('/');await page.getByRole('button',{name:'도감',exact:true}).click();
  const a=await measure(page);expect(a.some(x=>x.state==='preparing')).toBeTruthy();expect(a.some(x=>x.state==='locked')).toBeTruthy();
- await page.screenshot({path:info.outputPath('collection-A-'+width+'.png'),fullPage:true,animations:'disabled'});
- await page.getByRole('button',{name:'B 연속 2열'}).click();await measure(page);
+ await expect(page.locator('.collection-screen')).toHaveAttribute('data-layout','B');
  await page.screenshot({path:info.outputPath('collection-B-'+width+'.png'),fullPage:true,animations:'disabled'});
  await page.locator('.month-tile').first().click();
  const detail=await page.locator('.collection-detail-stage').evaluate(e=>{const a=e.getBoundingClientRect(),b=e.querySelector('.month-visual')!.getBoundingClientRect();return {w:a.width,h:a.height,vw:b.width,vh:b.height}});

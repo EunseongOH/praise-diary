@@ -105,3 +105,6 @@
  --switch-inset:var(--space-1); --switch-off:var(--field-border);
  --toast-surface:var(--menu-bg); --toast-padding:var(--space-3);
 }
+
+/* v0.11 — diary entry row component contract */
+:root{--record-meta-line:1.5;--record-meta-icon:var(--icon-inline);--record-title-line:1.5;--record-preview-lines:2;--record-untitled-lines:3;}

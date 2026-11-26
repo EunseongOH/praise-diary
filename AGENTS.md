@@ -64,3 +64,5 @@
 - 도감 V02 원본 `design-system/labs/dajeongrok/collection/` 보존. 최신 실제 통합 규칙 `foundation/v09-collection-rules.md`; A/B는 검토안. 2열·공통 월 상세·미래 잠금·원본 기록 기반 일수 유지. 그래픽 렌더러는 후속, 임시 글자 그래픽/시연 fixture를 제품에 이식하지 않는다.
 
 - v0.10 전수 코드 검토: `docs/handoff/32_design_system_audit.md`. 설정 row 12/8/48, section24/header8, switch/notification/shell 공통 토큰. 중복 CSS는 동등성 확인 후 제거. 현재 소스 검토와 실제 실측/실기 검증을 구분한다.
+
+- v0.11 `foundation/v11-diary-row-rules.md`: 도감 B 확정, 목록은 독립 DiaryRow 조합만 사용. 제목/마음/날짜/표면/구분선 variant, 날짜·숫자 동일 line box 및 icon center. 화면별 행 CSS 금지. C 그룹에서 마음 개수만 메타 행에 표시하는 배치는 검토안.

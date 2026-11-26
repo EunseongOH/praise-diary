@@ -149,28 +149,29 @@
 .ui-collapsible-panel>.ui-stack{gap:var(--gap-disclosure-items)}
 .ui-button.ui-prompt-option{width:100%;min-height:var(--touch-comfort);padding:var(--action-padding-y) var(--action-padding-x);text-align:start;white-space:normal;font-weight:400;line-height:var(--leading-body)}
 @media(hover:hover){.ui-button.ui-prompt-option:hover:not(:disabled){background:var(--surface-green)}}
-/* Shared record rows; variants change grouping/surface, never text content. */
+/* DiaryRow: one source of truth for entry previews, independent of list layout. */
 .diary-list{display:grid;min-width:0;gap:0}
-.diary-row{display:grid;gap:var(--list-row-gap);min-height:var(--list-row-min-height);min-width:0;width:100%;padding:var(--list-row-padding-y) var(--list-row-padding-x);background:transparent;border:0;border-radius:var(--radius-sm);text-align:start;color:var(--ink);overflow-wrap:anywhere}
-.diary-row__date,.diary-group-date{font:400 var(--type-meta)/1.5 var(--font-body);color:var(--muted)}
-.diary-row strong{font:500 var(--type-body)/1.5 var(--font-body)}
-.diary-row__excerpt,.diary-row__untitled{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;white-space:pre-wrap;overflow-wrap:anywhere;font:400 var(--type-supporting)/var(--leading-body) var(--font-body);color:var(--muted)}
-.diary-row__untitled{font-size:var(--type-body);color:var(--ink);-webkit-line-clamp:3}
-.diary-list[data-variant=A]>.diary-row:not(:last-child),.diary-group-rows>.diary-row:not(:last-child){border-bottom:1px solid var(--divider)}
+.diary-row{position:relative;display:grid;align-content:start;justify-items:stretch;grid-template-columns:minmax(0,1fr);gap:var(--list-row-gap);min-height:var(--list-row-min-height);min-width:0;width:100%;padding:var(--list-row-padding-y) var(--list-row-padding-x);background:transparent;border:0;border-radius:var(--radius-sm);text-align:start;color:var(--ink);overflow-wrap:anywhere}
+.diary-row[data-divider=true]::after{content:"";position:absolute;inset-inline:0;bottom:0;height:1px;background:var(--divider);pointer-events:none}
+.diary-row[data-surface=card]{background:var(--surface);box-shadow:inset 0 0 0 1px var(--line)}
+.diary-row-meta{display:flex;align-items:center;justify-content:flex-start;gap:var(--gap-record-meta);min-width:0;flex-wrap:wrap;font:400 var(--type-meta)/var(--record-meta-line) var(--font-body);color:var(--muted)}
+.diary-row__date,.diary-group-date{font:400 var(--type-meta)/var(--record-meta-line) var(--font-body);color:var(--muted)}
+.diary-reflection-count{display:inline-flex;align-items:center;gap:var(--gap-meta-icon);flex:none;font:inherit;color:inherit}
+.diary-reflection-count>.dj-icon{display:block;flex:none;width:var(--record-meta-icon);height:var(--record-meta-icon)}
+.diary-reflection-count__number{font:inherit;font-variant-numeric:tabular-nums}
+.diary-row__title{font:500 var(--type-body)/var(--record-title-line) var(--font-body);min-width:0;overflow-wrap:anywhere}
+.diary-row__excerpt,.diary-row__untitled{min-width:0;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:var(--record-preview-lines);overflow:hidden;white-space:normal;overflow-wrap:anywhere;font:400 var(--type-supporting)/var(--leading-body) var(--font-body);color:var(--muted)}
+.diary-row__untitled{font-size:var(--type-body);color:var(--ink);-webkit-line-clamp:var(--record-untitled-lines)}
 .diary-list[data-variant=B]{gap:var(--list-card-gap)}
-.diary-list[data-variant=B]>.diary-row{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm)}
 .diary-list[data-variant=C]{gap:var(--list-group-gap)}
 .diary-date-group{display:grid;gap:var(--list-group-label-gap);min-width:0}
 .diary-group-date{padding-inline:var(--list-row-padding-x)}
 .diary-group-rows{display:grid;min-width:0}
 @media(hover:hover){.diary-row:hover{background:var(--surface-green)}}
+.diary-row:active{background:var(--surface-green)}
 .diary-row:focus-visible{outline:var(--focus-width) solid var(--focus);outline-offset:calc(-1 * var(--focus-width))}
-
 /* v0.8 review — existing TextAction and existing SVG, passive metadata only. */
 .ui-trailing-action{display:flex;justify-content:flex-end;min-width:0}
-.diary-row-meta,.diary-row-heading{display:flex;align-items:baseline;gap:var(--gap-record-meta);min-width:0;flex-wrap:wrap}
-.diary-row-heading>strong,.diary-row-heading>.diary-row__untitled{min-width:0;max-width:100%;overflow-wrap:anywhere}
-.diary-reflection-count{display:inline-flex;align-items:center;gap:var(--gap-meta-icon);flex:none;color:var(--muted);font:400 var(--type-meta)/1.5 var(--font-body)}
 .diary-original{gap:var(--gap-reference-prompt)}
 .diary-reference-prompt{display:flex;flex-direction:column;gap:var(--gap-reference-text);font:400 var(--type-meta)/1.5 var(--font-body);color:var(--muted);overflow-wrap:anywhere}
 .diary-reference-prompt>span:first-child{color:var(--quiet)}
@@ -193,10 +194,6 @@
 .month-tile__copy .month-tile__name{font:400 var(--type-supporting)/var(--leading-supporting) var(--font-body);color:var(--muted)}
 .month-tile[data-state=recorded] .month-tile__name{font:400 var(--type-section)/1.45 var(--font-artwork);letter-spacing:.015em;color:var(--ink)}
 @media(hover:hover){.month-tile:hover .month-tile__art .month-visual{background:var(--surface-green)}}
-.collection-future{display:flex;flex-direction:column;gap:var(--gap-component);border-top:1px solid var(--divider);padding-block-start:var(--gap-collection-section)}
-.collection-future h2{margin:0;font:500 var(--type-supporting)/1.5 var(--font-body);color:var(--muted)}
-.collection-future .month-tile__art{aspect-ratio:1/.74}
-.collection-future .month-visual[data-state=locked]{background:transparent}
 .collection-detail,.collection-locked{display:flex;flex-direction:column;align-items:center;gap:var(--gap-section);min-width:0;text-align:center}
 .collection-detail-heading{display:grid;gap:var(--gap-text);min-width:0}
 .collection-artwork-title{margin:0;font:400 var(--type-page)/1.4 var(--font-artwork);letter-spacing:.015em;overflow-wrap:anywhere}
