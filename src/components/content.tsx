@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { formatDay, formatMonth } from '../lib/date';
 import type { DiaryEntry, MonthTheme } from '../data/types';
-import { GraphicArtwork } from '../graphics/GraphicArtwork';
+import { ArtworkSlot } from '../graphics/ArtworkSlot';
 
 export function MonthTile({ month, theme, writtenDays, entries, entriesData = [], letterSource = '', reducedMotion, onClick, locked }: {
   month: string; theme?: MonthTheme; writtenDays: number; entries: number; entriesData?: DiaryEntry[]; letterSource?: string;
@@ -9,7 +9,7 @@ export function MonthTile({ month, theme, writtenDays, entries, entriesData = []
 }) {
   return <button type="button" className={`month-tile ${locked ? 'month-tile--locked' : ''}`} onClick={onClick}>
     <div className="month-tile__art">
-      {theme && !locked ? <GraphicArtwork theme={theme} writtenDays={writtenDays} letterCount={entries} entries={entriesData} letterSource={letterSource} reducedMotion={reducedMotion} small /> :
+      {theme && !locked ? <ArtworkSlot theme={theme} writtenDays={writtenDays} letterCount={entries} entries={entriesData} letterSource={letterSource} reducedMotion={reducedMotion} small /> :
         <span className="month-tile__blank" aria-hidden="true">···</span>}
     </div>
     <div className="month-tile__copy">

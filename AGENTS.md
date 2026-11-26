@@ -46,3 +46,9 @@
 - `design-system/labs/dajeongrok/README.md` 및 `DECISIONS.md`를 최신 UI 실험의 인덱스로 읽는다. 기존 앱 소스/그래픽 연구와 별도로 보존한 기록이며, 사용자 합의와 미확정 실험을 구별한다.
 - `foundation/package-v03/`의 React/CSS 토큰은 통합 후보. 기존 앱 컴포넌트를 중복 생성하거나 승인 없이 덮어쓰지 않는다. SUIT는 이전 후보이며 최신 UI 기본 서체는 Pretendard, 브랜드/작품명은 고운바탕이다.
 - 꺼내보기는 유리병 A·쪽지 A1·B 구도 및 안쪽 풀림, 4:3 원지, 어두운 편지지가 최신 방향. V6 재질은 사용자 검토 전 앱에 적용하지 않는다. 실제 기록/키/폰트 파일/워터마크 참조 이미지를 커밋하지 않는다.
+
+## MVP 통합 브랜치 및 최신 UI 규칙 (2026-11-26)
+- `main`은 검증된 기능 통합 브랜치. `feat/mvp-integration`에서 검수 후 main 대상 PR. 기존 연구 브랜치 보호. `docs/handoff/31_MVP_통합_작업기준_2026-11-26.md`를 먼저 읽는다.
+- 월간 그래픽 렌더러는 통합 후 연결한다. 실제 아트워크 연구 소스는 변경하지 말고 `ArtworkSlot`을 화면 공통 계약으로 사용한다.
+- 최신 디자인 규격은 `design-system/labs/dajeongrok/foundation/v05-rules.md` 및 `v04-rules.md`. 화면 구현 전 컴포넌트 인벤토리·역할·padding/gap/focus 규격을 확인하고 부족한 경우 공통 variant를 먼저 보강. 메뉴는 TextAction 대신 ActionMenu/MenuItem을 사용한다.
+- 꺼내보기는 읽은 한 편을 음미하는 경험. 감상에서 다시 뽑기 버튼 제거, 닫힌 병으로 복귀. 오늘의 마음 덧붙이기는 MVP이며 달력/전체 목록/꺼내보기 공통 원문 화면에서 사용; 원본 일기와 별도 1:N, 성장/해제/추첨에 포함하지 않는다. V10 참고.

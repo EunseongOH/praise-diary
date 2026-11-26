@@ -304,3 +304,8 @@ body { font-family: var(--font-body); font-size: var(--type-body); line-height: 
   width: 100%;
   max-width: none;
 }
+
+/* MVP integration: same reserved canvas across monthly views. Real renderer deferred. */
+.artwork-slot { width: min(100%, 400px); aspect-ratio: 1 / 1; display: grid; place-items: center; margin-inline: auto; color: var(--muted); font-size: var(--type-meta); background: transparent; }
+.artwork-slot--small { width: min(100%, 160px); }
+.gesture-artwork-viewer__content .artwork-slot { width: 100%; }

@@ -21,3 +21,9 @@
 - `foundation/package-v03/`: v0.3 원본 React/TSX/CSS/JSON 및 검증 스크립트와 보고. 실제 앱 통합 전 검토 필요; 기존 문서의 제안 상태를 최신 DECISIONS.md와 함께 읽는다.
 - `rediscover/scroll-v6.html`: V6 유리·코르크 리파인. 기본 A/A1/B, 기존 풀림 유지, V5 재질과 비교 가능. 미승인 아트워크.
 - `rediscover/scroll-v6-brief.md`: 수정 브리프, 레이어 구성, 타이밍, QA 및 미검증 범위.
+
+## 2026-11-26 통합 준비
+- `home/home-calendar-typography-lab.html`: 홈/달력 헤더 및 월 전환 참고 원본.
+- `foundation/v04-rules.md`, `v05-rules.md`: 입력/간격/메뉴 규격 최신 기준.
+- `rediscover/scroll-v7.html`, `rediscover-v8.html`, `rediscover-v9.html`, `rediscover-v10.html`, `rediscover-v8-spec.md`: V10까지의 시안.
+- 실제 앱 통합 기준: `docs/handoff/31_MVP_통합_작업기준_2026-11-26.md`. 월간 그래픽은 나중에 연결.
