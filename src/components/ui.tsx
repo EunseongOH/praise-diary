@@ -39,12 +39,13 @@ export function CompactSelect<T extends string>({label,value,options,onChange,de
    const t=trigger.current,p=popup.current;if(!t||!p)return;
    const r=t.getBoundingClientRect(),root=getComputedStyle(document.documentElement);
    const gutter=parseFloat(root.getPropertyValue('--space-5'))||20,gap=parseFloat(root.getPropertyValue('--space-1'))||4;
+   const minimum=parseFloat(root.getPropertyValue('--menu-min-width'))||144,limit=parseFloat(root.getPropertyValue('--select-popup-max-height'))||320,rowHeight=parseFloat(root.getPropertyValue('--touch-comfort'))||48;
    const viewport=document.documentElement.clientWidth;
-   const width=Math.min(viewport-2*gutter,Math.max(r.width,144,p.scrollWidth+2));
+   const width=Math.min(viewport-2*gutter,Math.max(r.width,minimum,p.scrollWidth+2));
    const below=window.innerHeight-r.bottom-gap-gutter,above=r.top-gap-gutter;
-   const height=Math.min(p.scrollHeight+2,Math.max(below,above),320);
+   const height=Math.min(p.scrollHeight+2,Math.max(below,above),limit);
    const top=below>=height||below>=above?r.bottom+gap:r.top-gap-height;
-   setPosition({width,left:Math.max(gutter,Math.min(r.left,viewport-gutter-width)),top:Math.max(gutter,top),maxHeight:Math.max(48,height),visibility:'visible'});
+   setPosition({width,left:Math.max(gutter,Math.min(r.left,viewport-gutter-width)),top:Math.max(gutter,top),maxHeight:Math.max(rowHeight,height),visibility:'visible'});
   };
   place();window.addEventListener('resize',place);window.addEventListener('scroll',place,true);
   return()=>{window.removeEventListener('resize',place);window.removeEventListener('scroll',place,true)};

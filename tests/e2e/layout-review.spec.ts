@@ -15,7 +15,7 @@ for(const width of [320,390,430]){
    const sel=page.getByRole('combobox',{name});const shell=sel;
    const metric=await shell.evaluate(el=>{const label=el.querySelector('span')!,icon=el.querySelector('svg')!,r=el.getBoundingClientRect();return {gap:icon.getBoundingClientRect().left-label.getBoundingClientRect().right,width:r.width,height:r.height,label:label.getBoundingClientRect().width,icon:icon.getBoundingClientRect().width,padding:parseFloat(getComputedStyle(el).paddingLeft)+parseFloat(getComputedStyle(el).paddingRight)}});
    expect(metric.gap).toBeCloseTo(8,0);expect(metric.height).toBeGreaterThanOrEqual(44);expect(metric.icon).toBe(16);expect(metric.width).toBeCloseTo(metric.label+metric.icon+metric.gap+metric.padding,0);
-   const before=await shell.boundingBox();await sel.focus();expect(await shell.evaluate(el=>getComputedStyle(el).outlineOffset)).toBe('-2px');expect(await shell.boundingBox()).toEqual(before);
+   const before=await shell.boundingBox();await sel.focus();expect(await shell.evaluate(el=>getComputedStyle(el).outlineOffset)).toBe('-2px');expect(await shell.evaluate(el=>getComputedStyle(el).outlineWidth)).toBe('2px');expect(await shell.evaluate(el=>getComputedStyle(el).paddingLeft)).toBe('12px');expect(await shell.boundingBox()).toEqual(before);
   };
   await expect(art).toBeVisible();await checkSelect('작품 월 선택');
   await page.getByRole('button',{name:'달력으로 보기'}).click();await checkSelect('달력 월 선택');
