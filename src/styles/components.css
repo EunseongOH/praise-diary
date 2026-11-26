@@ -171,5 +171,6 @@
 .diary-row-meta,.diary-row-heading{display:flex;align-items:baseline;gap:var(--gap-record-meta);min-width:0;flex-wrap:wrap}
 .diary-row-heading>strong,.diary-row-heading>.diary-row__untitled{min-width:0;max-width:100%;overflow-wrap:anywhere}
 .diary-reflection-count{display:inline-flex;align-items:center;gap:var(--gap-meta-icon);flex:none;color:var(--muted);font:400 var(--type-meta)/1.5 var(--font-body)}
-.diary-reference-prompt{display:flex;flex-direction:column;gap:var(--gap-reference-text);padding-block-start:var(--gap-reference-prompt);font:400 var(--type-meta)/1.5 var(--font-body);color:var(--muted);overflow-wrap:anywhere}
+.diary-original{gap:var(--gap-reference-prompt)}
+.diary-reference-prompt{display:flex;flex-direction:column;gap:var(--gap-reference-text);font:400 var(--type-meta)/1.5 var(--font-body);color:var(--muted);overflow-wrap:anywhere}
 .diary-reference-prompt>span:first-child{color:var(--quiet)}
