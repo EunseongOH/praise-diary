@@ -24,6 +24,13 @@ test('F archive: minimal list, search modal, picker, independent pagination and 
  await base.getByRole('button',{name:'칭찬 검색하기'}).click();
  const overlay=page.getByRole('dialog',{name:'칭찬 검색',exact:true}),search=overlay.getByRole('searchbox',{name:'칭찬 검색'});
  await expect(search).toBeFocused();
+ const field=overlay.locator('.ui-search-field .ui-field-shell');
+ expect(await field.evaluate(el=>({radius:getComputedStyle(el).borderRadius,line:getComputedStyle(el,'::after').height,shadow:getComputedStyle(el).boxShadow}))).toEqual({radius:'0px',line:'2px',shadow:'none'});
+ const initialField=await field.boundingBox();
+ await search.blur();
+ expect(await field.evaluate(el=>getComputedStyle(el,'::after').height)).toBe('1px');
+ expect((await field.boundingBox())?.height).toBe(initialField?.height);
+ await search.focus();
  await expect(page.locator('.archive-search-dim')).toBeVisible();
  await search.fill('용기');
  const results=overlay.locator('.diary-row');
@@ -57,10 +64,15 @@ test('F archive: minimal list, search modal, picker, independent pagination and 
  for(const width of [320,360,390,430]){
   await page.setViewportSize({width,height:720});
   const period=overlay.getByRole('button',{name:/기간 선택:/});
+  await expect(period.locator('svg')).toHaveCount(1);
   const a=await period.boundingBox(),b=await toggle.boundingBox();
+  expect(await period.evaluate(el=>getComputedStyle(el).backgroundColor)).toBe('rgba(0, 0, 0, 0)');
   expect(Math.abs((a?.y??0)-(b?.y??0))).toBeLessThan(1);
   await period.click();
   await expect(picker).toBeVisible();
+  expect((await period.boundingBox())?.width).toBe(a?.width);
+  expect((await toggle.boundingBox())?.x).toBe(b?.x);
+  expect(await period.evaluate(el=>getComputedStyle(el).backgroundColor)).toBe('rgba(0, 0, 0, 0)');
   expect(await picker.evaluate(el=>el.getBoundingClientRect().right<=innerWidth)).toBeTruthy();
   await page.keyboard.press('Escape');
   await expect(picker).toHaveCount(0);
