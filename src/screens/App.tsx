@@ -7,6 +7,7 @@ import { JarArtwork } from '../components/JarArtwork';
 import { stackCount } from '../graphics/rediscover-motion.mjs';
 import { ArtworkSlot } from '../graphics/ArtworkSlot';
 import { HomeShell, type HomeMode } from './HomeShell';
+import { ArchiveScreen, type ArchiveSnapshot } from './ArchiveScreen';
 import { WriterLayout } from './WriterLayout';
 import { CollectionScreen, MonthlyGraphicDetail, LockedMonthDetail, GraphicIdeaForm } from './CollectionScreen';
 import { COPY, deleteImpact, savedMessage } from '../content/copy';
@@ -45,7 +46,8 @@ export default function App() {
   const [monthIdea, setMonthIdea] = useState('');
   const [writerDate, setWriterDate] = useState('');
   const collectionReturn=useRef<{month:MonthId;scroll:number}|null>(null);
-  const [listVariant,setListVariant]=useState<DiaryListVariant>('A');
+  const [listVariant,setListVariant]=useState<DiaryListVariant|'E'>('E');
+  const archiveReturn=useRef<ArchiveSnapshot|null>(null);
   const reviewMode=Boolean((window as Window & {__DAJEONGROK_REVIEW__?:boolean}).__DAJEONGROK_REVIEW__);
   const [writerTitle, setWriterTitle] = useState('');
   const [writerBody, setWriterBody] = useState('');
@@ -91,6 +93,7 @@ export default function App() {
     if (page.screen === 'write' && (writerBody.trim() || writerTitle.trim()) && !draftSaved) {
       setLeaveWriting(true); return;
     }
+    if(next.screen==='list')archiveReturn.current=null;
     setStack(previous => [...previous, page]);
     setPage(next);
     window.scrollTo({ top: 0, behavior: 'instant' });
@@ -104,6 +107,7 @@ export default function App() {
   const toTab = (tab: MainTab) => {
     setPendingDraw(null);
     collectionReturn.current=null;
+    archiveReturn.current=null;
     if (page.screen === 'write' && writerBody.trim()) { setLeaveWriting(true); return; }
     setStack([]); setPage({ screen: tab }); window.scrollTo(0, 0);
   };
@@ -248,8 +252,8 @@ export default function App() {
       {isReader && (readerEntry ? renderReader(readerEntry,page.screen==='memory'?'random':'direct') : <Stack><EmptyState title="기록이 없어요."/><Button onClick={back}>돌아가기</Button></Stack>)}
 
       {page.screen === 'list' && <Stack>
-        {reviewMode&&<aside className="writer-review-panel" aria-label="검수용 기록 목록 비교"><Stack gap="controls"><p>검수용 · 기록 목록 비교</p><SegmentedChoice label="기록 목록 시안" value={listVariant} onChange={setListVariant} options={[{value:"A",label:"A 구분선"},{value:"B",label:"B 카드"},{value:"C",label:"C 날짜별"}]}/></Stack></aside>}
-        <DiaryList variant={listVariant} reflectionCounts={noteCounts} entries={page.day ? state.entries.filter(e => e.entryDate === page.day) : page.month ? monthEntries(state.entries,page.month) : state.entries} onOpen={entry => navigate({ screen:'detail', entryId:entry.id })} emptyContent={<EmptyState title="아직 남긴 칭찬이 없어요." description="오늘의 작은 칭찬부터 시작해 볼까요?" action={<Button onClick={() => startWrite()}>칭찬일기 남기러 가기</Button>} />} />
+        {reviewMode&&<aside className="writer-review-panel" aria-label="검수용 기록 목록 비교"><Stack gap="controls"><p>검수용 · 기록 목록 비교</p><SegmentedChoice label="기록 목록 시안" value={listVariant} onChange={setListVariant} options={[{value:"A",label:"A 구분선"},{value:"B",label:"B 카드"},{value:"C",label:"C 날짜별"},{value:"E",label:"E 탐색"}]}/></Stack></aside>}
+        {!page.day&&(!reviewMode||listVariant==='E')?<ArchiveScreen key={page.month??'all'} entries={state.entries} reflectionCounts={noteCounts} scopeMonth={page.month} initial={archiveReturn.current} onOpen={(entry,snapshot)=>{archiveReturn.current=snapshot;navigate({screen:'detail',entryId:entry.id})}} onWrite={()=>startWrite()}/>:<DiaryList variant={listVariant==='E'?'A':listVariant} reflectionCounts={noteCounts} entries={page.day ? state.entries.filter(e => e.entryDate === page.day) : page.month ? monthEntries(state.entries,page.month) : state.entries} onOpen={entry => navigate({ screen:'detail', entryId:entry.id })} emptyContent={<EmptyState title="아직 남긴 칭찬이 없어요." description="오늘의 작은 칭찬부터 시작해 볼까요?" action={<Button onClick={() => startWrite()}>칭찬일기 남기러 가기</Button>} />} />}
       </Stack>}
       {page.screen === 'collection' && <CollectionScreen months={allMonths} current={todayMonth} entries={state.entries} reducedMotion={state.reducedMotion} onOpen={openMonth}/>}
       {(page.screen === 'month'||page.screen === 'graphic') && <MonthlyGraphicDetail month={currentMonth} entries={state.entries} reducedMotion={state.reducedMotion} onList={()=>navigate({screen:'list',month:currentMonth})}/>}
