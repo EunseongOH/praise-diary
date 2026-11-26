@@ -23,7 +23,15 @@ jobs:
         run: npm install --no-audit --no-fund
       - name: Verify prototype
         run: npm run check
+      - name: Prepare actual React review package
+        run: node scripts/prepare-review.mjs
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
       - name: Browser integration and design geometry
         run: npm run test:e2e
+      - name: Upload verified React review
+        uses: actions/upload-artifact@v4
+        with:
+          name: dajeongrok-react-review
+          path: review/
+          retention-days: 14

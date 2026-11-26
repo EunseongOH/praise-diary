@@ -3,7 +3,7 @@ import type {ReactNode} from 'react';
 import {DRAW_DURATION,applyJarFrame,jarMarkup,stackCount} from '../graphics/rediscover-motion.mjs';
 type Props={entryCount:number;pick?:number;onComplete?:()=>void;reducedMotion:boolean;preview?:ReactNode};
 export function JarArtwork({entryCount,pick=-1,onComplete,reducedMotion,preview}:Props){
- const id=useId(),root=useRef<HTMLDivElement>(null),overlay=useRef<HTMLDivElement>(null),done=useRef(onComplete);
+ const id=useId(),root=useRef<HTMLDivElement>(null),overlay=useRef<HTMLDivElement|null>(null),done=useRef(onComplete);
  done.current=onComplete;
  const count=stackCount(entryCount),drawing=pick>=0&&pick<count;
  const markup=useMemo(()=>({__html:jarMarkup(count,pick,id)}),[count,pick,id]);

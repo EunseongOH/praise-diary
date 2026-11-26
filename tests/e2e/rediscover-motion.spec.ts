@@ -1,4 +1,7 @@
 import {test,expect} from '@playwright/test';
+import {pathToFileURL} from 'node:url';
+import path from 'node:path';
+import fs from 'node:fs';
 const day='2026-11-08';
 const entries=Array.from({length:12},(_,i)=>({id:'e'+i,entryDate:day,createdAt:day+'T00:00:00Z',title:'기록 '+i,body:'오늘도 내 속도로.\n수고했어.'}));
 const fixture={entries,reflections:[],letterDrawUnlockedAt:'2026-11-09T00:00:00Z',boundaryHour:0,reducedMotion:false,ideas:[]};
@@ -16,7 +19,8 @@ test('V10 real-time extraction, lower-note support settling, closed return and r
  await expect(page.locator('.rediscover-handoff')).toHaveCount(0);
  const first=await page.locator('.diary-original h2').innerText();await page.getByRole('button',{name:'닫기',exact:true}).click();
  await expect(jar).toHaveAttribute('data-phase','closed');await expect(jar.locator('.pile-interior .note-pos')).toHaveCount(5);
- await page.getByRole('button',{name:'칭찬 하나 꺼내보기',exact:true}).click();await expect(page.locator('.rediscover-handoff')).toHaveCount(0,{timeout:6000});
+ await page.getByRole('button',{name:'칭찬 하나 꺼내보기',exact:true}).click();await expect(page.getByRole('button',{name:'닫기',exact:true})).toBeVisible({timeout:6000});
+ await expect(page.locator('.rediscover-handoff')).toHaveCount(0);
  await expect(page.locator('.diary-original h2')).not.toHaveText(first);
  expect(errors).toEqual([]);
 });
@@ -32,4 +36,18 @@ for(const [size,count,unlocked] of [[0,0,false],[1,1,false],[3,3,false],[9,3,fal
  await expect(page.locator('.rediscover-jar')).toHaveAttribute('data-note-count',String(count));
  await expect(page.getByRole('button',{name:'칭찬 하나 꺼내보기',exact:true})).toHaveCount(unlocked&&size?1:0);
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBeTruthy();
+});
+
+test('downloadable real React review opens from file with sample diaries',async({page})=>{
+ const preview=path.resolve('review/다정록-검수.html');
+ test.skip(!fs.existsSync(preview),'Review bundle is prepared by CI');
+ await page.route('https://**/*',r=>r.abort());
+ await page.goto(pathToFileURL(preview).href);
+ await page.getByRole('button',{name:'꺼내보기',exact:true}).click();
+ await expect(page.locator('.rediscover-jar')).toHaveAttribute('data-note-count','5');
+ await page.getByRole('button',{name:'칭찬 하나 꺼내보기',exact:true}).click();
+ await page.getByRole('button',{name:'오늘의 마음 덧붙이기'}).click();
+ await page.getByRole('textbox',{name:'오늘의 마음'}).fill('검수용 마음');
+ await page.getByRole('button',{name:'남기기',exact:true}).click();
+ await expect(page.getByText('검수용 마음',{exact:true})).toBeVisible();
 });
