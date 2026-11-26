@@ -10,3 +10,10 @@ assert.ok(main.indexOf('./styles/components.css')>main.indexOf('./styles/app.css
 const app=read('src/screens/App.tsx');assert.ok(!/<(?:textarea|input)\b[^>]*className="form-(?:textarea|input)"/.test(app),'Use shared fields, not legacy form styles');
 assert.ok(read('src/components/DiaryContent.tsx').includes('gap="field-actions"'),'Semantic field-actions layout');
 console.log('PASS — v0.5 source contract (not a computed-layout browser test)');
+
+for(const f of ['--select-label-gap:var(--gap-inline)','--calendar-mark-size:36px','--calendar-mark-gap:var(--gap-controls)','--gap-writer-meta:var(--gap-controls)'])assert.ok(tokens.includes(f),f);
+for(const f of ['.ui-compact-select:focus-within{box-shadow:inset 0 0 0 var(--focus-width) var(--focus)}','inline-size:min(var(--calendar-mark-size),calc(100% - var(--calendar-mark-gap)))','gap:var(--gap-tile-row) var(--gap-tile-column)'])assert.ok(css.includes(f),f);
+assert.ok(!read('src/styles/app.css').includes('margin-inline:calc((100% - 308px) / 2)'),'No negative calendar margin');
+assert.ok(read('src/screens/HomeShell.tsx').includes('<CompactSelect'),'Reuse shared selector');
+assert.ok(read('src/screens/WriterLayout.tsx').includes('<Textarea'),'Reuse shared writer fields');
+console.log('PASS — v0.6 selection, calendar surface, writer layout source contracts');
