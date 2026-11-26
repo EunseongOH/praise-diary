@@ -34,29 +34,44 @@ export function initialState(): PrototypeState {
   };
 }
 
+/**
+ * Restore the permanent rediscovery unlock for legacy imports and review fixtures.
+ * Ten diary ENTRIES (not ten distinct dates) unlock the feature. Once unlocked,
+ * later deletion never clears the saved timestamp.
+ */
+export function reconcileRediscoveryUnlock(state: PrototypeState): PrototypeState {
+  if (state.letterDrawUnlockedAt || state.entries.length < 10) return state;
+  const bySaveTime = [...state.entries].sort((a, b) => a.createdAt.localeCompare(b.createdAt) || a.id.localeCompare(b.id));
+  const tenthSavedAt = bySaveTime[9]?.createdAt;
+  return {
+    ...state,
+    letterDrawUnlockedAt: tenthSavedAt && !Number.isNaN(Date.parse(tenthSavedAt)) ? tenthSavedAt : new Date().toISOString(),
+  };
+}
+
 export function loadState(): PrototypeState {
   // review builds only (snowflake flag): a fake-data scenario from the URL replaces the session state
   const review = reviewEntries(sampleEntries(), todayAndYesterday(currentPreviewTime(), 0).today);
-  if (review) return { ...initialState(), entries: review };
+  if (review) return reconcileRediscoveryUnlock({ ...initialState(), entries: review });
   try {
     const saved = sessionStorage.getItem(STORAGE_KEY);
     if (saved) {
       const value = JSON.parse(saved) as Partial<PrototypeState>;
       if (Array.isArray(value.entries) && Array.isArray(value.ideas)) {
-        return {
+        return reconcileRediscoveryUnlock({
           entries: value.entries,
           reflections: Array.isArray(value.reflections) ? value.reflections.filter(r => r && typeof r.id === 'string' && typeof r.body === 'string' && typeof r.reflectionDate === 'string' && typeof r.createdAt === 'string' && typeof r.updatedAt === 'string' && value.entries?.some(e => e.id === r.entryId)) : [],
           letterDrawUnlockedAt: value.letterDrawUnlockedAt ?? null,
           boundaryHour: [0, 1, 2, 3, 4].includes(Number(value.boundaryHour)) ? Number(value.boundaryHour) : 0,
           reducedMotion: Boolean(value.reducedMotion),
           ideas: value.ideas,
-        };
+        });
       }
     }
   } catch {
     // 시연 데이터 파손 시 조용히 복구. 실제 사용자 데이터 저장에는 사용할 수 없다.
   }
-  return initialState();
+  return reconcileRediscoveryUnlock(initialState());
 }
 
 export function saveState(state: PrototypeState) {
