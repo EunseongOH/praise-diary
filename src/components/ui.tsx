@@ -1,5 +1,11 @@
 import { useEffect, useRef } from 'react';
-import type { ReactNode } from 'react';
+import type { ReactNode, ButtonHTMLAttributes } from 'react';
+import { Icon, type IconName } from './icons';
+
+/** Shared icon control, v0.5: 44px target, 20px SVG, internal focus. */
+export function IconButton({ icon, label, ...props }: Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children' | 'className' | 'style' | 'aria-label'> & { icon: IconName; label: string }) {
+  return <button {...props} type="button" className="ui-icon-button" aria-label={label}><Icon name={icon}/></button>;
+}
 
 type ButtonVariant = 'primary' | 'secondary' | 'quiet' | 'danger';
 
@@ -29,13 +35,13 @@ export function AppBar({ title, onBack, action, onAction }: {
 export type MainTab = 'home' | 'rediscover' | 'collection';
 
 export function BottomNavigation({ active, onChange }: { active: MainTab; onChange: (tab: MainTab) => void }) {
-  const tabs: { id: MainTab; label: string }[] = [
-    { id: 'home', label: '홈' }, { id: 'rediscover', label: '꺼내보기' }, { id: 'collection', label: '도감' },
+  const tabs: { id: MainTab; label: string; icon: IconName }[] = [
+    { id: 'home', label: '홈', icon: 'home' }, { id: 'rediscover', label: '꺼내보기', icon: 'book' }, { id: 'collection', label: '도감', icon: 'collection' },
   ];
   return <nav className="bottom-navigation" aria-label="주 메뉴">
-    {tabs.map(({ id, label }) => <button key={id} type="button" onClick={() => onChange(id)}
+    {tabs.map(({ id, label, icon }) => <button key={id} type="button" onClick={() => onChange(id)}
       className={`bottom-navigation__item ${active === id ? 'is-active' : ''}`}
-      aria-current={active === id ? 'page' : undefined}>{label}</button>)}
+      aria-current={active === id ? 'page' : undefined}><Icon name={icon} size="navigation"/><span>{label}</span></button>)}
   </nav>;
 }
 

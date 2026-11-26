@@ -2,7 +2,7 @@ import type { MonthTheme } from '../data/types';
 
 /** 기능 명세 v1.6의 사용자용 카피를 한곳에서 관리한다. */
 export const COPY = {
-  appName: '칭찬일기',
+  appName: '다정록',
   tabs: { home: '홈', rediscover: '꺼내보기', collection: '도감' },
   home: {
     newEntry: '오늘의 칭찬 남기기',

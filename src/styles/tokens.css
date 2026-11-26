@@ -64,3 +64,14 @@
   --radius-lg: 22px;
   --content-width: 520px;
 }
+
+/* Integration foundation. Color remains a reviewed candidate; not a final brand palette. */
+:root {
+  --font-body: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Noto Sans KR', system-ui, sans-serif;
+  --font-artwork: 'Gowun Batang', 'NanumMyeongjo', serif;
+  --background:#1E1C27; --hero:var(--background); --surface:#282631; --surface-soft:#302A3A; --surface-green:#363040;
+  --line:#585164; --ink:#E9E4F2; --hero-ink:var(--ink); --muted:#B8AEC8; --quiet:#A79DB6;
+  --accent:#D3C2EF; --accent-hover:#E9E4F2; --accent-ink:#1E1C27; --danger:#F0A9B0; --danger-soft:#393342; --focus:#D3C2EF;
+  --touch:44px; --touch-comfort:48px; --icon-inline:16px; --icon-control:20px; --icon-nav:24px; --icon-stroke:1.8;
+  --gutter:var(--space-5); --gap-toolbar:var(--space-1); --gap-component:var(--space-3); --gap-controls:var(--space-2); --gap-section:var(--space-6); --focus-width:2px;
+}
