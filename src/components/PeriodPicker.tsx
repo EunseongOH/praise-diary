@@ -11,11 +11,11 @@ export function PeriodPicker({value,months,years,onChange}:{value:string;months:
  const label=value==='all'?'전체 기간':value.length===4?value+'년':formatMonth(value);
  const pageOf=(y:number)=>Math.floor(y/12)*12;
  const close=(restore:boolean)=>{setOpen(false);if(restore)trigger.current?.focus({preventScroll:true})};
- const show=()=>{const y=value==='all'?last:Number(value.slice(0,4));setYear(y);setBase(pageOf(y));setYearMode(false);setOpen(true)};
+ const show=()=>{const y=value==='all'||!years.includes(value.slice(0,4))?last:Number(value.slice(0,4));setYear(y);setBase(pageOf(y));setYearMode(false);setOpen(true)};
  const choose=(v:string)=>{onChange(v);close(true)};
  useLayoutEffect(()=>{
   if(!open)return;
-  const fit=()=>{const p=panel.current;if(!p)return;const v=window.visualViewport;setHeight(Math.max(100,(v?.offsetTop??0)+(v?.height??window.innerHeight)-p.getBoundingClientRect().top-12))};
+  const fit=()=>{const p=panel.current;if(!p)return;const v=window.visualViewport;setHeight(Math.max(44,(v?.offsetTop??0)+(v?.height??window.innerHeight)-p.getBoundingClientRect().top-12))};
   fit();window.addEventListener('resize',fit);window.visualViewport?.addEventListener('resize',fit);window.visualViewport?.addEventListener('scroll',fit);
   return()=>{window.removeEventListener('resize',fit);window.visualViewport?.removeEventListener('resize',fit);window.visualViewport?.removeEventListener('scroll',fit)};
  },[open]);
@@ -29,7 +29,7 @@ export function PeriodPicker({value,months,years,onChange}:{value:string;months:
  },[open]);
  const index=sorted.indexOf(String(year));
  const canPrev=yearMode?base>pageOf(first):index>0,canNext=yearMode?base<pageOf(last):index>=0&&index<sorted.length-1;
- const step=(delta:number)=>{if(yearMode)setBase(b=>b+delta*12);else setYear(Number(sorted[index+delta]??year))};
+ const step=(delta:number)=>{if(yearMode)setBase(b=>b+delta*12);else setYear(Number(sorted[index+delta]??year));panel.current?.querySelector<HTMLButtonElement>('.ui-period-heading')?.focus({preventScroll:true})};
  const items=Array.from({length:12},(_,i)=>yearMode?base+i:i+1);
  return <div className="ui-period-picker">
   <button ref={trigger} type="button" className="ui-filter-text ui-period-trigger" data-active={value!=='all'} aria-label={'기간 선택: '+label} aria-haspopup="dialog" aria-expanded={open} aria-controls={open?id:undefined} disabled={!years.length} onClick={()=>open?close(true):show()} onKeyDown={e=>{if(e.key==='Escape'&&open){e.stopPropagation();e.preventDefault();close(true)}}}>
