@@ -115,3 +115,6 @@
 
 /* v0.8 review — passive record metadata. No new interactive targets. */
 :root{--gap-record-meta:var(--gap-inline);--gap-meta-icon:var(--gap-text);--gap-reference-prompt:var(--gap-component);--gap-reference-text:var(--gap-text);}
+
+/* v0.9 collection review: semantic aliases, no screen-local spacing scale. */
+:root{--gap-collection-section:var(--gap-section);--gap-tile-art-copy:var(--gap-component);--gap-tile-text:var(--gap-text);--collection-art-radius:var(--radius-sm);--collection-empty-mark:32px;--collection-detail-art-max:400px;}

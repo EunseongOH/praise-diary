@@ -4,21 +4,31 @@ import type { DiaryEntry, MonthTheme } from '../data/types';
 import { Icon } from './icons';
 import { ArtworkSlot } from '../graphics/ArtworkSlot';
 
+export type MonthVisualState='locked'|'empty'|'preparing'|'recorded';
+/** No artificial artwork: only a reserved canvas and distinct status symbols. */
+export function MonthVisual({state,children}:{state:MonthVisualState;children?:ReactNode}){
+ return <div className="month-visual" data-state={state}>
+  {state==='locked'?<Icon name="lock" size="navigation"/>:state==='empty'?<span className="month-empty-mark" aria-hidden="true"/>:children}
+ </div>;
+}
 export function MonthTile({ month, theme, writtenDays, entries, entriesData = [], letterSource = '', reducedMotion, onClick, locked }: {
   month: string; theme?: MonthTheme; writtenDays: number; entries: number; entriesData?: DiaryEntry[]; letterSource?: string;
   reducedMotion: boolean; onClick: () => void; locked?: boolean;
 }) {
-  return <button type="button" data-month={month} className={`month-tile ${locked ? 'month-tile--locked' : ''}`} onClick={onClick}>
-    <div className="month-tile__art">
-      {theme && !locked ? <ArtworkSlot theme={theme} writtenDays={writtenDays} letterCount={entries} entries={entriesData} letterSource={letterSource} reducedMotion={reducedMotion} small /> :
-        <span className="month-tile__blank" aria-hidden="true">···</span>}
-    </div>
-    <div className="month-tile__copy">
-      <span className="month-tile__date">{formatMonth(month)}</span>
-      <strong>{locked ? '아직 공개되지 않았어요' : (theme?.title ?? '작품 준비 중')}</strong>
-      {!locked && <small>{writtenDays}일의 칭찬</small>}
-    </div>
-  </button>;
+ const state:MonthVisualState=locked?'locked':!theme?'preparing':writtenDays===0?'empty':'recorded';
+ const name=locked?'아직 공개되지 않았어요':state==='empty'?'아직 남긴 칭찬이 없어요':theme?.title??'작품 준비 중';
+ const meta=locked?'':state==='empty'?theme?.title??'':writtenDays+'일의 칭찬';
+ return <button type="button" data-month={month} className="month-tile" data-state={state} onClick={onClick}>
+  <div className="month-tile__art"><MonthVisual state={state}>
+   <ArtworkSlot theme={theme} writtenDays={writtenDays} letterCount={entries} entries={entriesData} letterSource={letterSource} reducedMotion={reducedMotion} small/>
+   {(state==='recorded'||state==='preparing')&&<span className="month-slot-caption" aria-hidden="true">작품 준비 중</span>}
+  </MonthVisual></div>
+  <div className="month-tile__copy">
+   <span className="month-tile__date">{formatMonth(month)}</span>
+   <strong className="month-tile__name">{name}</strong>
+   {meta&&<small>{meta}</small>}
+  </div>
+ </button>;
 }
 
 export type DiaryListVariant='A'|'B'|'C';

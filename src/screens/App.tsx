@@ -1,18 +1,18 @@
 import { useEffect, useState } from 'react';
-import { AppBar, BottomNavigation, Button, Dialog, EmptyState, SegmentedChoice, SettingRow, Stack, TextAction, Textarea, TextInput, Toast, Toggle } from '../components/ui';
+import { AppBar, BottomNavigation, Button, Dialog, EmptyState, SegmentedChoice, SettingRow, Stack, TextAction, TextInput, Toast, Toggle } from '../components/ui';
 import type { MainTab } from '../components/ui';
-import { DiaryList, MonthTile, type DiaryListVariant } from '../components/content';
+import { DiaryList, type DiaryListVariant } from '../components/content';
 import { DiaryContent } from '../components/DiaryContent';
 import { JarArtwork } from '../components/JarArtwork';
 import { stackCount } from '../graphics/rediscover-motion.mjs';
 import { ArtworkSlot } from '../graphics/ArtworkSlot';
 import { HomeShell, type HomeMode } from './HomeShell';
 import { WriterLayout } from './WriterLayout';
-import { GestureArtwork } from '../components/GestureArtwork';
+import { CollectionScreen, MonthlyGraphicDetail, LockedMonthDetail, GraphicIdeaForm } from './CollectionScreen';
 import { COPY, deleteImpact, savedMessage } from '../content/copy';
 import { pickPrompts, type Prompt } from '../data/prompts';
 import { loadState, saveState, writtenDays, dateHasEntry, monthEntries, chooseDifferentEntry, reflectionsFor, upsertReflection, removeReflection, removeDiary, reflectionCounts } from '../data/store';
-import { MONTH_THEMES, UPCOMING_MONTHS, themeFor, collectionMonths } from '../data/themes';
+import { MONTH_THEMES, UPCOMING_MONTHS, themeFor, type CollectionLayout } from '../data/themes';
 import type { DiaryEntry, MonthId, PrototypeState } from '../data/types';
 import { currentPreviewTime, formatDay, formatMonth, koreanClock, monthOf, todayAndYesterday } from '../lib/date';
 
@@ -44,6 +44,7 @@ export default function App() {
   const [pendingDraw, setPendingDraw] = useState<{id:string;pick:number}|null>(null);
   const [monthIdea, setMonthIdea] = useState('');
   const [writerDate, setWriterDate] = useState('');
+  const [collectionLayout,setCollectionLayout]=useState<CollectionLayout>('A');
   const [listVariant,setListVariant]=useState<DiaryListVariant>('A');
   const reviewMode=Boolean((window as Window & {__DAJEONGROK_REVIEW__?:boolean}).__DAJEONGROK_REVIEW__);
   const [writerTitle, setWriterTitle] = useState('');
@@ -167,7 +168,6 @@ export default function App() {
   };
   const allMonths = Array.from(new Set([...MONTH_THEMES.map(m => m.month), ...UPCOMING_MONTHS, todayMonth, ...state.entries.map(e => monthOf(e.entryDate))])).sort().reverse();
   const homeMonths = [...new Set([...allMonths, viewMonth])].sort();
-  const orderedCollection=collectionMonths(allMonths,todayMonth);
   const noteCounts=reflectionCounts(state.reflections);
   const saveIdeas = () => {
     if (!monthIdea.trim() || !page.month) return;
@@ -241,27 +241,10 @@ export default function App() {
         {reviewMode&&<aside className="writer-review-panel" aria-label="검수용 기록 목록 비교"><Stack gap="controls"><p>검수용 · 기록 목록 비교</p><SegmentedChoice label="기록 목록 시안" value={listVariant} onChange={setListVariant} options={[{value:"A",label:"A 구분선"},{value:"B",label:"B 카드"},{value:"C",label:"C 날짜별"}]}/></Stack></aside>}
         <DiaryList variant={listVariant} reflectionCounts={noteCounts} entries={page.day ? state.entries.filter(e => e.entryDate === page.day) : page.month ? monthEntries(state.entries,page.month) : state.entries} onOpen={entry => navigate({ screen:'detail', entryId:entry.id })} emptyContent={<EmptyState title="아직 남긴 칭찬이 없어요." description="오늘의 작은 칭찬부터 시작해 볼까요?" action={<Button onClick={() => startWrite()}>칭찬일기 남기러 가기</Button>} />} />
       </Stack>}
-      {page.screen === 'collection' && <>
-        <Stack gap="component">
-        <div className="month-tiles">{orderedCollection.map(month => <MonthTile key={month} month={month} theme={themeFor(month)} writtenDays={writtenDays(state.entries,month)} entries={monthEntries(state.entries,month).length} entriesData={monthEntries(state.entries,month)} letterSource={monthEntries(state.entries,month).map(e => e.body).join(' ')} reducedMotion={state.reducedMotion} locked={month > todayMonth} onClick={() => openMonth(month)} />)}</div>
-        </Stack>
-      </>}
-      {page.screen === 'month' && <div className="space-stack immersive-detail"><div className="month-detail-title"><h1 className="page-title">{monthTheme?.title ?? formatMonth(currentMonth)}</h1><span className="small-caption">{writtenDays(state.entries,currentMonth)}일의 칭찬</span></div>
-        {monthTheme && <div className="illustration-stage"><button className="illustration-stage__view" aria-label="그래픽 크게 보기" onClick={() => navigate({ screen:'graphic', month:currentMonth })}><ArtworkSlot theme={monthTheme} writtenDays={writtenDays(state.entries,currentMonth)} letterCount={monthEntries(state.entries,currentMonth).length} entries={monthEntries(state.entries,currentMonth)} letterSource={monthEntries(state.entries,currentMonth).map(e => e.body).join(' ')} reducedMotion={state.reducedMotion}/></button></div>}
-        <Button className="ui-button--full" variant="secondary" onClick={() => navigate({screen:'list',month:currentMonth})}>{COPY.collection.monthEntries}</Button>
-      </div>}
-      {page.screen === 'graphic' && <div className="space-stack immersive-detail">
-        <div className="month-detail-title"><h1 className="page-title">{monthTheme?.title ?? formatMonth(currentMonth)}</h1></div>
-        {monthTheme && <div className="illustration-stage graphic-detail-art">
-          <GestureArtwork key={currentMonth}>
-            <ArtworkSlot theme={monthTheme} writtenDays={writtenDays(state.entries,currentMonth)} letterCount={monthEntries(state.entries,currentMonth).length} entries={monthEntries(state.entries,currentMonth)} letterSource={monthEntries(state.entries,currentMonth).map(e => e.body).join(' ')} reducedMotion={state.reducedMotion}/>
-          </GestureArtwork>
-          <p className="illustration-stage__footer">{writtenDays(state.entries,currentMonth)}일의 칭찬</p>
-        </div>}
-        <TextAction onClick={() => navigate({screen:'list',month:currentMonth})}>{COPY.collection.monthEntries}</TextAction>
-      </div>}
-      {page.screen === 'locked-month' && <div className="locked-intro"><div className="locked-shape" aria-hidden="true"><div className="locked-shape__bar" /></div><h1 className="page-title">{COPY.collection.locked}</h1><p>어떤 그래픽이 등장할지 기대해 주세요.</p><TextAction onClick={() => navigate({screen:'idea',month:currentMonth})}>{COPY.collection.suggest}</TextAction></div>}
-      {page.screen === 'idea' && <div className="space-stack"><div className="page-intro"><h1 className="page-title">어떤 그래픽을 보고 싶나요?</h1><p className="description">떠오르는 모양이나 장면이 있다면 편하게 남겨 주세요.</p></div><div className="form-group"><label htmlFor="graphic-idea" className="form-label">그래픽 아이디어</label><Textarea id="graphic-idea" variant="outline" placeholder="예: 봄에는 글자로 자라는 벚꽃나무가 있으면 좋겠어요." value={monthIdea} onChange={e => setMonthIdea(e.target.value)} /></div><Button disabled={!monthIdea.trim()} onClick={saveIdeas}>의견 남기기</Button><p className="small-caption">프로토타입에서는 의견이 운영자에게 전송되지 않고 이 브라우저 세션에만 저장돼요.</p></div>}
+      {page.screen === 'collection' && <CollectionScreen months={allMonths} current={todayMonth} entries={state.entries} reducedMotion={state.reducedMotion} layout={collectionLayout} onLayout={setCollectionLayout} review={reviewMode} onOpen={openMonth}/>}
+      {(page.screen === 'month'||page.screen === 'graphic') && <MonthlyGraphicDetail month={currentMonth} entries={state.entries} reducedMotion={state.reducedMotion} onList={()=>navigate({screen:'list',month:currentMonth})}/>}
+      {page.screen === 'locked-month' && <LockedMonthDetail onIdea={()=>{setMonthIdea('');navigate({screen:'idea',month:currentMonth})}}/>}
+      {page.screen === 'idea' && <GraphicIdeaForm month={currentMonth} value={monthIdea} onChange={setMonthIdea} onSave={saveIdeas}/>}
 
       {page.screen === 'settings' && <>
         <div className="setting-section"><h2>기록 설정</h2><SettingRow title={COPY.settings.boundary} detail={`${state.boundaryHour === 0 ? '자정' : `오전 ${state.boundaryHour}시`}`} onClick={() => navigate({screen:'boundary'})} /></div>

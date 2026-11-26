@@ -71,3 +71,12 @@ for(let i=0;i<50;i++){const pair=prompts.pickPrompts();assert.equal(pair.length,
 assert.equal(store.reflectionCounts(withNote.reflections).get('a'),1);assert.equal(store.reflectionCounts(store.removeReflection(withNote,'a','r').reflections).get('a'),undefined);
 assert.equal(JSON.stringify(themes.collectionMonths(['2027-03','2026-11','2027-01','2026-12','2026-12'],'2026-12')),JSON.stringify(['2026-12','2026-11','2027-01','2027-03']));
 console.log('PASS — prompt refresh, derived reflection counts, collection ordering');
+
+const catalog=['2026-11','2026-12','2027-01','2027-02','2027-03'];
+const groupsA=themes.collectionGroups(catalog,'2027-01',new Set(['2026-12']),'A');
+assert.equal(JSON.stringify(groupsA),JSON.stringify({archived:['2027-01','2026-12'],upcoming:['2027-02']}));
+const groupsB=themes.collectionGroups(catalog,'2027-01',new Set(['2026-12']),'B');
+assert.equal(JSON.stringify(groupsB),JSON.stringify({archived:['2027-01','2026-12','2026-11'],upcoming:['2027-02','2027-03']}));
+assert.equal(themes.shiftMonth('2026-12',1),'2027-01');
+assert.equal(JSON.stringify(themes.collectionGroups(catalog,'2027-01',new Set(),'A').archived),JSON.stringify(['2027-01']));
+console.log('PASS — V02 collection variants and calendar rollover');

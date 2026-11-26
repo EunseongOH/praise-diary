@@ -17,3 +17,17 @@ export function collectionMonths(months: MonthId[],current:MonthId):MonthId[] {
  const unique=[...new Set(months)];
  return [current,...unique.filter(m=>m<current).sort().reverse(),...unique.filter(m=>m>current).sort()];
 }
+
+export type CollectionLayout = 'A' | 'B';
+export function shiftMonth(month:MonthId,offset:number):MonthId {
+ const [year=0,m=1]=month.split('-').map(Number);
+ const date=new Date(Date.UTC(year,m-1+offset,1));
+ return date.toISOString().slice(0,7) as MonthId;
+}
+/** V02 review variants. Calendar selection catalog is independent. */
+export function collectionGroups(months:MonthId[],current:MonthId,recorded:ReadonlySet<MonthId>,layout:CollectionLayout){
+ const past=collectionMonths(months,current).filter(m=>m<=current);
+ const archived=layout==='A'?past.filter(m=>m===current||recorded.has(m)):past;
+ const upcoming=Array.from({length:layout==='A'?1:2},(_,i)=>shiftMonth(current,i+1));
+ return {archived,upcoming};
+}

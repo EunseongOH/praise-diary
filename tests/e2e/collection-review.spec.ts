@@ -1,0 +1,24 @@
+import {test,expect} from '@playwright/test';
+const month='2027-01';
+const fixtures={entries:[{id:'past',entryDate:'2026-12-31',createdAt:'2026-12-31T00:00:00Z',body:'지난달의 기록'},{id:'now',entryDate:'2027-01-01',createdAt:'2027-01-01T00:00:00Z',body:'이번 달의 기록'}],reflections:[],ideas:[],letterDrawUnlockedAt:null,boundaryHour:0,reducedMotion:true};
+for(const width of [320,390,430])test('collection V02 shared UI '+width,async({page})=>{
+ await page.setViewportSize({width,height:844});await page.route('https://**/*',r=>r.abort());
+ await page.clock.install({time:new Date('2027-01-15T04:00:00Z')});
+ await page.addInitScript(s=>{sessionStorage.setItem('praise-diary:prototype:v1',JSON.stringify(s));Object.defineProperty(window,'__DAJEONGROK_REVIEW__',{value:true})},fixtures);
+ await page.goto('/');await page.getByRole('button',{name:'도감',exact:true}).click();
+ const tiles=page.locator('.month-tile');await expect(tiles).toHaveCount(3);await expect(tiles.first()).toHaveAttribute('data-month',month);
+ await expect(page.locator('.collection-future .month-tile')).toHaveAttribute('data-month','2027-02');
+ const grid=page.locator('.collection-screen>.month-tiles');expect(await grid.evaluate(e=>getComputedStyle(e).columnGap)).toBe('12px');expect(await grid.evaluate(e=>getComputedStyle(e).rowGap)).toBe('24px');
+ const tile=tiles.first();const metrics=await tile.evaluate(e=>({gap:getComputedStyle(e).gap,w:e.getBoundingClientRect().width}));expect(metrics.gap).toBe('12px');expect(metrics.w).toBeGreaterThanOrEqual(44);
+ await tile.focus();expect(await tile.evaluate(e=>getComputedStyle(e).outlineOffset)).toBe('-2px');
+ await page.getByRole('button',{name:'B 연속 2열'}).click();await expect(tiles).toHaveCount(4);await expect(page.locator('.collection-future')).toHaveCount(0);
+ await page.getByRole('button',{name:'A 작품과 미래 분리'}).click();await expect(tiles).toHaveCount(3);
+ await tiles.first().click();await expect(page.getByRole('heading',{name:'붉은 양과 해'})).toBeVisible();await page.getByRole('button',{name:'이달의 칭찬 보기'}).click();
+ await expect(page.getByText('이번 달의 기록',{exact:true})).toBeVisible();await expect(page.getByText('지난달의 기록',{exact:true})).toHaveCount(0);
+ await page.getByRole('button',{name:'뒤로가기'}).click();await page.getByRole('button',{name:'뒤로가기'}).click();
+ await page.locator('.month-tile[data-month="2027-02"]').click();await expect(page.getByRole('heading',{name:'아직 공개되지 않았어요.'})).toBeVisible();
+ await page.getByRole('button',{name:'이런 그래픽은 어때요? 의견 남기기'}).click();await expect(page.getByRole('button',{name:'의견 남기기',exact:true})).toBeDisabled();
+ await page.getByRole('textbox',{name:'그래픽 아이디어'}).fill('벚꽃나무');await page.getByRole('button',{name:'의견 남기기',exact:true}).click();await expect(page.getByText('시연용으로 의견을 보관했어요.')).toBeVisible();
+ expect(await page.evaluate(()=>JSON.parse(sessionStorage.getItem('praise-diary:prototype:v1')!).ideas[0].month)).toBe('2027-02');
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBeTruthy();
+});

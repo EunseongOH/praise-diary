@@ -60,3 +60,5 @@
 - v0.7 검토안 `design-system/labs/dajeongrok/foundation/v07-rules.md`: 날짜/월 선택은 custom CompactSelect, 펼침 panel 자체 8px gap, 기록 목록 공통 row. 작성 A 확정; 목록 A/B/C 검수 전용, A 임시 기본. 신규 역할/간격/상태/실측 게이트 유지.
 
 - v0.8 검토안 `design-system/labs/dajeongrok/foundation/v08-rules.md`: 질문 재추출과 선택 문장 별도 속성, 마음 개수 파생 표시 및 도감 정렬 제안. 기존 토큰/컴포넌트 재사용, 정책 승인 전 확정 금지.
+
+- 도감 V02 원본 `design-system/labs/dajeongrok/collection/` 보존. 최신 실제 통합 규칙 `foundation/v09-collection-rules.md`; A/B는 검토안. 2열·공통 월 상세·미래 잠금·원본 기록 기반 일수 유지. 그래픽 렌더러는 후속, 임시 글자 그래픽/시연 fixture를 제품에 이식하지 않는다.
