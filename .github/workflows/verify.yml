@@ -2,9 +2,9 @@ name: Prototype quality checks
 
 on:
   pull_request:
-    branches: [main]
+    branches: [main, feat/mvp-integration]
   push:
-    branches: [main, feat/design-system-prototype, feat/mvp-integration]
+    branches: [main, feat/design-system-prototype, feat/mvp-integration, feat/snowflake-service-integration]
 
 jobs:
   check:
@@ -27,7 +27,7 @@ jobs:
         run: node scripts/prepare-review.mjs
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
-      - name: Browser integration and design geometry
+      - name: Browser integration, design geometry and snowflake review build
         run: npm run test:e2e
       - name: Upload collection visual evidence
         if: always()
