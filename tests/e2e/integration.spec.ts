@@ -1,0 +1,64 @@
+import { test, expect } from '@playwright/test';
+const today = new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
+const fixture={entries:[{id:'a',entryDate:today,createdAt:today+'T00:00:00Z',title:'나의 속도',body:'오늘도 수고했어.\n한 걸음씩.'}],reflections:[],letterDrawUnlockedAt:'2026-01-01T00:00:00Z',boundaryHour:0,reducedMotion:true,ideas:[]};
+for(const width of [320,390,430]){
+ test('shared reader and v0.5 geometry '+width,async({page})=>{
+  const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
+  await page.setViewportSize({width,height:850});
+  await page.route('https://**/*',r=>r.abort());
+  await page.addInitScript(s=>{if(!sessionStorage.getItem('praise-diary:prototype:v1'))sessionStorage.setItem('praise-diary:prototype:v1',JSON.stringify(s))},fixture);
+  await page.goto('/');
+  await page.getByRole('button',{name:'꺼내보기',exact:true}).click();
+  await page.getByRole('button',{name:'칭찬 하나 꺼내보기',exact:true}).click();
+  await expect(page.getByText('나의 속도',{exact:true})).toBeVisible();
+  await expect(page.getByRole('button',{name:'다른 칭찬 꺼내기'})).toHaveCount(0);
+  await page.getByRole('button',{name:'오늘의 마음 덧붙이기'}).click();
+  const area=page.getByRole('textbox',{name:'오늘의 마음'});
+  await expect(area).toBeFocused();
+  const metrics=await area.evaluate(el=>{const cs=getComputedStyle(el),shell=el.parentElement!,actions=shell.parentElement!.querySelector('.ui-action-group')!;return {padding:cs.paddingLeft,ring:getComputedStyle(shell).boxShadow,gap:actions.getBoundingClientRect().top-shell.getBoundingClientRect().bottom,buttonGap:getComputedStyle(actions).gap,alignment:Math.abs(el.getBoundingClientRect().left+parseFloat(cs.paddingLeft)-document.querySelector('.diary-original p')!.getBoundingClientRect().left)}});
+  expect(metrics.padding).toBe('12px');expect(metrics.ring).toContain('inset');expect(metrics.ring).toContain('2px');expect(metrics.gap).toBeCloseTo(12,0);expect(metrics.buttonGap).toBe('8px');expect(metrics.alignment).toBeCloseTo(0,0);
+  await area.fill('오늘 다시 만나서 좋았어.');
+  await page.getByRole('button',{name:'남기기',exact:true}).click();
+  await expect(page.getByText('오늘 다시 만나서 좋았어.',{exact:true})).toBeVisible();
+  await page.getByRole('button',{name:'덧붙인 마음 관리'}).click();
+  const menu=page.locator('.ui-action-menu:visible');
+  const row=menu.getByRole('button',{name:'수정하기'});
+  const geometry=await row.evaluate(el=>{const cs=getComputedStyle(el),p=el.parentElement!;return {height:el.getBoundingClientRect().height,paddingX:cs.paddingLeft,paddingY:cs.paddingTop,width:p.getBoundingClientRect().width,gap:getComputedStyle(p).gap}});
+  expect(geometry.height).toBeGreaterThanOrEqual(48);expect(geometry.paddingX).toBe('12px');expect(geometry.paddingY).toBe('8px');expect(geometry.width).toBeGreaterThanOrEqual(144);expect(geometry.gap).toBe('4px');
+  await page.keyboard.press('Escape');await expect(menu).toBeHidden();
+  if(width===320){await page.evaluate(()=>{document.documentElement.style.fontSize='200%'});await page.getByRole('button',{name:'덧붙인 마음 관리'}).click();await expect(menu).toBeVisible();expect(await row.evaluate(el=>getComputedStyle(el).fontSize)).toBe('32px');expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBeTruthy();await page.keyboard.press('Escape');await page.evaluate(()=>{document.documentElement.style.fontSize=''})}
+  await page.getByRole('button',{name:'닫기',exact:true}).click();
+  await page.getByRole('button',{name:'홈',exact:true}).click();
+  await page.getByRole('button',{name:'달력으로 보기'}).click();
+  await page.getByRole('button',{name:today+' 기록 보기',exact:true}).click();
+  await page.getByRole('button').filter({hasText:'나의 속도'}).click();
+  await expect(page.getByText('오늘 다시 만나서 좋았어.',{exact:true})).toBeVisible();
+  await page.getByRole('button',{name:'덧붙인 마음 관리'}).click();await page.getByRole('button',{name:'수정하기',exact:true}).click();
+  await page.getByRole('textbox',{name:'오늘의 마음'}).fill('수정한 마음');await page.getByRole('button',{name:'남기기',exact:true}).click();
+  await expect(page.getByText('수정한 마음',{exact:true})).toBeVisible();
+  await page.getByRole('button',{name:'뒤로가기',exact:true}).click();
+  await page.getByRole('button',{name:'뒤로가기',exact:true}).click();
+  await expect(page.getByRole('button',{name:'작품으로 보기'})).toBeVisible();
+  await page.getByRole('button',{name:'내가 남긴 칭찬 보기'}).click();
+  await page.getByRole('button').filter({hasText:'나의 속도'}).click();
+  await expect(page.getByText('수정한 마음',{exact:true})).toBeVisible();
+  await page.getByRole('button',{name:'덧붙인 마음 관리'}).click();
+  await page.getByRole('button',{name:'삭제하기',exact:true}).click();
+  const dialog=page.getByRole('alertdialog');await expect(dialog).toBeVisible();const dlg=await dialog.evaluate(el=>({padding:getComputedStyle(el).paddingLeft,gap:getComputedStyle(el.querySelector('.ui-stack')!).gap}));expect(dlg.padding).toBe('20px');expect(dlg.gap).toBe('12px');await dialog.getByRole('button',{name:'삭제하기',exact:true}).click();
+  await expect(page.getByText('수정한 마음',{exact:true})).toHaveCount(0);
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBeTruthy();
+  expect(errors).toEqual([]);
+ });
+}
+test('save failure retains draft and close confirmation',async({page})=>{
+ await page.addInitScript(s=>{sessionStorage.setItem('praise-diary:prototype:v1',JSON.stringify(s))},fixture);
+ await page.goto('/');await page.getByRole('button',{name:'꺼내보기',exact:true}).click();await page.getByRole('button',{name:'칭찬 하나 꺼내보기'}).click();
+ await page.getByRole('button',{name:'오늘의 마음 덧붙이기'}).click();await page.getByRole('textbox',{name:'오늘의 마음'}).fill('아직 저장하지 않은 말');
+ await page.evaluate(()=>{Storage.prototype.setItem=()=>{throw new Error('test quota')}});
+ await page.getByRole('button',{name:'남기기',exact:true}).click();
+ await expect(page.getByRole('textbox',{name:'오늘의 마음'})).toHaveValue('아직 저장하지 않은 말');
+ await expect(page.getByRole('alert')).toContainText('저장하지 못했어요');
+ await page.getByRole('button',{name:'닫기',exact:true}).click();await expect(page.getByRole('alertdialog')).toBeVisible();
+ await page.getByRole('alertdialog').getByRole('button',{name:'취소'}).click();
+ await expect(page.getByRole('textbox',{name:'오늘의 마음'})).toHaveValue('아직 저장하지 않은 말');
+});

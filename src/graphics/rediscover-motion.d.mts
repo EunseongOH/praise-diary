@@ -1,0 +1,9 @@
+export const DRAW_DURATION:number;
+export function stackCount(n:number):number;
+export function notePositions(n:number):number[][];
+export function pileOrder(n:number):number[];
+export function settlePose(n:number,pick:number,i:number,t:number):number[];
+export function paperCurve(progress:number,kind?:string):{y:number;z:number;theta:number}[];
+export function paperSurface(progress?:number,i?:number,dark?:number,flatProjection?:number,kind?:string):string;
+export function jarMarkup(count:number,pick:number,prefix:string):string;
+export function applyJarFrame(root:HTMLElement,overlay:HTMLElement|null,n:number,pick:number,t:number):void;

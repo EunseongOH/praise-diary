@@ -1,0 +1,56 @@
+/* v0.3 — candidate typography layer; import after v0.2 interactions.css. */
+.dj-system { --dj-font: 'Pretendard Variable', Pretendard, 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans CJK KR', sans-serif; --dj-display:'Gowun Batang','NanumMyeongjo','Noto Serif CJK KR',serif; --dj-read-font:var(--dj-display); --dj-paragraph-gap:0.85em; --dj-read-size:1.0625rem; --dj-read-leading:1.85; --dj-read-track:0.005em; font-synthesis:none; font-family:var(--dj-font); }
+.dj-type { margin:0; min-inline-size:0; overflow-wrap:anywhere; word-break:keep-all; }
+.dj-type[data-tone=muted]{color:var(--dj-muted)} .dj-type[data-tone=quiet]{color:var(--dj-quiet)} .dj-type[data-tone=strong]{color:var(--dj-ink)}
+.dj-system { --dj-type-brand: 400 2.25rem/1.3 var(--dj-display); --dj-track-brand: 0.05em; }
+.dj-type--brand { font:var(--dj-type-brand); letter-spacing:var(--dj-track-brand); }
+.dj-system { --dj-type-tagline: 400 1rem/1.5 var(--dj-font); --dj-track-tagline: 0.01em; }
+.dj-type--tagline { font:var(--dj-type-tagline); letter-spacing:var(--dj-track-tagline); }
+.dj-system { --dj-type-artwork-title: 400 1.5rem/1.4 var(--dj-display); --dj-track-artwork-title: 0.015em; }
+.dj-type--artwork-title { font:var(--dj-type-artwork-title); letter-spacing:var(--dj-track-artwork-title); }
+.dj-system { --dj-type-artwork-reveal: 400 1.75rem/1.4 var(--dj-display); --dj-track-artwork-reveal: 0.015em; }
+.dj-type--artwork-reveal { font:var(--dj-type-artwork-reveal); letter-spacing:var(--dj-track-artwork-reveal); }
+.dj-system { --dj-type-page-title: 600 1.5rem/1.4 var(--dj-font); --dj-track-page-title: -0.02em; }
+.dj-type--page-title { font:var(--dj-type-page-title); letter-spacing:var(--dj-track-page-title); }
+.dj-system { --dj-type-section-title: 600 1.125rem/1.5 var(--dj-font); --dj-track-section-title: -0.015em; }
+.dj-type--section-title { font:var(--dj-type-section-title); letter-spacing:var(--dj-track-section-title); }
+.dj-system { --dj-type-entry-title: 500 1.25rem/1.5 var(--dj-font); --dj-track-entry-title: -0.01em; }
+.dj-type--entry-title { font:var(--dj-type-entry-title); letter-spacing:var(--dj-track-entry-title); }
+.dj-system { --dj-type-body: 400 1rem/1.6 var(--dj-font); --dj-track-body: 0em; }
+.dj-type--body { font:var(--dj-type-body); letter-spacing:var(--dj-track-body); }
+.dj-system { --dj-type-diary-write: 400 1rem/1.75 var(--dj-font); --dj-track-diary-write: 0em; }
+.dj-type--diary-write { font:var(--dj-type-diary-write); letter-spacing:var(--dj-track-diary-write); }
+.dj-system { --dj-type-diary-read: 400 var(--dj-read-size)/var(--dj-read-leading) var(--dj-read-font); --dj-track-diary-read: var(--dj-read-track); }
+.dj-type--diary-read { font:var(--dj-type-diary-read); letter-spacing:var(--dj-track-diary-read); }
+.dj-system { --dj-type-action-label: 500 1rem/1.5 var(--dj-font); --dj-track-action-label: -0.01em; }
+.dj-type--action-label { font:var(--dj-type-action-label); letter-spacing:var(--dj-track-action-label); }
+.dj-system { --dj-type-toolbar-label: 500 0.875rem/1.5 var(--dj-font); --dj-track-toolbar-label: 0em; }
+.dj-type--toolbar-label { font:var(--dj-type-toolbar-label); letter-spacing:var(--dj-track-toolbar-label); }
+.dj-system { --dj-type-supporting: 400 0.875rem/1.55 var(--dj-font); --dj-track-supporting: 0em; }
+.dj-type--supporting { font:var(--dj-type-supporting); letter-spacing:var(--dj-track-supporting); }
+.dj-system { --dj-type-meta: 400 0.8125rem/1.5 var(--dj-font); --dj-track-meta: 0em; }
+.dj-type--meta { font:var(--dj-type-meta); letter-spacing:var(--dj-track-meta); }
+.dj-system { --dj-type-nav-label: 500 0.75rem/1.5 var(--dj-font); --dj-track-nav-label: 0em; }
+.dj-type--nav-label { font:var(--dj-type-nav-label); letter-spacing:var(--dj-track-nav-label); }
+
+.dj-system[data-reading="sans"] {--dj-read-font:var(--dj-font);--dj-read-size:1rem;--dj-read-leading:1.75;--dj-read-track:0em}
+.dj-system[data-reading="serif"] {--dj-read-font:var(--dj-display)}
+.dj-system[data-reading="mixed"] {--dj-read-font:var(--dj-font);--dj-read-size:1.0625rem;--dj-read-leading:1.8;--dj-read-track:0em}
+.dj-system[data-reading="mixed"] .dj-reading-title,.dj-system[data-reading="serif"] .dj-reading-title{font-family:var(--dj-display);font-weight:400;letter-spacing:.01em}
+.dj-diary-content {min-width:0; max-inline-size:42rem; overflow-wrap:anywhere; word-break:keep-all; white-space:pre-wrap;}
+.dj-diary-content p {margin:0; white-space:pre-wrap} .dj-diary-content p+p{margin-block-start:var(--dj-paragraph-gap)}
+.dj-system .dj-primary{font:var(--dj-type-action-label);letter-spacing:var(--dj-track-action-label);min-height:var(--dj-cta);height:auto;white-space:normal;overflow-wrap:anywhere;justify-content:center;text-align:center}
+.dj-system .dj-text-action,.dj-system .dj-disclosure-trigger,.dj-system .dj-selected,.dj-system .dj-question{font:var(--dj-type-supporting);letter-spacing:var(--dj-track-supporting)}
+.dj-system .dj-disclosure-trigger[data-variant=standard]{font:var(--dj-type-body)}
+.dj-system .dj-header-title{font:var(--dj-type-toolbar-label);letter-spacing:var(--dj-track-toolbar-label)}
+.dj-system .dj-header{grid-template-columns:minmax(44px,max-content) minmax(0,1fr) minmax(44px,max-content)}
+.dj-system .dj-header>.dj-text-action{font:var(--dj-type-toolbar-label);min-width:44px;max-width:100%;padding-inline:4px;overflow-wrap:anywhere}
+.dj-system .dj-field{font:var(--dj-type-body);letter-spacing:var(--dj-track-body)}
+.dj-system .dj-title-row .dj-field{font:var(--dj-type-entry-title);letter-spacing:var(--dj-track-entry-title)}
+.dj-system .dj-field-shell[data-multiline=true] .dj-field{font:var(--dj-type-diary-write);letter-spacing:var(--dj-track-diary-write)}
+.dj-system .dj-action{white-space:normal;overflow-wrap:anywhere;}
+.dj-system .dj-field-shell,.dj-system .dj-header,.dj-system .dj-disclosure-trigger{height:auto;}
+.dj-diary-content > .dj-reading-title + .dj-type--diary-read {margin-block-start:var(--dj-gap-component)}
+
+.dj-system{--dj-type-artwork-tile:400 1.125rem/1.45 var(--dj-display);--dj-track-artwork-tile:.015em}
+.dj-type--artwork-tile{font:var(--dj-type-artwork-tile);letter-spacing:var(--dj-track-artwork-tile)}

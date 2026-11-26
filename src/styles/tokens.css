@@ -1,0 +1,119 @@
+:root {
+  /* Visual direction v0.2: one uninterrupted dark canvas, not an artwork card.
+     Soft colors are exploration candidates, not final brand colors. */
+  color-scheme: dark;
+  font-family: var(--font-body);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+
+  /* Shared foundation; final UI font is declared in the integration block. */
+  --font-display: var(--font-body);
+  --type-hero: clamp(28px, 7vw, 32px);
+  --leading-supporting: 1.55;
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-emphasis: 600;
+  --weight-strong: 700;
+
+  --brand-lime: #B8D68A;
+  --brand-leaf: #61AE72;
+  --brand-white: #FFFFFF;
+  --brand-apricot: #FAD89E;
+  --brand-sky: #A6C5D3;
+
+  /* Artwork palette and remaining foundation tokens. */
+  --accent-soft: #B8D68A;
+  --hero-sky: #A6C5D3;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 22px;
+  --content-width: 520px;
+}
+
+/* Integration foundation. Color remains a reviewed candidate; not a final brand palette. */
+:root {
+  --font-body: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Noto Sans KR', system-ui, sans-serif;
+  --font-artwork: 'Gowun Batang', 'NanumMyeongjo', serif;
+  --background:#1E1C27; --hero:var(--background); --surface:#282631; --surface-soft:#302A3A; --surface-green:#363040;
+  --line:#585164; --ink:#E9E4F2; --hero-ink:var(--ink); --muted:#B8AEC8; --quiet:#A79DB6;
+  --accent:#D3C2EF; --accent-hover:#E9E4F2; --accent-ink:#1E1C27; --danger:#F0A9B0; --danger-soft:#393342; --focus:#D3C2EF;
+  --touch:44px; --touch-comfort:48px; --icon-inline:16px; --icon-control:20px; --icon-nav:24px; --icon-stroke:1.8;
+  --gutter:var(--space-5); --gap-toolbar:var(--space-1); --gap-component:var(--space-3); --gap-controls:var(--space-2); --gap-section:var(--space-6); --focus-width:2px;
+}
+
+/* v0.5 role-based interaction contract. All new screen controls use these tokens. */
+:root {
+  --gap-text:var(--space-1); --gap-inline:var(--space-2);
+  --gap-field-actions:var(--gap-component); --gap-action-group:var(--gap-controls);
+  --field-height:52px; --field-padding:var(--space-3); --field-compact-height:112px; --field-area-height:260px;
+  --field-border:#82778F; --disabled:#756E81; --paper:#302A3A; --divider:#403849;
+  --cta-height:52px; --action-padding-x:var(--space-3); --action-padding-y:var(--space-2);
+  --action-toolbar-padding-x:var(--space-1); --menu-min-width:144px; --menu-inset:var(--space-1);
+  --menu-gap:var(--gap-text); --menu-anchor-gap:var(--gap-text); --menu-row-radius:var(--space-1); --dialog-padding:var(--gutter); --menu-row-height:var(--touch-comfort); --menu-row-padding-x:var(--space-3);
+  --menu-row-padding-y:var(--space-2); --menu-bg:#393342; --menu-border:#685A77;
+  --type-page:1.5rem; --type-section:1.125rem; --type-entry-title:1.25rem; --type-body:1rem; --type-control:1rem;
+  --type-supporting:.875rem; --type-meta:.8125rem; --leading-body:1.6; --leading-display:1.4; --leading-reading:1.75;
+}
+
+/* v0.6 review: visual mark and hit target are independent. No arbitrary screen offsets. */
+:root{
+ --select-label-gap:var(--gap-inline); --select-padding-x:var(--action-toolbar-padding-x);
+ --calendar-mark-size:36px; --calendar-mark-gap:var(--gap-controls);
+ --calendar-min-width:calc(7 * var(--touch));
+ --calendar-narrow-inset:calc((320px - var(--calendar-min-width)) / 2);
+ --gap-calendar-header:var(--gap-component);
+ --gap-writer-meta:var(--gap-controls);
+ --gap-tile-column:var(--gap-component); --gap-tile-row:var(--gap-section);
+}
+
+/* v0.7 candidate: compact selector, expanded content and diary list. */
+:root{
+ --select-trigger-padding-x:var(--space-3);
+ --select-popup-max-height:320px;
+ --gap-disclosure-panel:var(--gap-controls);
+ --gap-disclosure-items:var(--gap-controls);
+ --list-row-padding-x:var(--space-3); --list-row-padding-y:var(--space-3);
+ --list-row-gap:var(--gap-text); --list-card-gap:var(--gap-component);
+ --list-group-gap:var(--gap-section); --list-group-label-gap:var(--gap-controls);
+ --list-row-min-height:var(--touch-comfort);
+}
+
+/* v0.8 review — passive record metadata. No new interactive targets. */
+:root{--gap-record-meta:var(--gap-inline);--gap-meta-icon:var(--gap-text);--gap-reference-prompt:var(--gap-component);--gap-reference-text:var(--gap-text);}
+
+/* v0.9 collection review: semantic aliases, no screen-local spacing scale. */
+:root{--gap-collection-section:var(--gap-section);--gap-tile-art-copy:var(--gap-component);--gap-tile-text:var(--gap-text);--collection-art-radius:var(--radius-sm);--collection-empty-mark:32px;--collection-detail-art-max:400px;}
+
+/* v0.10 audit: shared shell and settings geometry. */
+:root{
+ --type-nav:.75rem; --nav-height:68px; --app-bar-height:60px;
+ --page-bottom-with-tabs:calc(var(--nav-height) + var(--space-6) + env(safe-area-inset-bottom));
+ --page-bottom-without-tabs:calc(var(--gap-section) + env(safe-area-inset-bottom));
+ --gap-setting-section:var(--gap-section); --gap-setting-heading:var(--gap-controls);
+ --setting-row-padding:var(--space-3); --setting-row-gap:var(--gap-controls);
+ --switch-width:48px; --switch-height:28px; --switch-thumb:20px;
+ --switch-inset:var(--space-1); --switch-off:var(--field-border);
+ --toast-surface:var(--menu-bg); --toast-padding:var(--space-3);
+}
+
+/* v0.11 — diary entry row component contract */
+:root{--record-meta-line:1.5;--record-meta-icon:var(--icon-inline);--record-title-line:1.5;--record-preview-lines:2;--record-untitled-lines:3;}
+
+/* v0.12 — archive/search shared role aliases, no independent palette. */
+:root{--search-height:var(--field-height);--search-inset:var(--field-padding);--search-icon-gap:var(--gap-inline);--filter-height:var(--touch);--gap-archive-controls:var(--gap-component);--gap-archive-sections:var(--gap-section);--gap-archive-header:var(--gap-controls);--search-match-bg:var(--surface-green);--search-match-ink:var(--accent);}
+
+/* v0.14 search mode — reuse semantic geometry and palette. */
+:root{--search-plain-height:var(--touch);--gap-search-filter:var(--gap-controls);--gap-search-results:var(--space-4);--search-dim:rgba(0,0,0,.45);--period-padding:var(--space-3);--period-cell:var(--touch);--period-width:320px;--period-gap:var(--gap-text);}
+
+/* v0.15 approved A search header. Focus stroke does not change geometry. */
+:root{--search-line-width:1px;--search-line-focus-width:var(--focus-width);--search-filter-column-gap:var(--space-4);--search-filter-narrow-gap:var(--space-3);--search-header-bottom:var(--space-3);--search-filter-underline-offset:var(--space-1);--search-clear-icon:18px;}
