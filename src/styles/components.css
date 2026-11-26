@@ -208,3 +208,5 @@
 .collection-locked h2,.collection-idea h2{font:600 var(--type-page)/1.4 var(--font-body)}
 .collection-locked p,.collection-idea p{font:400 var(--type-body)/var(--leading-body) var(--font-body);color:var(--muted)}
 .collection-idea label{font:400 var(--type-supporting)/1.5 var(--font-body);color:var(--muted)}
+
+.collection-idea p.collection-idea-note{font:400 var(--type-meta)/1.5 var(--font-body);color:var(--muted)}

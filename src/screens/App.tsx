@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { AppBar, BottomNavigation, Button, Dialog, EmptyState, SegmentedChoice, SettingRow, Stack, TextAction, TextInput, Toast, Toggle } from '../components/ui';
 import type { MainTab } from '../components/ui';
 import { DiaryList, type DiaryListVariant } from '../components/content';
@@ -44,6 +44,7 @@ export default function App() {
   const [pendingDraw, setPendingDraw] = useState<{id:string;pick:number}|null>(null);
   const [monthIdea, setMonthIdea] = useState('');
   const [writerDate, setWriterDate] = useState('');
+  const collectionReturn=useRef<{month:MonthId;scroll:number}|null>(null);
   const [collectionLayout,setCollectionLayout]=useState<CollectionLayout>('A');
   const [listVariant,setListVariant]=useState<DiaryListVariant>('A');
   const reviewMode=Boolean((window as Window & {__DAJEONGROK_REVIEW__?:boolean}).__DAJEONGROK_REVIEW__);
@@ -81,6 +82,12 @@ export default function App() {
     return () => window.clearTimeout(timeout);
   }, [toast]);
 
+  useLayoutEffect(()=>{
+    if(page.screen!=='collection'||!collectionReturn.current)return;
+    const saved=collectionReturn.current;collectionReturn.current=null;
+    const tile=document.querySelector<HTMLButtonElement>(`.collection-screen .month-tile[data-month="${saved.month}"]`)??document.querySelector<HTMLButtonElement>('.collection-screen .month-tile');
+    tile?.focus({preventScroll:true});window.scrollTo(0,saved.scroll);
+  },[page.screen]);
   const navigate = (next: Page) => {
     if (page.screen === 'write' && (writerBody.trim() || writerTitle.trim()) && !draftSaved) {
       setLeaveWriting(true); return;
@@ -97,6 +104,7 @@ export default function App() {
   };
   const toTab = (tab: MainTab) => {
     setPendingDraw(null);
+    collectionReturn.current=null;
     if (page.screen === 'write' && writerBody.trim()) { setLeaveWriting(true); return; }
     setStack([]); setPage({ screen: tab }); window.scrollTo(0, 0);
   };
@@ -158,7 +166,10 @@ export default function App() {
     setPendingDraw({id:entry.id,pick:Math.floor(Math.random()*stackCount(state.entries.length))});
     window.scrollTo(0,0);
   };
-  const openMonth = (month: MonthId) => navigate({ screen: month > todayMonth ? 'locked-month' : 'month', month });
+  const openMonth = (month: MonthId) => {
+    if(page.screen==='collection')collectionReturn.current={month,scroll:window.scrollY};
+    navigate({ screen: month > todayMonth ? 'locked-month' : 'month', month });
+  };
   const confirmLeave = () => {
     setLeaveWriting(false);
     setDraftSaved(true);
