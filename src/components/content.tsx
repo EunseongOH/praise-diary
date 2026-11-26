@@ -3,7 +3,7 @@ import { formatDay, formatMonth } from '../lib/date';
 import type { DiaryEntry, MonthTheme } from '../data/types';
 import { Icon } from './icons';
 import { DiaryRow } from './DiaryRow';
-import { ArtworkSlot } from '../graphics/ArtworkSlot';
+import { ArtworkSlot, snowflakeActive } from '../graphics/ArtworkSlot';
 
 export type MonthVisualState='locked'|'empty'|'preparing'|'recorded';
 /** No artificial artwork: only a reserved canvas and distinct status symbols. */
@@ -22,7 +22,7 @@ export function MonthTile({ month, theme, writtenDays, entries, entriesData = []
  return <button type="button" data-month={month} className="month-tile" data-state={state} onClick={onClick}>
   <div className="month-tile__art"><MonthVisual state={state}>
    <ArtworkSlot theme={theme} writtenDays={writtenDays} letterCount={entries} entries={entriesData} letterSource={letterSource} reducedMotion={reducedMotion} small/>
-   {(state==='recorded'||state==='preparing')&&<span className="month-slot-caption" aria-hidden="true">작품 준비 중</span>}
+   {(state==='recorded'||state==='preparing')&&!snowflakeActive(theme)&&<span className="month-slot-caption" aria-hidden="true">작품 준비 중</span>}
   </MonthVisual></div>
   <div className="month-tile__copy">
    <span className="month-tile__date">{formatMonth(month)}</span>

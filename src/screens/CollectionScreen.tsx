@@ -1,6 +1,7 @@
 import { MonthTile, MonthVisual, type MonthVisualState } from '../components/content';
 import { Button, Stack, TextAction, Textarea } from '../components/ui';
-import { ArtworkSlot } from '../graphics/ArtworkSlot';
+import { ArtworkSlot, snowflakeActive } from '../graphics/ArtworkSlot';
+import { GestureArtwork } from '../components/GestureArtwork';
 import { collectionGroups, themeFor } from '../data/themes';
 import { monthEntries, writtenDays } from '../data/store';
 import type { DiaryEntry, MonthId } from '../data/types';
@@ -29,7 +30,9 @@ export function MonthlyGraphicDetail({month,entries,reducedMotion,onList}:{
    <p className="collection-meta">{days===0?'아직 남긴 칭찬이 없어요':days+'일의 칭찬'}</p>
   </div>
   <div className="collection-detail-stage"><MonthVisual state={state}>
-   <ArtworkSlot theme={theme} writtenDays={days} letterCount={records.length} entries={records} letterSource={records.map(e=>e.body).join(' ')} reducedMotion={reducedMotion}/>
+   {snowflakeActive(theme)&&days>0
+    ? <GestureArtwork><ArtworkSlot theme={theme} writtenDays={days} letterCount={records.length} entries={records} reducedMotion={reducedMotion} variant="detail"/></GestureArtwork>
+    : <ArtworkSlot theme={theme} writtenDays={days} letterCount={records.length} entries={records} letterSource={records.map(e=>e.body).join(' ')} reducedMotion={reducedMotion}/>}
   </MonthVisual></div>
   <Button className="ui-button--full" onClick={onList}>{COPY.collection.monthEntries}</Button>
  </section>;
