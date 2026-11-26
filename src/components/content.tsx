@@ -20,18 +20,19 @@ export function MonthTile({ month, theme, writtenDays, entries, entriesData = []
   </button>;
 }
 
-export function DiaryList({ entries, onOpen, emptyContent }: {
-  entries: DiaryEntry[]; onOpen: (entry: DiaryEntry) => void; emptyContent?: ReactNode;
-}) {
-  if (entries.length === 0) return <>{emptyContent}</>;
-  return <div className="diary-list">
-    {[...entries].sort((a, b) => b.entryDate.localeCompare(a.entryDate) || b.createdAt.localeCompare(a.createdAt))
-      .map((entry) => <button className="diary-row" key={entry.id} type="button" onClick={() => onOpen(entry)}>
-        <time className="diary-row__date" dateTime={entry.entryDate}>{formatDay(entry.entryDate)}</time>
-        <strong>{entry.title || entry.body.slice(0, 27)}</strong>
-        {entry.title && <span className="diary-row__excerpt">{entry.body}</span>}
-      </button>)}
-  </div>;
+export type DiaryListVariant='A'|'B'|'C';
+export function DiaryList({entries,onOpen,emptyContent,variant='A'}:{
+ entries:DiaryEntry[];onOpen:(entry:DiaryEntry)=>void;emptyContent?:ReactNode;variant?:DiaryListVariant;
+}){
+ if(!entries.length)return <>{emptyContent}</>;
+ const sorted=[...entries].sort((a,b)=>b.entryDate.localeCompare(a.entryDate)||b.createdAt.localeCompare(a.createdAt));
+ const row=(entry:DiaryEntry,showDate:boolean)=><button className="diary-row" key={entry.id} type="button" onClick={()=>onOpen(entry)}>
+   {showDate&&<time className="diary-row__date" dateTime={entry.entryDate}>{formatDay(entry.entryDate)}</time>}
+   {entry.title?<><strong>{entry.title}</strong><span className="diary-row__excerpt">{entry.body}</span></>:<span className="diary-row__untitled">{entry.body}</span>}
+ </button>;
+ return <div className="diary-list" data-variant={variant}>
+  {variant==='C'?[...new Set(sorted.map(e=>e.entryDate))].map(date=><section className="diary-date-group" key={date}><time className="diary-group-date" dateTime={date}>{formatDay(date)}</time><div className="diary-group-rows">{sorted.filter(e=>e.entryDate===date).map(e=>row(e,false))}</div></section>):sorted.map(e=>row(e,true))}
+ </div>;
 }
 
 export function MemorySlip({ entry }: { entry: DiaryEntry }) {

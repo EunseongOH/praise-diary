@@ -100,3 +100,15 @@
  --gap-writer-meta:var(--gap-controls);
  --gap-tile-column:var(--gap-component); --gap-tile-row:var(--gap-section);
 }
+
+/* v0.7 candidate: compact selector, expanded content and diary list. */
+:root{
+ --select-trigger-padding-x:var(--space-3);
+ --select-popup-max-height:320px;
+ --gap-disclosure-panel:var(--gap-controls);
+ --gap-disclosure-items:var(--gap-controls);
+ --list-row-padding-x:var(--space-3); --list-row-padding-y:var(--space-3);
+ --list-row-gap:var(--gap-text); --list-card-gap:var(--gap-component);
+ --list-group-gap:var(--gap-section); --list-group-label-gap:var(--gap-controls);
+ --list-row-min-height:var(--touch-comfort);
+}

@@ -1,4 +1,5 @@
-import { forwardRef, useEffect, useId, useRef, useState } from 'react';
+import { forwardRef, useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import type { ReactNode, ButtonHTMLAttributes, InputHTMLAttributes, TextareaHTMLAttributes, CSSProperties } from 'react';
 import { Icon, type IconName } from './icons';
 
@@ -20,18 +21,62 @@ export function TextAction({ children, onClick, className = '', density = 'stand
 }) {
   return <button type="button" onClick={onClick} disabled={disabled} data-density={density} className={`ui-text-action ${className}`.trim()}>{icon && <Icon name={icon} size="inline"/>}{children}</button>;
 }
-/** Content-sized selection trigger. Native select owns semantics and keyboard input; visual label owns geometry. */
+/** Select-only combobox: shared menu surface, separate selection semantics. */
 export function CompactSelect<T extends string>({label,value,options,onChange,density='toolbar'}:{
   label:string;value:T;options:{label:string;value:T}[];onChange:(value:T)=>void;density?:ActionDensity;
 }){
-  const current=options.find(o=>o.value===value);
-  return <label className="ui-compact-select" data-density={density}>
-    <span className="ui-compact-select__label" aria-hidden="true">{current?.label??value}</span>
-    <Icon name="chevron-down" size="inline"/>
-    <select aria-label={label} value={value} onChange={e=>onChange(e.target.value as T)}>
-      {options.map(o=><option key={o.value} value={o.value}>{o.label}</option>)}
-    </select>
-  </label>;
+ const id=useId(),trigger=useRef<HTMLButtonElement>(null),popup=useRef<HTMLDivElement>(null);
+ const [open,setOpen]=useState(false),[active,setActive]=useState(0);
+ const [position,setPosition]=useState<CSSProperties>({visibility:'hidden'});
+ const selected=Math.max(0,options.findIndex(o=>o.value===value));
+ const current=options[selected];
+ const close=()=>setOpen(false);
+ const show=(i=selected)=>{setActive(Math.max(0,Math.min(options.length-1,i)));setPosition({visibility:'hidden'});setOpen(true)};
+ const choose=(i:number)=>{const next=options[i];if(next)onChange(next.value);close();trigger.current?.focus({preventScroll:true})};
+ useLayoutEffect(()=>{
+  if(!open)return;
+  const place=()=>{
+   const t=trigger.current,p=popup.current;if(!t||!p)return;
+   const r=t.getBoundingClientRect(),root=getComputedStyle(document.documentElement);
+   const gutter=parseFloat(root.getPropertyValue('--space-5'))||20,gap=parseFloat(root.getPropertyValue('--space-1'))||4;
+   const viewport=document.documentElement.clientWidth;
+   const width=Math.min(viewport-2*gutter,Math.max(r.width,144,p.scrollWidth+2));
+   const below=window.innerHeight-r.bottom-gap-gutter,above=r.top-gap-gutter;
+   const height=Math.min(p.scrollHeight+2,Math.max(below,above),320);
+   const top=below>=height||below>=above?r.bottom+gap:r.top-gap-height;
+   setPosition({width,left:Math.max(gutter,Math.min(r.left,viewport-gutter-width)),top:Math.max(gutter,top),maxHeight:Math.max(48,height),visibility:'visible'});
+  };
+  place();window.addEventListener('resize',place);window.addEventListener('scroll',place,true);
+  return()=>{window.removeEventListener('resize',place);window.removeEventListener('scroll',place,true)};
+ },[open,options.length]);
+ useEffect(()=>{
+  if(!open)return;
+  const outside=(e:Event)=>{const node=e.target as Node;if(!trigger.current?.contains(node)&&!popup.current?.contains(node))close()};
+  document.addEventListener('pointerdown',outside);document.addEventListener('focusin',outside);
+  return()=>{document.removeEventListener('pointerdown',outside);document.removeEventListener('focusin',outside)};
+ },[open]);
+ useEffect(()=>{if(open)popup.current?.querySelector<HTMLElement>('[data-active=true]')?.scrollIntoView({block:'nearest'})},[open,active]);
+ return <div className="ui-compact-select" data-density={density}>
+  <button ref={trigger} type="button" className="ui-compact-select__trigger" role="combobox" aria-label={label}
+   aria-expanded={open} aria-haspopup="listbox" aria-controls={open?id:undefined}
+   aria-activedescendant={open?id+'-'+active:undefined} data-value={value}
+   onClick={()=>open?close():show()}
+   onKeyDown={e=>{
+    if(e.key==='Escape'&&open){e.preventDefault();e.stopPropagation();close();return}
+    if(e.key==='Tab'){close();return}
+    if(e.key==='Enter'||e.key===' '){e.preventDefault();open?choose(active):show();return}
+    if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();const d=e.key==='ArrowDown'?1:-1;if(open)setActive(i=>Math.max(0,Math.min(options.length-1,i+d)));else show();return}
+    if(e.key==='Home'||e.key==='End'){e.preventDefault();const i=e.key==='Home'?0:options.length-1;if(open)setActive(i);else show(i)}
+   }}>
+   <span className="ui-compact-select__label">{current?.label??value}</span><Icon name="chevron-down" size="inline"/>
+  </button>
+  {open&&createPortal(<div ref={popup} id={id} role="listbox" aria-label={label} className="ui-select-popup" style={position}>
+   {options.map((o,i)=><div key={o.value} id={id+'-'+i} role="option" aria-selected={o.value===value} data-active={active===i} className="ui-menu-item ui-select-option"
+    onPointerMove={()=>setActive(i)} onPointerDown={e=>e.preventDefault()} onClick={()=>choose(i)}>
+    <span>{o.label}</span><span className="ui-select-check" aria-hidden="true">{o.value===value&&<Icon name="check" size="inline"/>}</span>
+   </div>)}
+  </div>,document.body)}
+ </div>;
 }
 type LayoutGap = 'text' | 'inline' | 'controls' | 'toolbar' | 'component' | 'section' | 'field-actions';
 export function Stack({children,gap='component'}:{children:ReactNode;gap?:LayoutGap}) {
@@ -58,7 +103,7 @@ export function RemovableField({children,onRemove,label}:{children:ReactNode;onR
 }
 export function Collapsible({label,open,onOpenChange,children}:{label:string;open:boolean;onOpenChange:(open:boolean)=>void;children:ReactNode}) {
   const id=useId(),trigger=useRef<HTMLButtonElement>(null),panel=useRef<HTMLDivElement>(null);
-  return <div><button ref={trigger} className="ui-disclosure" type="button" aria-expanded={open} aria-controls={id} onClick={()=>{if(open&&panel.current?.contains(document.activeElement))trigger.current?.focus();onOpenChange(!open)}}><span>{label}</span><Icon name="chevron-down" size="inline"/></button><div ref={panel} id={id} hidden={!open}>{children}</div></div>;
+  return <div className="ui-collapsible"><button ref={trigger} className="ui-disclosure" type="button" aria-expanded={open} aria-controls={id} onClick={()=>{if(open&&panel.current?.contains(document.activeElement))trigger.current?.focus();onOpenChange(!open)}}><span>{label}</span><Icon name="chevron-down" size="inline"/></button><div ref={panel} id={id} className="ui-collapsible-panel" hidden={!open}>{children}</div></div>;
 }
 export type ActionMenuItem={id:string;label:string;tone?:'default'|'danger';disabled?:boolean;onSelect:()=>void};
 export function MenuItem({item,onSelect}:{item:ActionMenuItem;onSelect:()=>void}) {

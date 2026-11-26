@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
-import { AppBar, BottomNavigation, Button, Dialog, EmptyState, SettingRow, Stack, TextAction, Textarea, TextInput, Toast, Toggle } from '../components/ui';
+import { AppBar, BottomNavigation, Button, Dialog, EmptyState, SegmentedChoice, SettingRow, Stack, TextAction, Textarea, TextInput, Toast, Toggle } from '../components/ui';
 import type { MainTab } from '../components/ui';
-import { DiaryList, MonthTile } from '../components/content';
+import { DiaryList, MonthTile, type DiaryListVariant } from '../components/content';
 import { DiaryContent } from '../components/DiaryContent';
 import { JarArtwork } from '../components/JarArtwork';
 import { stackCount } from '../graphics/rediscover-motion.mjs';
 import { ArtworkSlot } from '../graphics/ArtworkSlot';
 import { HomeShell, type HomeMode } from './HomeShell';
-import { WriterLayout, WriterDate, type WriterVariant } from './WriterLayout';
+import { WriterLayout } from './WriterLayout';
 import { GestureArtwork } from '../components/GestureArtwork';
 import { COPY, deleteImpact, savedMessage } from '../content/copy';
 import { pickPrompts, type Prompt } from '../data/prompts';
@@ -44,7 +44,7 @@ export default function App() {
   const [pendingDraw, setPendingDraw] = useState<{id:string;pick:number}|null>(null);
   const [monthIdea, setMonthIdea] = useState('');
   const [writerDate, setWriterDate] = useState('');
-  const [writerVariant,setWriterVariant]=useState<WriterVariant>('A');
+  const [listVariant,setListVariant]=useState<DiaryListVariant>('A');
   const reviewMode=Boolean((window as Window & {__DAJEONGROK_REVIEW__?:boolean}).__DAJEONGROK_REVIEW__);
   const [writerTitle, setWriterTitle] = useState('');
   const [writerBody, setWriterBody] = useState('');
@@ -193,7 +193,7 @@ export default function App() {
     onClose={back} onSave={(body,date,id)=>saveReflection(entry.id,body,date,id)} onDelete={id=>persist(removeReflection(state,entry.id,id))}
     onEditEntry={()=>startWrite(entry)} onDeleteEntry={()=>setConfirmDelete(entry.id)}/>;
   return <div className="app-shell" data-drawing={isDrawing}>
-    {page.screen !== 'home' && !isReader && <AppBar title={pageTitle[page.screen]} onBack={showBack ? back : undefined} trailing={page.screen==='write'&&!page.editId&&writerVariant==='C'?<WriterDate date={writerDate} today={today} yesterday={yesterday} onChange={setWriterDate}/>:undefined}/>}
+    {page.screen !== 'home' && !isReader && <AppBar title={pageTitle[page.screen]} onBack={showBack ? back : undefined}/>}
     <main className={`app-content ${!isTabPage ? 'app-content--no-tabs' : ''} ${page.screen === 'home' ? 'app-content--home-integrated' : ''} ${page.screen==='write'?'app-content--writer':''}`} id="main-content">
       {page.screen === 'home' && <HomeShell month={viewMonth} months={homeMonths} mode={homeMode} today={today}
         theme={themeFor(viewMonth)} entries={monthEntries(state.entries, viewMonth)} reducedMotion={state.reducedMotion}
@@ -204,10 +204,9 @@ export default function App() {
         onArt={() => navigate({screen:'graphic',month:viewMonth})}
         onIdea={() => navigate({screen:'idea',month:viewMonth})}/>}
 
-      {page.screen === 'write' && <WriterLayout variant={writerVariant} editing={Boolean(page.editId)} date={writerDate} today={today} yesterday={yesterday} onDate={setWriterDate}
+      {page.screen === 'write' && <WriterLayout editing={Boolean(page.editId)} date={writerDate} today={today} yesterday={yesterday} onDate={setWriterDate}
         title={writerTitle} titleOpen={writerTitleOpen} onTitle={setWriterTitle} onTitleOpen={setWriterTitleOpen} body={writerBody} onBody={setWriterBody}
-        prompts={writerPrompts} promptOpen={promptVisible} onPromptOpen={setPromptVisible} selected={promptSelected} onSelect={setPromptSelected} onSave={saveEntry}
-        review={reviewMode} onVariant={setWriterVariant}/>}
+        prompts={writerPrompts} promptOpen={promptVisible} onPromptOpen={setPromptVisible} selected={promptSelected} onSelect={setPromptSelected} onSave={saveEntry}/>}
 
       {page.screen === 'saved' && <div className="space-stack immersive-detail">
         <div className="month-detail-title"><span className="eyebrow">{page.day && formatDay(page.day)}</span><h1 className="page-title">{savedMessage(monthTheme,page.mode ?? 'growth')}</h1></div>
@@ -233,12 +232,12 @@ export default function App() {
 
       {isReader && (readerEntry ? renderReader(readerEntry,page.screen==='memory'?'random':'direct') : <Stack><EmptyState title="기록이 없어요."/><Button onClick={back}>돌아가기</Button></Stack>)}
 
-      {page.screen === 'list' && <div className="space-stack"><div className="page-intro"><h1 className="page-title">{page.day ? `${formatDay(page.day)}에 남긴 칭찬` : page.month ? `${formatMonth(page.month)}에 남긴 칭찬` : '내가 남긴 칭찬들'}</h1></div>
-        <DiaryList entries={page.day ? state.entries.filter(e => e.entryDate === page.day) : page.month ? monthEntries(state.entries,page.month) : state.entries} onOpen={entry => navigate({ screen:'detail', entryId:entry.id })} emptyContent={<EmptyState title="아직 남긴 칭찬이 없어요." description="오늘의 작은 칭찬부터 시작해 볼까요?" action={<Button onClick={() => startWrite()}>칭찬일기 남기러 가기</Button>} />} />
-      </div>}
+      {page.screen === 'list' && <Stack>
+        {reviewMode&&<aside className="writer-review-panel" aria-label="검수용 기록 목록 비교"><Stack gap="controls"><p>검수용 · 기록 목록 비교</p><SegmentedChoice label="기록 목록 시안" value={listVariant} onChange={setListVariant} options={[{value:"A",label:"A 구분선"},{value:"B",label:"B 카드"},{value:"C",label:"C 날짜별"}]}/></Stack></aside>}
+        <DiaryList variant={listVariant} entries={page.day ? state.entries.filter(e => e.entryDate === page.day) : page.month ? monthEntries(state.entries,page.month) : state.entries} onOpen={entry => navigate({ screen:'detail', entryId:entry.id })} emptyContent={<EmptyState title="아직 남긴 칭찬이 없어요." description="오늘의 작은 칭찬부터 시작해 볼까요?" action={<Button onClick={() => startWrite()}>칭찬일기 남기러 가기</Button>} />} />
+      </Stack>}
       {page.screen === 'collection' && <>
         <Stack gap="component">
-        <p className="collection-description">{COPY.collection.subtitle}</p>
         <div className="month-tiles">{allMonths.map(month => <MonthTile key={month} month={month} theme={themeFor(month)} writtenDays={writtenDays(state.entries,month)} entries={monthEntries(state.entries,month).length} entriesData={monthEntries(state.entries,month)} letterSource={monthEntries(state.entries,month).map(e => e.body).join(' ')} reducedMotion={state.reducedMotion} locked={month > todayMonth || !themeFor(month)} onClick={() => openMonth(month)} />)}</div>
         </Stack>
       </>}
