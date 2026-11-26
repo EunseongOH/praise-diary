@@ -1,0 +1,13 @@
+/* v0.2: interaction metrics proposed; dark palette candidate, scoped to .dj-system. */
+.dj-system {
+ --dj-bg:#1E1C27; --dj-surface:#282631; --dj-ink:#E9E4F2; --dj-muted:#B8AEC8; --dj-quiet:#A79DB6; --dj-disabled:#756E81; --dj-border:#585164; --dj-divider:#403849; --dj-focus:#D3C2EF; --dj-danger:#F0A9B0; --dj-press:#363040;
+ --dj-icon-inline:16px; --dj-icon-control:20px; --dj-icon-navigation:24px; --dj-icon-stroke:1.8; --dj-touch:44px; --dj-touch-comfort:48px; --dj-cta:52px;
+ --dj-space-1:4px; --dj-space-2:8px; --dj-space-3:12px; --dj-space-4:16px; --dj-space-5:20px; --dj-space-6:24px; --dj-space-8:32px; --dj-radius:8px; --dj-radius-button:14px;
+ --dj-motion-quick:120ms; --dj-motion-standard:180ms; --dj-ease:cubic-bezier(.2,0,0,1);
+ --dj-font: Pretendard, 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', sans-serif;
+ --dj-display:'Gowun Batang', 'NanumMyeongjo',serif;
+ /* Semantic spacing: actual component boxes, not the glyph bounds. */
+ --dj-gutter:var(--dj-space-5); --dj-gap-inline:var(--dj-space-2); --dj-gap-controls:var(--dj-space-2); --dj-gap-toolbar:var(--dj-space-1); --dj-gap-component:var(--dj-space-3); --dj-gap-section:var(--dj-space-6); --dj-gap-text:var(--dj-space-1);
+ --dj-field-height:52px; --dj-field-padding-x:var(--dj-space-3); --dj-field-padding-y:var(--dj-space-3); --dj-field-slot-padding:4px; --dj-field-textarea-height:260px; --dj-focus-width:2px; --dj-field-border:#82778F;
+ color:var(--dj-ink); font-family:var(--dj-font); color-scheme:dark;
+}
