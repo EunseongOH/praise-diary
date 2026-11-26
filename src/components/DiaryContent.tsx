@@ -33,7 +33,7 @@ export function DiaryContent({entry,reflections,mode,date,onClose,onSave,onDelet
   const save=()=>{if(!composer?.body.trim())return;if(onSave(composer.body,composer.date,composer.id))finish();else setError('저장하지 못했어요. 내용을 그대로 두었으니 다시 시도해 주세요.')};
   const editor=composer&&<section className="reflection-section">
     <span className="diary-paper-text diary-paper-date">{formatDay(composer.date)}</span>
-    <Stack gap="component">
+    <Stack gap="field-actions">
       <Textarea ref={area} density="compact" aria-label="오늘의 마음" placeholder="다시 읽어보니 어떤 마음이 드나요?" value={composer.body} onChange={e=>setComposer(c=>c?{...c,body:e.target.value}:null)}/>
       {error&&<p role="alert" className="reflection-error">{error}</p>}
       <ActionGroup><TextAction onClick={cancel}>취소</TextAction><Button size="compact" disabled={!composer.body.trim()} onClick={save}>남기기</Button></ActionGroup>

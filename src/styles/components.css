@@ -23,10 +23,10 @@
 .ui-removable-field .ui-field{font-size:var(--type-entry-title);line-height:1.5}
 .ui-menu-anchor{position:relative;display:flex;align-items:center;justify-content:space-between;gap:var(--gap-controls);width:100%;min-width:0}
 .ui-menu-leading{flex:1;min-width:0;overflow-wrap:anywhere}
-.ui-action-menu{position:absolute;z-index:20;inset-inline-end:0;inset-block-start:calc(100% + var(--menu-gap));inline-size:max-content;min-inline-size:min(var(--menu-min-width),100%);max-inline-size:100%;display:grid;gap:var(--menu-gap);padding:var(--menu-inset);border:1px solid var(--menu-border);border-radius:var(--radius-sm);background:var(--menu-bg)}
-.ui-action-menu[data-placement=above]{inset-block-start:auto;inset-block-end:calc(100% + var(--menu-gap))}
+.ui-action-menu{position:absolute;z-index:20;inset-inline-end:0;inset-block-start:calc(100% + var(--menu-anchor-gap));inline-size:max-content;min-inline-size:min(var(--menu-min-width),100%);max-inline-size:100%;display:grid;gap:var(--menu-gap);padding:var(--menu-inset);border:1px solid var(--menu-border);border-radius:var(--radius-sm);background:var(--menu-bg)}
+.ui-action-menu[data-placement=above]{inset-block-start:auto;inset-block-end:calc(100% + var(--menu-anchor-gap))}
 .ui-action-menu[hidden]{display:none}
-.ui-menu-item{display:flex;align-items:center;justify-content:flex-start;min-width:0;min-height:var(--menu-row-height);width:100%;height:auto;padding:var(--menu-row-padding-y) var(--menu-row-padding-x);border:0;border-radius:var(--space-1);background:transparent;color:var(--ink);font:500 var(--type-control)/1.5 var(--font-body);text-align:start;white-space:normal;overflow-wrap:anywhere}
+.ui-menu-item{display:flex;align-items:center;justify-content:flex-start;min-width:0;min-height:var(--menu-row-height);width:100%;height:auto;padding:var(--menu-row-padding-y) var(--menu-row-padding-x);border:0;border-radius:var(--menu-row-radius);background:transparent;color:var(--ink);font:500 var(--type-control)/1.5 var(--font-body);text-align:start;white-space:normal;overflow-wrap:anywhere}
 .ui-menu-item>span{min-width:0;overflow-wrap:anywhere}
 .ui-menu-item[data-tone=danger]{color:var(--danger)}
 .ui-menu-item:disabled,.ui-text-action:disabled{color:var(--disabled)}
@@ -51,3 +51,16 @@
 .reflection-section .ui-field-shell[data-density=compact] .ui-field{resize:none;overflow:hidden}
 .reflection-error{padding-inline:var(--field-padding);color:var(--danger)}
 .diary-add-action{display:flex;justify-content:center}
+
+/* The global page and dialog share the reviewed 20px gutter. Legacy geometry is superseded here. */
+.app-content,.app-bar{padding-inline:var(--gutter)}
+.app-bar{gap:var(--gap-toolbar)}
+.ui-button{line-height:1.5}
+.ui-text-action{line-height:var(--leading-supporting)}
+.ui-text-action[data-density=toolbar]{font-weight:500;line-height:1.5}
+.dialog-backdrop{padding:var(--gutter)}
+.dialog{padding:var(--dialog-padding);border-radius:var(--space-3);background:var(--menu-bg);border-color:var(--menu-border)}
+.dialog h2,.dialog p{margin:0;overflow-wrap:anywhere}
+.dialog h2{font-weight:500;line-height:1.5}
+.dialog .ui-button[data-size=compact]{padding:var(--action-padding-y) var(--action-padding-x)}
+.dialog{max-height:calc(100dvh - 2 * var(--gutter));overflow-y:auto}

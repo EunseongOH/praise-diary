@@ -84,7 +84,7 @@
   --field-border:#82778F; --disabled:#756E81; --paper:#302A3A; --divider:#403849;
   --cta-height:52px; --action-padding-x:var(--space-3); --action-padding-y:var(--space-2);
   --action-toolbar-padding-x:var(--space-1); --menu-min-width:144px; --menu-inset:var(--space-1);
-  --menu-gap:var(--gap-text); --menu-row-height:var(--touch-comfort); --menu-row-padding-x:var(--space-3);
+  --menu-gap:var(--gap-text); --menu-anchor-gap:var(--gap-text); --menu-row-radius:var(--space-1); --dialog-padding:var(--gutter); --menu-row-height:var(--touch-comfort); --menu-row-padding-x:var(--space-3);
   --menu-row-padding-y:var(--space-2); --menu-bg:#393342; --menu-border:#685A77;
   --type-page:1.5rem; --type-section:1.125rem; --type-entry-title:1.25rem; --type-body:1rem; --type-control:1rem;
   --type-supporting:.875rem; --type-meta:.8125rem; --leading-body:1.6; --leading-display:1.4; --leading-reading:1.75;

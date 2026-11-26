@@ -70,3 +70,5 @@
 - 원본과 독립된 DiaryReflection 데이터 계약, 세 진입점에서 같은 DiaryContent 사용. 작성/수정/삭제, 원본 삭제 연동, 날짜 보존, 미저장 확인, 세션 저장 실패 입력 유지. 기존 sessionStorage 데이터에는 reflections 기본 빈 배열 마이그레이션. 세션 저장을 먼저 확인하고 상태를 변경. 서버/인증 아님.
 - v0.5 ActionMenu, FieldShell/Textarea, ActionGroup 사용. CI에 실제 빌드 결과를 대상으로 Playwright Chromium 320/390/430px 및 입력/메뉴 실측, 세 경로 CRUD, 저장 실패·미저장 확인을 추가. 현재 커밋의 실행 결과 확인 필요.
 - 실제 기억병/곡면·지지 모션, 모바일 키보드/WebView, 전체 200% 확대, 최신 도감/설정/스플래시, DB/SDK 미완료. 원문 관리 버튼 위치·날짜 정책(KST 실제 날짜)은 검토안. 월간 그래픽은 슬롯 유지.
+
+- 최초 통합 CI 45728247934의 타입 실패를 수정했고 45728774718은 전체 기존 검사/빌드 성공. 공통 감상 추가 후 45728988652는 타입·Vite·로직·디자인 정적 검사까지 성공, Chromium 설치는 ubuntu-latest(26.04) 호환성 문제로 실패. CI를 ubuntu-24.04로 고정. 확인창 20px padding/12px group, 공통 페이지 gutter, AppBar 공통 아이콘, field-actions 의미 토큰 및 입력 정렬/메뉴 200% 실측 검사를 보강. 최신 CI 통과 여부는 PR #2 검사 결과를 기준으로 한다.

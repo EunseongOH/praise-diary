@@ -15,8 +15,8 @@ for(const width of [320,390,430]){
   await page.getByRole('button',{name:'오늘의 마음 덧붙이기'}).click();
   const area=page.getByRole('textbox',{name:'오늘의 마음'});
   await expect(area).toBeFocused();
-  const metrics=await area.evaluate(el=>{const cs=getComputedStyle(el),shell=el.parentElement!,actions=shell.parentElement!.querySelector('.ui-action-group')!;return {padding:cs.paddingLeft,ring:getComputedStyle(shell).boxShadow,gap:actions.getBoundingClientRect().top-shell.getBoundingClientRect().bottom,buttonGap:getComputedStyle(actions).gap}});
-  expect(metrics.padding).toBe('12px');expect(metrics.ring).toContain('inset');expect(metrics.ring).toContain('2px');expect(metrics.gap).toBeCloseTo(12,0);expect(metrics.buttonGap).toBe('8px');
+  const metrics=await area.evaluate(el=>{const cs=getComputedStyle(el),shell=el.parentElement!,actions=shell.parentElement!.querySelector('.ui-action-group')!;return {padding:cs.paddingLeft,ring:getComputedStyle(shell).boxShadow,gap:actions.getBoundingClientRect().top-shell.getBoundingClientRect().bottom,buttonGap:getComputedStyle(actions).gap,alignment:Math.abs(el.getBoundingClientRect().left+parseFloat(cs.paddingLeft)-document.querySelector('.diary-original p')!.getBoundingClientRect().left)}});
+  expect(metrics.padding).toBe('12px');expect(metrics.ring).toContain('inset');expect(metrics.ring).toContain('2px');expect(metrics.gap).toBeCloseTo(12,0);expect(metrics.buttonGap).toBe('8px');expect(metrics.alignment).toBeCloseTo(0,0);
   await area.fill('오늘 다시 만나서 좋았어.');
   await page.getByRole('button',{name:'남기기',exact:true}).click();
   await expect(page.getByText('오늘 다시 만나서 좋았어.',{exact:true})).toBeVisible();
@@ -26,6 +26,7 @@ for(const width of [320,390,430]){
   const geometry=await row.evaluate(el=>{const cs=getComputedStyle(el),p=el.parentElement!;return {height:el.getBoundingClientRect().height,paddingX:cs.paddingLeft,paddingY:cs.paddingTop,width:p.getBoundingClientRect().width,gap:getComputedStyle(p).gap}});
   expect(geometry.height).toBeGreaterThanOrEqual(48);expect(geometry.paddingX).toBe('12px');expect(geometry.paddingY).toBe('8px');expect(geometry.width).toBeGreaterThanOrEqual(144);expect(geometry.gap).toBe('4px');
   await page.keyboard.press('Escape');await expect(menu).toBeHidden();
+  if(width===320){await page.evaluate(()=>{document.documentElement.style.fontSize='200%'});await page.getByRole('button',{name:'덧붙인 마음 관리'}).click();await expect(menu).toBeVisible();expect(await row.evaluate(el=>getComputedStyle(el).fontSize)).toBe('32px');expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBeTruthy();await page.keyboard.press('Escape');await page.evaluate(()=>{document.documentElement.style.fontSize=''})}
   await page.getByRole('button',{name:'닫기',exact:true}).click();
   await page.getByRole('button',{name:'홈',exact:true}).click();
   await page.getByRole('button',{name:'달력으로 보기'}).click();
@@ -43,7 +44,7 @@ for(const width of [320,390,430]){
   await expect(page.getByText('수정한 마음',{exact:true})).toBeVisible();
   await page.getByRole('button',{name:'덧붙인 마음 관리'}).click();
   await page.getByRole('button',{name:'삭제하기',exact:true}).click();
-  await page.getByRole('alertdialog').getByRole('button',{name:'삭제하기',exact:true}).click();
+  const dialog=page.getByRole('alertdialog');await expect(dialog).toBeVisible();const dlg=await dialog.evaluate(el=>({padding:getComputedStyle(el).paddingLeft,gap:getComputedStyle(el.querySelector('.ui-stack')!).gap}));expect(dlg.padding).toBe('20px');expect(dlg.gap).toBe('12px');await dialog.getByRole('button',{name:'삭제하기',exact:true}).click();
   await expect(page.getByText('수정한 마음',{exact:true})).toHaveCount(0);
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBeTruthy();
   expect(errors).toEqual([]);

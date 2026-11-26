@@ -20,7 +20,7 @@ export function TextAction({ children, onClick, className = '', density = 'stand
 }) {
   return <button type="button" onClick={onClick} disabled={disabled} data-density={density} className={`ui-text-action ${className}`.trim()}>{icon && <Icon name={icon} size="inline"/>}{children}</button>;
 }
-type LayoutGap = 'text' | 'inline' | 'controls' | 'toolbar' | 'component' | 'section';
+type LayoutGap = 'text' | 'inline' | 'controls' | 'toolbar' | 'component' | 'section' | 'field-actions';
 export function Stack({children,gap='component'}:{children:ReactNode;gap?:LayoutGap}) {
   return <div className="ui-stack" style={{'--layout-gap':`var(--gap-${gap})`} as CSSProperties}>{children}</div>;
 }
@@ -74,9 +74,9 @@ export function AppBar({ title, onBack, action, onAction }: {
   title: string; onBack?: () => void; action?: string; onAction?: () => void;
 }) {
   return <header className="app-bar">
-    {onBack ? <button type="button" className="app-bar__back" onClick={onBack} aria-label="뒤로가기">←</button> : null}
+    {onBack ? <IconButton icon="arrow-left" label="뒤로가기" onClick={onBack}/> : null}
     <span className="app-bar__title">{title}</span>
-    {action && onAction ? <button type="button" onClick={onAction} className="app-bar__action">{action}</button> : null}
+    {action && onAction ? <TextAction density="toolbar" onClick={onAction}>{action}</TextAction> : null}
   </header>;
 }
 
@@ -147,10 +147,10 @@ export function Dialog({ title, description, children, confirmLabel, confirmDisa
   }, []);
   return <div className="dialog-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) onCancel(); }}>
     <section ref={dialogRef} className="dialog" role="alertdialog" aria-modal="true" aria-label={title}>
-      <h2>{title}</h2>
-      {description && <p>{description}</p>}
-      {children}
-      <ActionGroup><TextAction onClick={onCancel}>취소</TextAction><Button size="compact" variant={danger ? 'danger' : 'primary'} onClick={onConfirm} disabled={confirmDisabled}>{confirmLabel}</Button></ActionGroup>
+      <Stack gap="component">
+        <Stack gap="controls"><h2>{title}</h2>{description && <p>{description}</p>}{children}</Stack>
+        <ActionGroup><TextAction onClick={onCancel}>취소</TextAction><Button size="compact" variant={danger ? 'danger' : 'primary'} onClick={onConfirm} disabled={confirmDisabled}>{confirmLabel}</Button></ActionGroup>
+      </Stack>
     </section>
   </div>;
 }
