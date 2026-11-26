@@ -33,7 +33,7 @@ export function PeriodPicker({value,months,years,onChange}:{value:string;months:
  const items=Array.from({length:12},(_,i)=>yearMode?base+i:i+1);
  return <div className="ui-period-picker">
   <button ref={trigger} type="button" className="ui-filter-text ui-period-trigger" data-active={value!=='all'} aria-label={'기간 선택: '+label} aria-haspopup="dialog" aria-expanded={open} aria-controls={open?id:undefined} disabled={!years.length} onClick={()=>open?close(true):show()} onKeyDown={e=>{if(e.key==='Escape'&&open){e.stopPropagation();e.preventDefault();close(true)}}}>
-   <Icon name="calendar" size="inline"/><span>{label}</span><Icon name="chevron-down" size="inline"/>
+   <span>{label}</span><Icon name="chevron-down" size="inline"/>
   </button>
   {open&&<div ref={panel} id={id} role="dialog" aria-label="기간 선택" className="ui-period-popup" style={{maxHeight:height}} onKeyDown={e=>{
    if(e.key==='Escape'){e.preventDefault();e.stopPropagation();close(true);return}
