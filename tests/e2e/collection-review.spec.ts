@@ -17,7 +17,10 @@ for(const width of [320,390,430])test('collection V02 shared UI '+width,async({p
  await page.getByRole('button',{name:'뒤로가기'}).click();await page.getByRole('button',{name:'뒤로가기'}).click();await expect(tiles.first()).toBeFocused();
  await page.locator('.month-tile[data-month="2027-02"]').click();await expect(page.getByRole('heading',{name:'아직 공개되지 않았어요.'})).toBeVisible();
  await page.getByRole('button',{name:'이런 그래픽은 어때요? 의견 남기기'}).click();await expect(page.getByRole('button',{name:'의견 남기기',exact:true})).toBeDisabled();
- await page.getByRole('textbox',{name:'그래픽 아이디어'}).fill('벚꽃나무');await page.getByRole('button',{name:'의견 남기기',exact:true}).click();await expect(page.getByText('시연용으로 의견을 보관했어요.')).toBeVisible();
+ await expect(page.getByText('그래픽 아이디어',{exact:true})).toHaveCount(0);
+ const field=page.getByRole('textbox',{name:'그래픽 아이디어'});await expect(field).toBeVisible();
+ const geometry=await field.evaluate(el=>{const shell=el.closest('.ui-field-shell')!,button=shell.parentElement!.querySelector('button')!;return {gap:button.getBoundingClientRect().top-shell.getBoundingClientRect().bottom,padding:getComputedStyle(el).paddingLeft}});expect(geometry.gap).toBeCloseTo(12,0);expect(geometry.padding).toBe('12px');
+ await field.fill('벚꽃나무');await page.getByRole('button',{name:'의견 남기기',exact:true}).click();await expect(page.getByText('시연용으로 의견을 보관했어요.')).toBeVisible();
  expect(await page.evaluate(()=>JSON.parse(sessionStorage.getItem('praise-diary:prototype:v1')!).ideas[0].month)).toBe('2027-02');
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBeTruthy();
 });
