@@ -15,7 +15,7 @@ export function SearchField({value,onChange,disabled=false,label='칭찬 검색'
  </div>;
 }
 export function FilterToggle({label,pressed,onChange,disabled=false}:{label:string;pressed:boolean;onChange:(pressed:boolean)=>void;disabled?:boolean}){
- return <button type="button" className="ui-filter-toggle" aria-pressed={pressed} disabled={disabled} onClick={()=>onChange(!pressed)}><Icon name="message" size="inline"/><span>{label}</span>{pressed&&<Icon name="check" size="inline"/>}</button>;
+ return <button type="button" className="ui-filter-toggle" aria-pressed={pressed} disabled={disabled} onClick={()=>onChange(!pressed)}><Icon name="message" size="inline"/><span>{label}</span></button>;
 }
 export function ListSectionHeader({label,id}:{label:string;id:string}){
  return <h2 className="ui-list-section-header" id={id}>{label}</h2>;
