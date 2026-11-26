@@ -11,11 +11,13 @@
     "check:contrast": "node scripts-contrast.mjs",
     "check:syntax": "node scripts-verify-syntax.mjs",
     "test:logic": "node tests/logic.mjs",
-    "check": "npm run check:syntax && npm run check:contrast && npm run check:design && npm run test:logic && npm run test:glyph && npm run test:motion && npm run build",
+    "check": "npm run check:syntax && npm run check:contrast && npm run check:design && npm run check:popups && npm run test:logic && npm run test:archive && npm run test:glyph && npm run test:motion && npm run build",
     "test:glyph": "node tests/glyph-layout.mjs",
     "check:design": "node tests/design-contract.mjs",
     "test:e2e": "playwright test",
-    "test:motion": "node tests/rediscover-motion.mjs"
+    "test:motion": "node tests/rediscover-motion.mjs",
+    "test:archive": "node tests/archive.mjs",
+    "check:popups": "node tests/no-native-popups.mjs"
   },
   "dependencies": {
     "react": "^18.3.1",

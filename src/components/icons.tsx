@@ -1,5 +1,6 @@
 import type { SVGProps } from 'react';
 export const iconPaths = {
+  "search": ["M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16z","m17 17 4 4"],
   "close": [
     "M6 6l12 12",
     "M18 6L6 18"
