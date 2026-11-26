@@ -39,6 +39,24 @@ test('home renders the real snowflake for 1 / 3 / 8 / 14 / 15 / 17 days, nothing
   }
 });
 
+test('review seed: 9 entries keep rediscovery locked, 10 and 14 unlock it without extra saving', async ({ page }) => {
+  test.setTimeout(180_000);
+  await page.setViewportSize({ width: 390, height: 860 });
+  for (const [days, locked] of [[9, true], [10, false], [14, false]] as const) {
+    const errors = await open(page, days);
+    await page.getByRole('button', { name: '꺼내보기', exact: true }).click();
+    await expect(page.locator('.rediscover-screen')).toHaveAttribute('data-locked', String(locked));
+    if (locked) {
+      await expect(page.getByText('10개의 칭찬이 모이면, 하나씩 꺼내볼 수 있어요.')).toBeVisible();
+      await expect(page.getByRole('button', { name: '칭찬 하나 꺼내보기' })).toHaveCount(0);
+    } else {
+      await expect(page.getByRole('button', { name: '칭찬 하나 꺼내보기' })).toBeEnabled();
+      await expect(page.getByText('10개의 칭찬이 모이면, 하나씩 꺼내볼 수 있어요.')).toHaveCount(0);
+    }
+    expect(errors).toEqual([]);
+  }
+});
+
 test('collection tile is a still frame (no animation), caption hidden; 2027-01 stays locked; detail has pinch / keyboard zoom without controls', async ({ page }) => {
   test.setTimeout(180_000);
   await page.setViewportSize({ width: 390, height: 860 });
