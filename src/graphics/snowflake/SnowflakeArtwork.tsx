@@ -28,7 +28,7 @@ import { PRE } from './core/snowflakeCompletion/timeline';
 import type { Snap } from './core/snowflakeGrowthReplay/snapshots';
 import type { Entry } from './core/multiHelix/engine';
 
-export type SnowflakeVariant = 'home' | 'detail' | 'tile' | 'saved';
+export type SnowflakeVariant = 'home' | 'detail' | 'tile' | 'saved' | 'preview';
 export type SnowflakePlayback = { kind: 'growth' | 'addition' | 'complete'; eventId: string };
 type Props = { entries: DiaryEntry[]; reducedMotion: boolean; variant: SnowflakeVariant; playback?: SnowflakePlayback; label: string; onPlaybackState?: (phase: 'preparing' | 'replaying' | 'settled') => void };
 
@@ -75,7 +75,7 @@ export function SnowflakeArtwork({ entries, reducedMotion, variant, playback, la
   if (!E.length) return null;
   if (event) return <SnowflakeSaveEvent key={event.id} id={event.id} before={event.before} after={E} complete={event.complete} kind={event.kind} label={label} fallback={state} onPlaybackState={onPlaybackState} />;
   if (!state) return <div className="snowflake-artwork" data-snowflake="pending" aria-hidden="true" />;
-  return <SnowflakeStatic key={still ? 'still' : 'live'} snap={state} live={!still && variant !== 'tile'} label={label} />;
+  return <SnowflakeStatic key={still ? 'still' : 'live'} snap={state} live={!still && variant !== 'tile' && variant !== 'preview'} label={label} />;
 }
 
 function SnowflakeSaveEvent({ id, before, after, complete, kind, label, fallback, onPlaybackState }: { id: string; before: Entry[]; after: Entry[]; complete: boolean; kind: string; label: string; fallback: Snap | null; onPlaybackState?: (phase: 'preparing' | 'replaying' | 'settled') => void }) {
