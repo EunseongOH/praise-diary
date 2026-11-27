@@ -187,13 +187,16 @@ test('entry review: first visitor sees brand and monthly introduction, reopening
   const intro=page.getByRole('dialog',{name:'다정록 첫 만남'});
   await expect(intro).toHaveAttribute('data-entry-scenario','first');
   await expect(intro.getByRole('heading',{name:'다정록'})).toBeVisible();
+  await page.screenshot({path:'test-results/entry-first-brand-390.png'});
   await expect(intro).toHaveAttribute('data-entry-phase','intro',{timeout:8000});
+  await page.screenshot({path:'test-results/entry-first-intro-390.png'});
   await intro.getByRole('button',{name:'건너뛰기'}).click();
   await expect(intro).toHaveCount(0);
   await expect(page.getByText('8일의 칭찬')).toBeVisible();
   await page.reload();
   const again=page.getByRole('dialog',{name:'다정록 첫 만남'});
   await expect(again).toHaveAttribute('data-entry-scenario','return');
+  await page.screenshot({path:'test-results/entry-return-brand-390.png'});
   await expect(again).toHaveCount(0,{timeout:6000});
   await expect(page.locator('.home-artwork-stage .artwork-slot')).toHaveAttribute('data-written-days','8');
   await context.close();
@@ -209,6 +212,7 @@ test('entry review: zero-entry return and first encounter of a new month can be 
     await expect(intro).toHaveAttribute('data-entry-scenario',scenario);
     await expect(intro).toHaveAttribute('data-motion','off');
     if(scenario==='new-month') await expect(intro.getByRole('heading',{name:'새해 양'})).toBeVisible();
+    await page.screenshot({path:'test-results/entry-'+scenario+'-320.png'});
     await intro.getByRole('button',{name:'홈으로'}).click();
     await expect(intro).toHaveCount(0);
   }
