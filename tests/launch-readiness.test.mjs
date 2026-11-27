@@ -9,7 +9,7 @@ test('draft app info is within 20 characters with a valid immutable slug candida
  assert.ok([...m.product.shortDescription].length<=20);
  assert.ok(!/[.!。！]$/.test(m.product.shortDescription));
  assert.match(m.product.appNameCandidate,/^[a-z0-9]+(?:-[a-z0-9]+)*$/);
- assert.ok(m.product.detailDescription.includes('다정록을 열고'));
+ assert.ok(m.product.detailDescription.includes('다정한 한마디'));
  assert.ok(m.product.detailDescription.includes('칭찬일기'));
 });
 test('real launch remains blocked until real Toss SDK, backend and privacy proof exist',()=>{

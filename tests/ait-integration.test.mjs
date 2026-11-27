@@ -39,5 +39,18 @@ test('App-in-Toss name, subtitle and long description meet visible console limit
  assert.ok([...m.product.detailDescription].length>200);
  assert.equal(m.product.appNameRegistered,'dajeongrok');
  assert.ok(m.product.detailDescription.includes('작품'));
- assert.ok(m.product.detailDescription.includes('꺼내보기'));
+ assert.ok(m.product.detailDescription.includes('포춘쿠키'));
+ assert.ok(m.product.detailDescription.includes('칭찬일기'));
+});
+
+test('the December sandbox QA uses real renderer and fictional 1/5/15 day fixture, never diary state', () => {
+ const source=read('src/screens/SandboxSnowflakeQA.tsx');
+ const app=read('src/screens/App.tsx');
+ assert.match(source,/previewFor\(theme\)/);
+ assert.match(source,/ArtworkSlot/);
+ assert.match(source,/1, 5, 15/);
+ assert.match(source,/preview.entries.slice\(0, days\)/);
+ assert.doesNotMatch(source,/saveState|localStorage|sessionStorage/);
+ assert.match(app,/aitReview && sandboxSnowflakeOpen/);
+ assert.match(app,/sandboxSnowflakeOpen.*setSandboxSnowflakeOpen\(false\)/);
 });
