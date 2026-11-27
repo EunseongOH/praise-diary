@@ -24,6 +24,8 @@ export type PrototypeState = {
   entries: DiaryEntry[];
   reflections: DiaryReflection[];
   letterDrawUnlockedAt: string | null;
+  /** Saved message rotation progress (not the number of days); retained after entry deletion. */
+  postGoalCopyCounter?: number;
   boundaryHour: number;
   reducedMotion: boolean;
   ideas: GraphicIdea[];
