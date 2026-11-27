@@ -6,7 +6,7 @@ on:
     branches: [main, feat/mvp-integration, feat/brand-splash-window, feat/entry-actual-artwork-preview]
     types: [opened, synchronize, reopened, ready_for_review, edited]
   push:
-    branches: [main, feat/design-system-prototype, feat/mvp-integration, feat/archive-f, feat/snowflake-service-integration, feat/entry-actual-artwork-preview, feat/artwork-registry-backend-design, feat/provider-neutral-data-auth-contract, feat/ait-launch-readiness-audit, feat/ait-sdk3-review-bundle, feat/ait-snowflake-qa-and-copy]
+    branches: [main, feat/design-system-prototype, feat/mvp-integration, feat/archive-f, feat/snowflake-service-integration, feat/entry-actual-artwork-preview, feat/artwork-registry-backend-design, feat/provider-neutral-data-auth-contract, feat/ait-launch-readiness-audit, feat/ait-sdk3-review-bundle, feat/ait-snowflake-qa-and-copy, fix/ait-snowflake-motion-full-qa]
 
 jobs:
   check:

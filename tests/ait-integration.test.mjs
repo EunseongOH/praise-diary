@@ -43,14 +43,27 @@ test('App-in-Toss name, subtitle and long description meet visible console limit
  assert.ok(m.product.detailDescription.includes('칭찬일기'));
 });
 
-test('the December sandbox QA uses real renderer and fictional 1/5/15 day fixture, never diary state', () => {
+test('AIT sandbox tests REAL idle, first, growth, same-day, completion, reduced motion without saving fake entries', () => {
  const source=read('src/screens/SandboxSnowflakeQA.tsx');
  const app=read('src/screens/App.tsx');
+ const engine=read('src/graphics/snowflake/SnowflakeArtwork.tsx');
+ const css=read('src/styles/components.css');
+ const smoke=read('scripts/smoke-ait-snowflake.mjs');
  assert.match(source,/previewFor\(theme\)/);
- assert.match(source,/ArtworkSlot/);
- assert.match(source,/1, 5, 15/);
- assert.match(source,/preview.entries.slice\(0, days\)/);
+ assert.match(source,/variant=\{eventScenario \? 'saved' : 'home'\}/);
+ assert.match(source,/id: 'additional-praise-ait-qa-/);
+ for(const mode of ["'idle'", "'first'", "'growth'", "'addition'", "'complete'", "'reduced'"]) {
+   assert.ok(source.includes(mode), 'missing scene '+mode);
+ }
+ assert.doesNotMatch(source,/variant="preview"|\breducedMotion variant="preview"/);
  assert.doesNotMatch(source,/saveState|localStorage|sessionStorage/);
+ assert.match(engine,/event\.before\.length === 0/);
+ assert.match(engine,/function SnowflakeFirstGrowth/);
+ assert.match(css,/@keyframes snowflake-first-grow/);
+ assert.match(smoke,/idle motion must move glyphs/);
+ assert.match(smoke,/First-day bottom→top reveal/);
+ assert.match(smoke,/canvas\[data-fx="reward"\]/);
+ assert.match(smoke,/OS prefers-reduced-motion/);
  assert.match(app,/aitReview && sandboxSnowflakeOpen/);
  assert.match(app,/sandboxSnowflakeOpen.*setSandboxSnowflakeOpen\(false\)/);
 });
