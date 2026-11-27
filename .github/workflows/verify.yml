@@ -6,7 +6,7 @@ on:
     branches: [main, feat/mvp-integration, feat/brand-splash-window, feat/entry-actual-artwork-preview]
     types: [opened, synchronize, reopened, ready_for_review, edited]
   push:
-    branches: [main, feat/design-system-prototype, feat/mvp-integration, feat/archive-f, feat/snowflake-service-integration, feat/entry-actual-artwork-preview, feat/artwork-registry-backend-design, feat/provider-neutral-data-auth-contract, feat/ait-launch-readiness-audit, feat/ait-sdk3-review-bundle]
+    branches: [main, feat/design-system-prototype, feat/mvp-integration, feat/archive-f, feat/snowflake-service-integration, feat/entry-actual-artwork-preview, feat/artwork-registry-backend-design, feat/provider-neutral-data-auth-contract, feat/ait-launch-readiness-audit, feat/ait-sdk3-review-bundle, feat/ait-snowflake-qa-and-copy]
 
 jobs:
   check:
@@ -43,6 +43,8 @@ jobs:
         run: npm run test:e2e
       - name: Build SDK 3.x sandbox-only .ait (NOT FOR PRODUCTION)
         run: npm run bundle:ait:review
+      - name: Smoke test December Canvas in exact sandbox build assets
+        run: node scripts/smoke-ait-snowflake.mjs
       - name: Upload sandbox-only Apps-in-Toss bundle
         if: success()
         uses: actions/upload-artifact@v4
