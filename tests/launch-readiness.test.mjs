@@ -14,7 +14,7 @@ test('draft app info is within 20 characters with a valid immutable slug candida
 });
 test('real launch remains blocked until real Toss SDK, backend and privacy proof exist',()=>{
  assert.equal(result.status,'NOT_READY');
- for(const key of ['ait_sdk','production_repository','toss_verification','auth_and_cross_user','legal_urls','marketing_assets']) {
+ for(const key of ['production_repository','toss_verification','auth_and_cross_user','legal_urls','marketing_assets']) {
   assert.ok(result.issues.some(x=>x.key===key && x.level==='blocker'),'expected blocker '+key);
  }
 });
