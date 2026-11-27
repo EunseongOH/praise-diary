@@ -81,6 +81,25 @@ assert.equal(preservedUnlock.letterDrawUnlockedAt,unlockedAtTen.letterDrawUnlock
 console.log('PASS — rediscovery 9/10 entry threshold, legacy recovery, permanent unlock');
 
 
+const baseCopy=load('content/copy.ts');
+const copy=load('content/savedCopy.ts', name=>name==='./copy'?baseCopy:undefined);
+const december={month:'2026-12',title:'겨울의 눈꽃',kind:'snowflake',targetDays:null};
+assert.equal(copy.selectSavedCopy({theme:december,mode:'growth',beforeDays:0,afterDays:1,postGoalCounter:0}).text,'작은 눈꽃이 피어나기 시작했어요.');
+assert.equal(copy.selectSavedCopy({theme:december,mode:'growth',beforeDays:13,afterDays:14,postGoalCounter:0}).text,'눈꽃이 어느새 이만큼 피어났어요.');
+assert.equal(copy.selectSavedCopy({theme:december,mode:'growth',beforeDays:14,afterDays:15,postGoalCounter:0}).text,'남긴 칭찬이 눈꽃에 더해졌어요.','December unconfirmed target must not claim completion');
+const confirmed={...december,targetDays:15};
+assert.equal(copy.selectSavedCopy({theme:confirmed,mode:'complete',beforeDays:14,afterDays:15,postGoalCounter:0}).text,'차곡차곡 모은 다정함이 하나의 눈꽃이 되었어요.');
+const sequence=Array.from({length:16},(_,i)=>copy.postGoalCaption(i));
+assert.equal(new Set(sequence).size,16,'rotating copy uses all messages without repeat within one cycle');
+assert.notEqual(copy.postGoalCaption(15),copy.postGoalCaption(16),'new cycle must not repeat last message');
+const afterward=copy.selectSavedCopy({theme:confirmed,mode:'growth',beforeDays:15,afterDays:16,postGoalCounter:0});
+assert.equal(afterward.text,sequence[0]);assert.equal(afterward.nextCounter,1,'increment only for post-goal save');
+const sameDay=copy.selectSavedCopy({theme:confirmed,mode:'addition',beforeDays:16,afterDays:16,postGoalCounter:1});
+assert.equal(sameDay.text,sequence[1]);assert.equal(sameDay.nextCounter,2);
+const beforeGoalSameDay=copy.selectSavedCopy({theme:december,mode:'addition',beforeDays:5,afterDays:5,postGoalCounter:0});
+assert.equal(beforeGoalSameDay.text,'눈꽃에 칭찬이 하나 더 쌓였어요.');assert.equal(beforeGoalSameDay.nextCounter,0);
+console.log('PASS — distinct-day saved copy, confirmed completion, post-goal 16-copy no-repeat cycle');
+
 const prompts=load('data/prompts.ts');const themes=load('data/themes.ts');
 for(let i=0;i<50;i++){const pair=prompts.pickPrompts();assert.equal(pair.length,2);assert.notEqual(pair[0].category,pair[1].category);const next=prompts.pickPrompts(pair);assert.equal(next.length,2);assert.ok(next.every(p=>!pair.some(q=>q.category===p.category)));}
 assert.equal(store.reflectionCounts(withNote.reflections).get('a'),1);assert.equal(store.reflectionCounts(store.removeReflection(withNote,'a','r').reflections).get('a'),undefined);
