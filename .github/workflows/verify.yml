@@ -6,19 +6,19 @@ on:
     branches: [main, feat/mvp-integration, feat/brand-splash-window, feat/entry-actual-artwork-preview]
     types: [opened, synchronize, reopened, ready_for_review, edited]
   push:
-    branches: [main, feat/design-system-prototype, feat/mvp-integration, feat/archive-f, feat/snowflake-service-integration, feat/entry-actual-artwork-preview, feat/artwork-registry-backend-design, feat/provider-neutral-data-auth-contract, feat/ait-launch-readiness-audit]
+    branches: [main, feat/design-system-prototype, feat/mvp-integration, feat/archive-f, feat/snowflake-service-integration, feat/entry-actual-artwork-preview, feat/artwork-registry-backend-design, feat/provider-neutral-data-auth-contract, feat/ait-launch-readiness-audit, feat/ait-sdk3-review-bundle]
 
 jobs:
   check:
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 18
     steps:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '24'
           cache: npm
           cache-dependency-path: package.json
       - name: Install dependencies
@@ -32,7 +32,7 @@ jobs:
       - name: Audit Apps-in-Toss launch blockers (report only; not deployment)
         run: |
           npm run audit:ait
-          node --test tests/launch-readiness.test.mjs
+          node --test tests/launch-readiness.test.mjs tests/ait-integration.test.mjs
       - name: Verify prototype
         run: npm run check
       - name: Prepare actual React review package
@@ -41,6 +41,19 @@ jobs:
         run: npx playwright install --with-deps chromium
       - name: Browser integration, design geometry and snowflake review build
         run: npm run test:e2e
+      - name: Build SDK 3.x sandbox-only .ait (NOT FOR PRODUCTION)
+        run: npm run bundle:ait:review
+      - name: Upload sandbox-only Apps-in-Toss bundle
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dajeongrok-ait-sdk3-sandbox-ONLY
+          path: |
+            *.ait
+            build/*.ait
+            dist/*.ait
+          if-no-files-found: error
+          retention-days: 7
       - name: Upload collection visual evidence
         if: always()
         uses: actions/upload-artifact@v4

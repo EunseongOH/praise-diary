@@ -20,6 +20,11 @@ export function assessLaunch(rootPath=root){
    if(!passed)issues.push({key,level,reason});
  };
  const short=manifest.product.shortDescription??'';
+ const detail=manifest.product.detailDescription??'';
+ const englishName=manifest.product.englishDisplayName??'';
+ gate('registration_fields',Array.from(short).length<=20 && Array.from(detail).length<=500 &&
+  Array.from(englishName).length<=15 && englishName.length>0,
+  '부제(20자), 상세 설명(500자), 영문명(15자) 제한 및 누락을 확인하세요.');
  const appName=manifest.product.appNameCandidate??'';
  const shortPass=short.length>0 && [...short].length<=20 && !/[.!。！]$/.test(short);
  const slugPass=/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(appName);
@@ -34,8 +39,10 @@ export function assessLaunch(rootPath=root){
  const assets=manifest.assets;
  gate('marketing_assets',Boolean(assets.appIcon && assets.squareThumbnail && assets.wideThumbnail &&
    assets.portraitScreenshots.length>=3), '앱 아이콘/대표 썸네일/실제 화면 캡처 미준비');
- gate('ait_sdk',Boolean(deps['@apps-in-toss/web-framework'] && exists('granite.config.ts') &&
-   (pkg.scripts['build:ait'] || pkg.scripts['bundle:ait'])), '앱인토스 SDK·granite.config.ts·.ait 빌드 스크립트 없음');
+ gate('ait_sdk',Boolean(evidence.aitSdkInstalledAndBuilt &&
+   deps['@apps-in-toss/web-framework'] && deps['@apps-in-toss/devtools'] &&
+   exists('apps-in-toss.config.ts') && pkg.scripts['bundle:ait:review']),
+   'SDK 3.x apps-in-toss.config.ts / .ait 빌드의 실검수 증거 필요');
  const app=load('src/screens/App.tsx'),store=load('src/data/store.ts');
  gate('production_repository',evidence.durableEntriesAndRecoveryTested &&
    !(app.includes('loadState, saveState') && store.includes('sessionStorage')),
@@ -45,7 +52,7 @@ export function assessLaunch(rootPath=root){
  gate('auth_and_cross_user',evidence.firebaseOrSupabaseAuthAndRulesVerified && evidence.crossUserPrivacyTestsPassed,
    '실 DB 보안 규칙/RLS 및 서로 다른 사용자 교차접근 검증 필요');
  gate('data_controls',evidence.accountDeletionAndExportTested, '계정 탈퇴/전체 기록 삭제/내보내기·복원 미검증');
- const graphics=load('src/graphics/snowflake/flags.ts'),themes=load('src/data/themes.ts');
+ const graphics=load('src/graphics/snowflake/flags.ts');
  const css=load('src/styles/tokens.css'),html=load('index.html');
  gate('dark_theme_policy',evidence.nonGameDarkThemePolicyReviewed,
    css.includes('color-scheme: dark') ? '비게임 라이트 모드 기준과 기본 다크 퍼플 테마의 승인·예외 확인 필요' : '테마 검수 근거 필요');

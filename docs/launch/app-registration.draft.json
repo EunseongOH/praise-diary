@@ -7,8 +7,8 @@
     "appNameCandidate": "dajeongrok",
     "appType": "non-game",
     "categoryCandidate": "라이프스타일",
-    "shortDescription": "나를 칭찬하고 작품으로 남기는 일기",
-    "detailDescription": "다정록을 열고 오늘 나에게 칭찬해 주고 싶은 일을 떠올려 보세요. 안내 질문을 참고하거나 자유롭게 칭찬일기를 쓸 수 있어요. 날짜별로 쌓인 기록은 그달의 작품을 만들어 가는 재료가 됩니다. 홈에서 작품의 변화를 보고, 달력과 기록 목록에서 이전 칭찬을 다시 읽어볼 수 있어요. 칭찬일기를 10개 모으면 꺼내보기에서 예전의 나에게 남긴 말을 무작위로 다시 만날 수 있어요.",
+    "shortDescription": "나의 칭찬이 작품으로 자라는 일기",
+    "detailDescription": "다정록을 열고 오늘도 스스로에게 다정한 한 줄을 남겨보세요.\n\n다정록은 하루의 작은 노력과 마음을 칭찬일기로 남기고, 그 문장들이 모여 매달 하나의 작품으로 자라는 일기 서비스예요.\n\n오늘이나 어제의 칭찬을 자유롭게 작성하거나, 두 개의 회고 질문을 참고해 하루를 돌아볼 수 있어요.\n\n새로운 날짜에 칭찬을 남길 때마다 작품이 조금씩 자라요. 같은 날 더 남긴 말도 작품에 더해져 나만의 글자 작품을 완성해 가요.\n\n달력과 기록 목록에서 지나온 칭찬을 다시 읽고, 일기 10개를 모으면 ‘꺼내보기’에서 예전의 나에게 건넨 다정한 말을 무작위로 다시 만날 수 있어요.\n\n평범했던 하루에서 잘한 일을 발견하고, 시간이 지나 쌓인 나의 다정함을 하나의 작품으로 돌아보세요.",
     "tagline": "오늘도 나에게 다정한 한 줄",
     "keyFeatures": [
       "오늘 나에게 남기는 칭찬일기",
@@ -27,7 +27,11 @@
     "externalAds": false,
     "requiresInAppPayment": false,
     "notes": "서비스 설명은 실제 활성화된 기능만 반영해 최종 제출 시 재확인. 2027-01 양 그래픽 등 미출시 기능은 광고에 노출 금지.",
-    "appNameRegistered": "dajeongrok"
+    "appNameRegistered": "dajeongrok",
+    "englishDisplayName": "Dajeongrok",
+    "releaseNotesReview": "다정록의 첫 앱인토스 테스트 번들입니다. 칭찬일기 작성과 수정, 달력·도감·꺼내보기 화면, 월별 눈꽃 그래픽의 기본 동작을 검수합니다. 기록은 아직 기기 세션에만 저장되며 다른 기기로 복원되지 않습니다.",
+    "internalMemoReview": "SDK 3.x 연동 검수용. 실제 개인정보 입력 금지. 토스 인증 및 영구 저장 미연결, 정식 출시 심사 요청 전 기능·보안 재검증 필요.",
+    "releaseNotesProduction": "칭찬일기를 남기고, 기록이 모여 자라는 월별 작품을 감상해 보세요. 지난 기록을 꺼내보며 스스로에게 건넨 다정한 말을 다시 만날 수 있어요."
   },
   "publisher": {
     "makerDisplayName": null,
@@ -49,7 +53,7 @@
   "releaseEvidence": {
     "consoleAppRegistered": true,
     "verifiedAvailableAppName": true,
-    "aitSdkInstalledAndBuilt": false,
+    "aitSdkInstalledAndBuilt": true,
     "realTossCodeExchangeVerified": false,
     "firebaseOrSupabaseAuthAndRulesVerified": false,
     "crossUserPrivacyTestsPassed": false,
@@ -64,7 +68,10 @@
     "nonGameDarkThemePolicyReviewed": false,
     "externalFontsAndRemoteResourcesReviewed": false,
     "nativeNavigationIntegrated": false,
-    "consentAndRetentionLegallyReviewed": false
+    "consentAndRetentionLegallyReviewed": false,
+    "aitSdkReviewBuildVerifiedAt": "2026-11-27",
+    "aitSdkReviewBuildGitHubRun": "https://github.com/EunseongOH/praise-diary/actions/runs/45954067483",
+    "aitSdkReviewBundleArtifact": "https://github.com/EunseongOH/praise-diary/actions/runs/45954067483/artifacts/15178595398"
   },
   "registrationEvidence": {
     "source": "user_confirmed_apps_in_toss_console_link",
