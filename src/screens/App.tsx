@@ -1,4 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { closeView, graniteEvent } from '@apps-in-toss/web-framework';
 import { AppBar, BottomNavigation, Button, Dialog, EmptyState, SegmentedChoice, SettingRow, Stack, TextAction, TextInput, Toast, Toggle } from '../components/ui';
 import type { MainTab } from '../components/ui';
 import { DiaryList, type DiaryListVariant } from '../components/content';
@@ -56,6 +57,10 @@ export default function App() {
   const [listVariant,setListVariant]=useState<DiaryListVariant|'F'>('F');
   const archiveReturn=useRef<ArchiveSnapshot|null>(null);
   const reviewMode=Boolean((window as Window & {__DAJEONGROK_REVIEW__?:boolean}).__DAJEONGROK_REVIEW__);
+  // Build-time flag: only true for .ait review bundles; ordinary web reviews are unchanged.
+  const nativeNav = import.meta.env.VITE_AIT_NATIVE_NAV === '1';
+  const aitReview = import.meta.env.VITE_AIT_REVIEW_BUILD === '1';
+  const nativeBackRef = useRef<() => void>(() => {});
   const [writerTitle, setWriterTitle] = useState('');
   const [writerBody, setWriterBody] = useState('');
   const [writerTitleOpen, setWriterTitleOpen] = useState(false);
@@ -126,6 +131,31 @@ export default function App() {
     if (page.screen === 'write' && writerBody.trim()) { setLeaveWriting(true); return; }
     setStack([]); setPage({ screen: tab }); window.scrollTo(0, 0);
   };
+  // Use the official Toss native back button in .ait bundles; do not register
+  // a handler on the standalone web review. Use a ref so the event subscription
+  // is stable while page, dialogs and draft-protection state change.
+  nativeBackRef.current = () => {
+    if (entryScenario) { setEntryScenario(null); return; }
+    if (confirmDelete) { setConfirmDelete(null); return; }
+    if (deleteAllStage !== 0) { setDeleteAllStage(0); return; }
+    if (leaveWriting) { setLeaveWriting(false); return; }
+    if (page.screen !== 'home' && mainScreens.includes(page.screen)) { toTab('home'); return; }
+    if (page.screen !== 'home') { back(); return; }
+    try { void closeView(); } catch { /* Not inside Toss or unable to close. */ }
+  };
+  useEffect(() => {
+    if (!nativeNav) return;
+    try {
+      const unsubscribe = graniteEvent.addEventListener('backEvent', {
+        onEvent: () => nativeBackRef.current(),
+      });
+      return () => { if (typeof unsubscribe === 'function') unsubscribe(); };
+    } catch {
+      // Browser and unsupported environments retain the app's existing nav UI.
+      return;
+    }
+  }, [nativeNav]);
+
   const startWrite = (edit?: DiaryEntry) => {
     setWriterDate(edit?.entryDate ?? today);
     setWriterTitle(edit?.title ?? '');
@@ -232,10 +262,13 @@ export default function App() {
     onClose={back} onSave={(body,date,id)=>saveReflection(entry.id,body,date,id)} onDelete={id=>persist(removeReflection(state,entry.id,id))}
     onEditEntry={()=>startWrite(entry)} onDeleteEntry={()=>setConfirmDelete(entry.id)}/>;
   const isArchiveF=page.screen==='list'&&!page.day&&(!reviewMode||listVariant==='F');
-  return <div className="app-shell" data-drawing={isDrawing}>
+  return <div className="app-shell" data-drawing={isDrawing} data-native-nav={nativeNav ? 'true' : 'false'}>
+    {aitReview && <div className="ait-review-disclaimer" role="status">
+      개발용 테스트 번들 · 실제 일기나 개인정보를 입력하지 마세요. 기록은 보존되지 않을 수 있어요.
+    </div>}
     {entryScenario && <EntryExperience scenario={entryScenario} theme={themeFor(reviewEntryMonth(window.location.search, viewMonth))} reducedMotion={state.reducedMotion || window.matchMedia('(prefers-reduced-motion: reduce)').matches}
       onFinish={artworkIntroduced => { if (!new URLSearchParams(window.location.search).has('entryScenario')) markEntrySeen(todayMonth, artworkIntroduced); setEntryScenario(null); }} />}
-    {page.screen !== 'home' && !isReader && !isArchiveF && <AppBar title={pageTitle[page.screen]} onBack={showBack ? back : undefined}/>}
+    {page.screen !== 'home' && !isReader && !isArchiveF && <AppBar title={pageTitle[page.screen]} onBack={showBack && !nativeNav ? back : undefined}/>}
     <main className={`app-content ${!isTabPage ? 'app-content--no-tabs' : ''} ${page.screen === 'home' ? 'app-content--home-integrated' : ''} ${page.screen==='write'?'app-content--writer':''} ${isArchiveF?'app-content--archive-f':''}`} id="main-content">
       {page.screen === 'home' && <HomeShell month={viewMonth} months={homeMonths} mode={homeMode} today={today}
         theme={themeFor(viewMonth)} entries={monthEntries(state.entries, viewMonth)} reducedMotion={state.reducedMotion}

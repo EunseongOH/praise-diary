@@ -19,11 +19,15 @@
     "test:archive": "node tests/archive.mjs",
     "check:popups": "node tests/no-native-popups.mjs",
     "audit:ait": "node scripts/audit-ait-launch.mjs",
-    "audit:ait:strict": "node scripts/audit-ait-launch.mjs --strict"
+    "audit:ait:strict": "node scripts/audit-ait-launch.mjs --strict",
+    "bundle:ait:review": "node scripts/build-ait-review.mjs",
+    "bundle:ait:release": "npm run audit:ait:strict && npm run build && ait build",
+    "test:ait": "node --test tests/ait-integration.test.mjs"
   },
   "dependencies": {
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "@apps-in-toss/web-framework": "^3.0.2"
   },
   "devDependencies": {
     "@types/react": "^18.3.0",
@@ -31,6 +35,7 @@
     "@vitejs/plugin-react": "^4.4.1",
     "typescript": "^5.8.3",
     "vite": "^6.0.0",
-    "@playwright/test": "1.56.1"
+    "@playwright/test": "1.56.1",
+    "@apps-in-toss/devtools": "^3.0.2"
   }
 }
