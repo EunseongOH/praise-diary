@@ -30,7 +30,7 @@ import type { Entry } from './core/multiHelix/engine';
 
 export type SnowflakeVariant = 'home' | 'detail' | 'tile' | 'saved';
 export type SnowflakePlayback = { kind: 'growth' | 'addition' | 'complete'; eventId: string };
-type Props = { entries: DiaryEntry[]; reducedMotion: boolean; variant: SnowflakeVariant; playback?: SnowflakePlayback; label: string };
+type Props = { entries: DiaryEntry[]; reducedMotion: boolean; variant: SnowflakeVariant; playback?: SnowflakePlayback; label: string; onPlaybackState?: (phase: 'preparing' | 'replaying' | 'settled') => void };
 
 /** one save plays once per session; a remount within 0.5 s (React StrictMode) is the same play, not a replay */
 const started = new Map<string, number>();
@@ -55,7 +55,7 @@ function useMonthState(E: Entry[], still: boolean): Snap | null {
   return s && E.length ? s : null;
 }
 
-export function SnowflakeArtwork({ entries, reducedMotion, variant, playback, label }: Props) {
+export function SnowflakeArtwork({ entries, reducedMotion, variant, playback, label, onPlaybackState }: Props) {
   const osReduced = useOsReduced();
   const still = reducedMotion || osReduced;
   const sig = entries.map(e => `${e.id}\u0000${e.entryDate}\u0000${e.createdAt}\u0000${e.body}`).join('\u0001');
@@ -69,13 +69,16 @@ export function SnowflakeArtwork({ entries, reducedMotion, variant, playback, la
     const kind = eventKind(playback.kind, dB, dA, SNOWFLAKE_REVIEW, VISUAL_STAGE_DAYS);
     return { id: playback.eventId, before, complete: kind === 'complete' && dA >= 2 && before.length > 0, kind };
   }, [variant, playback?.eventId, playback?.kind, still, E]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (variant === 'saved' && !event) onPlaybackState?.('settled');
+  }, [variant, event, onPlaybackState]);
   if (!E.length) return null;
-  if (event) return <SnowflakeSaveEvent key={event.id} id={event.id} before={event.before} after={E} complete={event.complete} kind={event.kind} label={label} fallback={state} />;
+  if (event) return <SnowflakeSaveEvent key={event.id} id={event.id} before={event.before} after={E} complete={event.complete} kind={event.kind} label={label} fallback={state} onPlaybackState={onPlaybackState} />;
   if (!state) return <div className="snowflake-artwork" data-snowflake="pending" aria-hidden="true" />;
   return <SnowflakeStatic key={still ? 'still' : 'live'} snap={state} live={!still && variant !== 'tile'} label={label} />;
 }
 
-function SnowflakeSaveEvent({ id, before, after, complete, kind, label, fallback }: { id: string; before: Entry[]; after: Entry[]; complete: boolean; kind: string; label: string; fallback: Snap | null }) {
+function SnowflakeSaveEvent({ id, before, after, complete, kind, label, fallback, onPlaybackState }: { id: string; before: Entry[]; after: Entry[]; complete: boolean; kind: string; label: string; fallback: Snap | null; onPlaybackState?: (phase: 'preparing' | 'replaying' | 'settled') => void }) {
   const [tl] = useState(() => new EventTimeline(new PresentationClock(newStats())));
   const [stats] = useState(newEventStats);
   // inputs: B = the state before the save (normally cached from home), the after state / history from the worker
@@ -108,10 +111,11 @@ function SnowflakeSaveEvent({ id, before, after, complete, kind, label, fallback
   useEffect(() => tl.attach(), [tl]);
   useEffect(() => registerClock(tl.clock), [tl]);
   useEffect(() => {
-    if (!startable) return;
+    if (!startable) { onPlaybackState?.('preparing'); return; }
+    onPlaybackState?.('replaying');
     if (!started.has(id)) started.set(id, performance.now());
     tl.len = w.len;
-    tl.onDone = () => tl.clock.play(); // after the event: the plain I3 keeps its idle motion
+    tl.onDone = () => { tl.clock.play(); onPlaybackState?.('settled'); }; // real timeline completion, not a timer guess
     tl.start(complete ? -PRE : -0.45);
     return () => { tl.pause(); tl.clock.pause(); };
   }, [startable]); // eslint-disable-line react-hooks/exhaustive-deps
