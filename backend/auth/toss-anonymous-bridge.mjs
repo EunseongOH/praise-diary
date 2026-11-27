@@ -64,9 +64,12 @@ export function makeTossAnonymousBridge({ exchangeCodeWithToss, issueSession, al
       }
       // Never send a raw Toss subject/anonKey to the client.
       const token = await issueSession({ provider: 'toss_verified_anonymous', subject: verified.subject });
-      if (!token || typeof token.accessToken !== 'string' || !token.accessToken ||
+      if (!token || typeof token.token !== 'string' || !token.token ||
+          !['firebase_custom_token', 'app_session'].includes(token.tokenType) ||
           typeof token.expiresAt !== 'string') return response(502, { error: 'session_unavailable' }, origin);
-      return response(200, { accessToken: token.accessToken, expiresAt: token.expiresAt }, origin);
+      // Firebase custom token is NOT a Firestore ID token. The WebView must
+      // exchange it with Firebase Auth signInWithCustomToken() before DB access.
+      return response(200, { token: token.token, tokenType: token.tokenType, expiresAt: token.expiresAt }, origin);
     } catch {
       // Do not log auth code, mTLS data, raw Toss subject, JWT, or exception contents.
       return response(401, { error: 'verification_failed' }, origin);

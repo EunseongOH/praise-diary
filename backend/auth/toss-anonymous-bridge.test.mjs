@@ -11,12 +11,13 @@ test('verified Toss exchange is required before session issuance and subject nev
   const handler = makeTossAnonymousBridge({
     allowedOrigins: [origin],
     exchangeCodeWithToss: async code => { seenCodes.push(code); return { subject: 'toss-verified-subject' }; },
-    issueSession: async x => { subjects.push(x); return { accessToken: 'signed.firebase.custom.token', expiresAt: '2026-11-27T12:00:00Z' }; },
+    issueSession: async x => { subjects.push(x); return { token: 'signed.firebase.custom.token', tokenType: 'firebase_custom_token', expiresAt: '2026-11-27T12:00:00Z' }; },
   });
   const response = await handler(request({ code: 'one-time-auth-code' }));
   assert.equal(response.status, 200);
   const text = await response.text();
-  assert.equal(JSON.parse(text).accessToken, 'signed.firebase.custom.token');
+  assert.equal(JSON.parse(text).token, 'signed.firebase.custom.token');
+  assert.equal(JSON.parse(text).tokenType, 'firebase_custom_token');
   assert.equal(text.includes('toss-verified-subject'), false);
   assert.equal(response.headers.get('cache-control'), 'no-store');
   assert.equal(response.headers.get('access-control-allow-origin'), origin);
@@ -28,7 +29,7 @@ test('spoofed userId, anonymous key and untrusted origin are rejected without ex
   const handler = makeTossAnonymousBridge({
     allowedOrigins: [origin],
     exchangeCodeWithToss: async () => { exchanged++; return { subject: 's' }; },
-    issueSession: async () => ({ accessToken: 's', expiresAt: 'future' }),
+    issueSession: async () => ({ token: 's', tokenType: 'app_session', expiresAt: 'future' }),
   });
   for (const bad of [{ anonKey: 'other-user' }, { code: 'valid', userId: 'victim' }, { code: '' }]) {
     assert.equal((await handler(request(bad))).status, 400);
@@ -46,7 +47,7 @@ test('failed, missing, replayed or invalid Toss exchange never creates a session
       used.add(code);
       return code === 'invalid' ? null : { subject: 'verified' };
     },
-    issueSession: async () => { issued++; return { accessToken: 'safe', expiresAt: 'soon' }; },
+    issueSession: async () => { issued++; return { token: 'safe', tokenType: 'app_session', expiresAt: 'soon' }; },
   });
   assert.equal((await handler(request({ code: 'invalid' }))).status, 502);
   assert.equal((await handler(request({ code: 'success' }))).status, 200);

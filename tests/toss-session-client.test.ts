@@ -8,13 +8,14 @@ test('Toss WebView sends only one-time code to trusted HTTPS server', async () =
     serverUrl: 'https://backend.example.test/v1/auth/toss-anonymous/exchange',
     request: async (url, init) => {
       endpoint = String(url); sent = String(init?.body);
-      return new Response(JSON.stringify({ accessToken: 'firebase-signed', expiresAt: 'tomorrow' }), { status: 200 });
+      return new Response(JSON.stringify({ token: 'firebase-signed', tokenType: 'firebase_custom_token', expiresAt: 'tomorrow' }), { status: 200 });
     },
   });
   const session = await client();
   assert.equal(endpoint, 'https://backend.example.test/v1/auth/toss-anonymous/exchange');
   assert.deepEqual(JSON.parse(sent), { code: 'one-time-code' });
-  assert.equal(session.accessToken, 'firebase-signed');
+  assert.equal(session.token, 'firebase-signed');
+  assert.equal(session.tokenType, 'firebase_custom_token');
   assert.equal(sent.includes('anonKey'), false);
 });
 test('Toss client refuses insecure server and failed auth never pretends success', async () => {
