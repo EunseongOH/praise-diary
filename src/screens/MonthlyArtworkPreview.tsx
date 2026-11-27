@@ -1,32 +1,23 @@
 import { ArtworkSlot } from '../graphics/ArtworkSlot';
-import { SNOWFLAKE_ARTWORK } from '../graphics/snowflake/flags';
-import { DECEMBER_PREVIEW_DAYS, DECEMBER_PREVIEW_ENTRIES } from '../data/brandPreviewFixtures';
+import { previewFor } from '../graphics/artworkRegistry';
 import type { MonthTheme } from '../data/types';
 
-/** Only expose artwork that uses the same renderer as the user's home.
- * The January sheep engine is not yet integrated: NEVER substitute a fake sheep image.
- */
-export function hasMonthlyArtworkPreview(theme?: MonthTheme): boolean {
-  return Boolean(SNOWFLAKE_ARTWORK && theme?.kind === 'snowflake' && theme.month === '2026-12');
-}
+/** Ready to introduce only when the actual renderer and preview fixture both exist. */
+export const hasMonthlyArtworkPreview = (theme?: MonthTheme): boolean => Boolean(previewFor(theme));
 
-/** Warm the same worker-backed snapshots while the brand splash is visible.
- * This must not block the intro timeline or modify the diary store.
- */
+/** Precompute during the splash; never block navigation or write fictional records into the diary store. */
 export function prefetchMonthlyArtwork(theme: MonthTheme | undefined, reducedMotion: boolean): void {
-  if (!hasMonthlyArtworkPreview(theme)) return;
-  void Promise.all([
-    import('../graphics/snowflake/snapshots'),
-    import('../graphics/snowflake/sourceAdapter'),
-  ]).then(([snapshots, adapter]) => {
-    return snapshots.requestState(adapter.toEngine(DECEMBER_PREVIEW_ENTRIES), reducedMotion);
-  }).catch(() => { /* The live renderer can retry; never stall entry on a prefetch error. */ });
+  const preview = previewFor(theme)?.preview;
+  if (preview?.prefetch) void preview.prefetch(reducedMotion).catch(() => { /* regular rendering retries */ });
 }
 
 export function MonthlyArtworkPreview({ theme, reducedMotion }: { theme?: MonthTheme; reducedMotion: boolean }) {
-  if (!hasMonthlyArtworkPreview(theme)) return null;
-  return <div className="entry-experience__preview" data-entry-artwork-preview="snowflake" data-preview-days={DECEMBER_PREVIEW_DAYS}>
-    <ArtworkSlot theme={theme} entries={DECEMBER_PREVIEW_ENTRIES} writtenDays={DECEMBER_PREVIEW_DAYS}
-      letterCount={DECEMBER_PREVIEW_ENTRIES.length} reducedMotion={reducedMotion} variant="preview" />
+  const spec = previewFor(theme);
+  if (!spec) return null;
+  const { artwork, preview } = spec;
+  return <div className="entry-experience__preview" data-entry-artwork-preview={artwork.kind}
+    data-artwork-id={artwork.id} data-preview-days={preview.days}>
+    <ArtworkSlot theme={theme} entries={[...preview.entries]} writtenDays={preview.days}
+      letterCount={preview.entries.length} reducedMotion={reducedMotion} variant="preview" />
   </div>;
 }

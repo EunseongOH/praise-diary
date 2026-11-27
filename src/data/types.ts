@@ -34,6 +34,9 @@ export type PrototypeState = {
 export type MonthTheme = {
   month: MonthId;
   title: string;
-  kind: 'snowflake' | 'sheep';
+  /** Open set of future artwork types; the renderer is selected by artworkKey, not this display category. */
+  kind: 'snowflake' | 'sheep' | (string & {});
+  /** Immutable versioned renderer/preview registration. Undefined only for legacy fixture compatibility. */
+  artworkKey?: string;
   targetDays: number | null;
 };
