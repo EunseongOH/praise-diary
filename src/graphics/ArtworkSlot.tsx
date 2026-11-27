@@ -17,6 +17,7 @@ export type ArtworkSlotProps = {
   variant?: Exclude<SnowflakeVariant, 'tile'>;
   /** saved screen only: the save that just succeeded (plays once per save) */
   playback?: SnowflakePlayback;
+  onPlaybackState?: (phase: 'preparing' | 'replaying' | 'settled') => void;
 };
 
 // The snowflake engine is loaded only when the review flag is on at build time; with the flag off this is dead code.
@@ -24,12 +25,12 @@ const SnowflakeArtwork = SNOWFLAKE_ARTWORK ? lazy(() => import('./snowflake/Snow
 /** true when the month is rendered by the real December snowflake (feature flag + snowflake theme) */
 export const snowflakeActive = (theme?: MonthTheme) => Boolean(SnowflakeArtwork) && theme?.kind === 'snowflake';
 
-export function ArtworkSlot({ theme, writtenDays, small = false, entries, reducedMotion = false, variant = 'home', playback }: ArtworkSlotProps) {
+export function ArtworkSlot({ theme, writtenDays, small = false, entries, reducedMotion = false, variant = 'home', playback, onPlaybackState }: ArtworkSlotProps) {
   if (SnowflakeArtwork && snowflakeActive(theme)) {
     const label = `${theme!.title}, ${writtenDays}일의 칭찬으로 자란 눈꽃.`;
     return <div className={`artwork-slot artwork-slot--snowflake ${small ? 'artwork-slot--small' : ''}`} role="img" aria-label={label} data-written-days={writtenDays}>
       <Suspense fallback={null}>
-        <SnowflakeArtwork entries={entries ?? []} reducedMotion={reducedMotion} variant={small ? 'tile' : variant} playback={playback} label={label} />
+        <SnowflakeArtwork entries={entries ?? []} reducedMotion={reducedMotion} variant={small ? 'tile' : variant} playback={playback} onPlaybackState={onPlaybackState} label={label} />
       </Suspense>
     </div>;
   }
