@@ -35,7 +35,7 @@ const durations = [800, 2100, 1300, 1450, 1600, 850];
 export function EntryExperience({ scenario, reducedMotion, monthTitle, onFinish }: {
   scenario: EntryScenario; reducedMotion: boolean; monthTitle: string; onFinish: () => void;
 }) {
-  const [phase, setPhase] = useState<Phase>(reducedMotion ? 'reveal' : 'brand');
+  const [phase, setPhase] = useState<Phase>(reducedMotion ? 'hold' : 'brand');
   const callback = useRef(onFinish);
   callback.current = onFinish;
   const skipRef = useRef<HTMLButtonElement>(null);
