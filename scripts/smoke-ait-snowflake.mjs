@@ -4,6 +4,7 @@
  */
 import { spawn } from 'node:child_process';
 import { chromium } from '@playwright/test';
+import { mkdirSync } from 'node:fs';
 
 const host = 'http://127.0.0.1:4184';
 const child = spawn(process.execPath, [
@@ -36,6 +37,8 @@ try {
     console.log('Snowflake sandbox Canvas painted:', day, 'days', dimensions);
   }
   if (errors.length) throw Error('JavaScript runtime errors: '+errors.join('; '));
+  mkdirSync('test-results', { recursive: true });
+  await page.screenshot({ path: 'test-results/ait-snowflake-qa-15-days.png', fullPage: true });
   await page.getByRole('button', { name: '눈꽃 테스트 닫기' }).click();
   if (await page.locator('[data-ait-snowflake-qa="true"]').count()) throw Error('QA dialog remained open');
   await context.close();
