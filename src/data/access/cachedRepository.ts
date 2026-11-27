@@ -8,21 +8,31 @@ import type { DiaryReflection, MonthId } from '../types.ts';
 export class CachedDiaryRepository implements DiaryRepository {
   private readonly months = new Map<MonthId, EntryRecord[]>();
   private readonly inFlight = new Map<MonthId, Promise<EntryRecord[]>>();
+  private cacheEpoch = 0;
   constructor(private readonly source: DiaryRepository) {}
   async listMonth(month: MonthId): Promise<EntryRecord[]> {
     const cached = this.months.get(month);
     if (cached) return structuredClone(cached);
     let load = this.inFlight.get(month);
     if (!load) {
-      load = this.source.listMonth(month).then(items => {
-        this.months.set(month, structuredClone(items)); return items;
-      }).finally(() => this.inFlight.delete(month));
+      const epoch = this.cacheEpoch;
+      let next: Promise<EntryRecord[]>;
+      next = this.source.listMonth(month).then(items => {
+        // An older request may resolve AFTER a new save or account switch.
+        // Never let that stale response repopulate the cache.
+        if (epoch === this.cacheEpoch) this.months.set(month, structuredClone(items));
+        return items;
+      }).finally(() => { if (this.inFlight.get(month) === next) this.inFlight.delete(month); });
+      load = next;
       this.inFlight.set(month, load);
     }
     return structuredClone(await load);
   }
-  invalidateMonth(month: MonthId) { this.months.delete(month); this.inFlight.delete(month); }
-  clear() { this.months.clear(); this.inFlight.clear(); }
+  invalidateMonth(month: MonthId) {
+    this.cacheEpoch++;
+    this.months.delete(month); this.inFlight.delete(month);
+  }
+  clear() { this.cacheEpoch++; this.months.clear(); this.inFlight.clear(); }
   listArchivePage(q: PageRequest) { return this.source.listArchivePage(q); }
   listYearIndex(year: number) { return this.source.listYearIndex(year); }
   getEntry(id: string) { return this.source.getEntry(id); }
