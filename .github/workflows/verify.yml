@@ -6,7 +6,7 @@ on:
     branches: [main, feat/mvp-integration, feat/brand-splash-window, feat/entry-actual-artwork-preview]
     types: [opened, synchronize, reopened, ready_for_review, edited]
   push:
-    branches: [main, feat/design-system-prototype, feat/mvp-integration, feat/archive-f, feat/snowflake-service-integration, feat/entry-actual-artwork-preview, feat/artwork-registry-backend-design]
+    branches: [main, feat/design-system-prototype, feat/mvp-integration, feat/archive-f, feat/snowflake-service-integration, feat/entry-actual-artwork-preview, feat/artwork-registry-backend-design, feat/provider-neutral-data-auth-contract]
 
 jobs:
   check:
@@ -25,6 +25,10 @@ jobs:
         run: npm install --no-audit --no-fund
       - name: Validate D1 schema and relational privacy constraints (no live database)
         run: python3 -m unittest discover -s backend/tests -p 'test_*.py' -v
+      - name: Verify portable diary repository and Toss auth-code boundary
+        run: |
+          node --experimental-strip-types --test tests/access-contract.test.ts tests/toss-session-client.test.ts
+          node --test backend/auth/toss-anonymous-bridge.test.mjs backend/auth/verified-user-id.test.mjs
       - name: Verify prototype
         run: npm run check
       - name: Prepare actual React review package
