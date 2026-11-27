@@ -3,7 +3,7 @@ name: Prototype quality checks
 on:
   workflow_dispatch:
   pull_request:
-    branches: [main, feat/mvp-integration]
+    branches: [main, feat/mvp-integration, feat/brand-splash-window]
     types: [opened, synchronize, reopened, ready_for_review, edited]
   push:
     branches: [main, feat/design-system-prototype, feat/mvp-integration, feat/archive-f, feat/snowflake-service-integration]
