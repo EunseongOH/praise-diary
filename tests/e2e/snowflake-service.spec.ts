@@ -161,9 +161,10 @@ test('saved copy: 14→15 review-only policy shows the agreed one-time completio
   test.setTimeout(180_000);
   await open(page,14,'&goalPreview=15');
   await save(page);
-  await expect(page.getByRole('heading', { name: '차곡차곡 모은 다정함이 하나의 눈꽃이 되었어요.' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '칭찬을 남겼어요.' })).toBeVisible();
   await expect.poll(async () => (await event(page))?.kind, {timeout:30000}).toBe('complete');
   await waitDone(page);
+  await expect(page.getByRole('heading', { name: '차곡차곡 모은 다정함이 하나의 눈꽃이 되었어요.' })).toBeVisible();
 });
 
 test('post-goal repeated saves use different captions without replaying completion', async ({ page }) => {
