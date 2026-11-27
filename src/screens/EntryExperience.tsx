@@ -29,13 +29,14 @@ export function markEntrySeen(month: string) {
 
 const glyphs = Array.from('다정한마음하나씩차곡차곡');
 const phases: Phase[] = ['brand', 'intro', 'reveal', 'gather', 'hold', 'fade'];
-const durations = [800, 2100, 1300, 1450, 1600, 850];
+const durations = [1700, 2100, 1300, 1450, 1600, 850];
+const returnBrandDuration = 800;
 
 /** A lightweight typographic preview, NOT the user's actual diary/artwork or final brand asset. */
 export function EntryExperience({ scenario, reducedMotion, monthTitle, onFinish }: {
   scenario: EntryScenario; reducedMotion: boolean; monthTitle: string; onFinish: () => void;
 }) {
-  const [phase, setPhase] = useState<Phase>(reducedMotion ? 'hold' : 'brand');
+  const [phase, setPhase] = useState<Phase>('brand');
   const callback = useRef(onFinish);
   callback.current = onFinish;
   const skipRef = useRef<HTMLButtonElement>(null);
@@ -49,7 +50,7 @@ export function EntryExperience({ scenario, reducedMotion, monthTitle, onFinish 
   useEffect(() => {
     if (reducedMotion) return;
     if (short) {
-      const t = window.setTimeout(() => callback.current(), durations[0]);
+      const t = window.setTimeout(() => callback.current(), returnBrandDuration);
       return () => window.clearTimeout(t);
     }
     const timers: number[] = [];
@@ -66,6 +67,11 @@ export function EntryExperience({ scenario, reducedMotion, monthTitle, onFinish 
     document.addEventListener('keydown', escape);
     return () => document.removeEventListener('keydown', escape);
   }, []);
+  const advance = () => {
+    // Reduced-motion users should still see the selected brand artwork and may advance manually.
+    if (reducedMotion && !short && phase === 'brand') { setPhase('hold'); return; }
+    callback.current();
+  };
   const newMonth = scenario === 'new-month';
   // The chosen window artwork is only shown during the brand phase.
   const showBrand = short || phase === 'brand';
@@ -94,6 +100,6 @@ export function EntryExperience({ scenario, reducedMotion, monthTitle, onFinish 
       </div>}
       {short && <div className="entry-experience__brand"><h1>다정록</h1><p>오늘도 나에게 다정한 한 줄</p></div>}
     </div>
-    <button ref={skipRef} type="button" className="entry-experience__skip" onClick={onFinish}>{reducedMotion ? '홈으로' : '건너뛰기'}</button>
+    <button ref={skipRef} type="button" className="entry-experience__skip" onClick={advance}>{reducedMotion ? (!short && phase === 'brand' ? '다음' : '홈으로') : '건너뛰기'}</button>
   </section>, document.body);
 }
