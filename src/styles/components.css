@@ -397,3 +397,67 @@
 .ait-snowflake-qa__footer {
   font-size: 12px; color: #aa9dbb; margin: 22px 0 0; text-align: center;
 }
+
+/* First praise has no earlier snapshot. Reveal its actual text-based snowflake
+   bottom-to-top; keep idle animation alive once the reveal finishes. */
+.snowflake-first-grow {
+  width: 100%;
+  animation: snowflake-first-grow 1.8s cubic-bezier(.2,.64,.22,1) both;
+  will-change: clip-path, opacity;
+}
+.snowflake-first-grow--settled {
+  animation: none;
+  clip-path: inset(0 0 0 0);
+  opacity: 1;
+  will-change: auto;
+}
+@keyframes snowflake-first-grow {
+  from { clip-path: inset(100% 0 0 0); opacity: .35; }
+  to { clip-path: inset(0 0 0 0); opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .snowflake-first-grow { animation: none; clip-path: none; opacity: 1; }
+}
+
+/* Test-only controls. These are not rendered in any real-user app build. */
+.ait-snowflake-qa__scenario-picker {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+.ait-snowflake-qa__scenario-picker button {
+  min-height: 44px;
+  background: #2a2733;
+  color: #f4ebff;
+  border: 1px solid #71627c;
+  border-radius: 10px;
+  padding: 9px 7px;
+  font: inherit;
+  font-size: 13px;
+}
+.ait-snowflake-qa__scenario-picker button[aria-pressed="true"] {
+  background: #d3c2ef;
+  border-color: #d3c2ef;
+  color: #1e1c27;
+  font-weight: 700;
+}
+.ait-snowflake-qa__warning {
+  background: #423447;
+  border: 1px solid #c2a2b5;
+  border-radius: 9px;
+  padding: 10px;
+  color: #f8e9f4;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.ait-snowflake-qa__phase { text-align: center; font-size: 13px; color: #d4c8e4; }
+.ait-snowflake-qa__replay {
+  border-radius: 10px;
+  min-height: 44px;
+  padding: 10px;
+  border: 1px solid #9685ac;
+  background: #41364e;
+  color: #f6edf9;
+  font: inherit;
+  font-size: 13px;
+}
