@@ -33,7 +33,7 @@ export default function App() {
   const [nowForPreview, setNowForPreview] = useState(currentPreviewTime);
   // Only explicit review URLs show the unapproved entry animation. Product default is unchanged.
   const [entryScenario, setEntryScenario] = useState<EntryScenario | null>(() =>
-    reviewEntryScenario(window.location.search, state.entries.length, monthOf(todayAndYesterday(currentPreviewTime(), state.boundaryHour).today)));
+    reviewEntryScenario(window.location.search, state.entries.length > 0, monthOf(todayAndYesterday(currentPreviewTime(), state.boundaryHour).today)));
 
   useEffect(() => {
     if (import.meta.env.VITE_DEMO_DATE) return;
