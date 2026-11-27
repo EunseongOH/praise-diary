@@ -28,7 +28,7 @@ jobs:
       - name: Verify portable diary repository and Toss auth-code boundary
         run: |
           node --experimental-strip-types --test tests/access-contract.test.ts tests/toss-session-client.test.ts
-          node --test backend/auth/toss-anonymous-bridge.test.mjs
+          node --test backend/auth/toss-anonymous-bridge.test.mjs backend/auth/verified-user-id.test.mjs
       - name: Verify prototype
         run: npm run check
       - name: Prepare actual React review package
