@@ -11,6 +11,8 @@ import { ArchiveScreen, type ArchiveSnapshot } from './ArchiveScreen';
 import { WriterLayout } from './WriterLayout';
 import { CollectionScreen, MonthlyGraphicDetail, LockedMonthDetail, GraphicIdeaForm } from './CollectionScreen';
 import { COPY, deleteImpact, savedMessage } from '../content/copy';
+import { selectSavedCopy } from '../content/savedCopy';
+import { SNOWFLAKE_ARTWORK, SNOWFLAKE_REVIEW } from '../graphics/snowflake/flags';
 import { pickPrompts, type Prompt } from '../data/prompts';
 import { loadState, saveState, writtenDays, dateHasEntry, monthEntries, chooseDifferentEntry, reflectionsFor, upsertReflection, removeReflection, removeDiary, reflectionCounts } from '../data/store';
 import { MONTH_THEMES, UPCOMING_MONTHS, themeFor } from '../data/themes';
@@ -18,7 +20,7 @@ import type { DiaryEntry, MonthId, PrototypeState } from '../data/types';
 import { currentPreviewTime, formatDay, formatMonth, koreanClock, monthOf, todayAndYesterday } from '../lib/date';
 
 type Screen = 'home' | 'rediscover' | 'memory' | 'collection' | 'month' | 'graphic' | 'list' | 'detail' | 'write' | 'saved' | 'settings' | 'boundary' | 'locked-month' | 'idea' | 'records' | 'information';
-type Page = { screen: Screen; month?: MonthId; entryId?: string; editId?: string; mode?: 'growth' | 'addition' | 'complete'; previousWrittenDays?: number; day?: string; from?: Screen };
+type Page = { screen: Screen; month?: MonthId; entryId?: string; editId?: string; mode?: 'growth' | 'addition' | 'complete'; previousWrittenDays?: number; day?: string; from?: Screen; savedText?: string };
 const mainScreens: Screen[] = ['home','rediscover','collection'];
 
 function makeId() {
@@ -58,6 +60,14 @@ export default function App() {
   const [existingPrompt,setExistingPrompt]=useState<string|undefined>();
   const [leaveWriting, setLeaveWriting] = useState(false);
   const [draftSaved, setDraftSaved] = useState(false);
+  const [artworkPhase, setArtworkPhase] = useState<'preparing'|'replaying'|'settled'>('settled');
+  const [showArtworkWait, setShowArtworkWait] = useState(false);
+
+  useEffect(() => {
+    if (page.screen !== 'saved' || artworkPhase !== 'preparing') { setShowArtworkWait(false); return; }
+    const t = window.setTimeout(() => setShowArtworkWait(true), 420);
+    return () => window.clearTimeout(t);
+  }, [page.screen, page.entryId, artworkPhase]);
 
   const { today, yesterday } = todayAndYesterday(nowForPreview, state.boundaryHour);
   const todayMonth = monthOf(today);
@@ -139,11 +149,16 @@ export default function App() {
     const newCount = state.entries.length + 1;
     const unlockTime = !state.letterDrawUnlockedAt && newCount >= 10 ? new Date().toISOString() : state.letterDrawUnlockedAt;
     const afterDays = beforeDays + (dateHasEntry(state.entries, writerDate) ? 0 : 1);
-    const mode = theme?.targetDays && afterDays >= theme.targetDays && beforeDays < theme.targetDays ? 'complete' : afterDays > beforeDays ? 'growth' : 'addition';
-    if (!persist({ ...state, entries: [...state.entries, next], letterDrawUnlockedAt: unlockTime })) return;
+    // The 15-day target is NOT confirmed for December. Only a deliberate review query may preview that policy.
+    const previewGoal = SNOWFLAKE_REVIEW && new URLSearchParams(window.location.search).get('goalPreview') === '15' && theme?.kind === 'snowflake' ? 15 : undefined;
+    const target = previewGoal ?? theme?.targetDays ?? null;
+    const mode = target && afterDays >= target && beforeDays < target ? 'complete' : afterDays > beforeDays ? 'growth' : 'addition';
+    const feedback = selectSavedCopy({ theme, mode, beforeDays, afterDays, postGoalCounter: state.postGoalCopyCounter ?? 0, previewGoal });
+    if (!persist({ ...state, entries: [...state.entries, next], letterDrawUnlockedAt: unlockTime, postGoalCopyCounter: feedback.nextCounter })) return;
     setDraftSaved(true);
+    setArtworkPhase(SNOWFLAKE_ARTWORK && theme?.kind === 'snowflake' && !state.reducedMotion && !window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'preparing' : 'settled');
     setStack([]);
-    setPage({ screen: 'saved', month, mode, previousWrittenDays: beforeDays, day: writerDate, entryId: next.id });
+    setPage({ screen: 'saved', month, mode, previousWrittenDays: beforeDays, day: writerDate, entryId: next.id, savedText: feedback.text });
     if (unlockTime && !state.letterDrawUnlockedAt) setToast('이제 꺼내보기에서 예전의 칭찬을 만날 수 있어요.');
   };
   const deleteOne = () => {
@@ -229,9 +244,10 @@ export default function App() {
         prompts={writerPrompts} promptOpen={promptVisible} onPromptOpen={setPromptVisible} selectedText={selectedPromptText} onSelect={setPromptSelected} onClearPrompt={()=>{setPromptSelected(null);setExistingPrompt(undefined)}} onRefreshPrompts={()=>setWriterPrompts(previous=>pickPrompts(previous))} onSave={saveEntry}/>}
 
       {page.screen === 'saved' && <div className="space-stack immersive-detail">
-        <div className="month-detail-title"><span className="eyebrow">{page.day && formatDay(page.day)}</span><h1 className="page-title">{savedMessage(monthTheme,page.mode ?? 'growth')}</h1></div>
-        {<div className="illustration-stage"><ArtworkSlot theme={monthTheme} writtenDays={writtenDays(state.entries,currentMonth)} letterCount={monthEntries(state.entries,currentMonth).length} entries={monthEntries(state.entries,currentMonth)} letterSource={monthEntries(state.entries,currentMonth).map(e => e.body).join(' ')} reducedMotion={state.reducedMotion} fromWrittenDays={page.mode === 'growth' || page.mode === 'complete' ? page.previousWrittenDays : undefined} variant="saved" playback={page.entryId ? { kind: page.mode ?? 'growth', eventId: page.entryId } : undefined} /></div>}
+        <div className="month-detail-title"><span className="eyebrow">{page.day && formatDay(page.day)}</span><h1 className="page-title">{page.savedText ?? savedMessage(monthTheme,page.mode ?? 'growth')}</h1></div>
+        {<div className="illustration-stage"><ArtworkSlot theme={monthTheme} writtenDays={writtenDays(state.entries,currentMonth)} letterCount={monthEntries(state.entries,currentMonth).length} entries={monthEntries(state.entries,currentMonth)} letterSource={monthEntries(state.entries,currentMonth).map(e => e.body).join(' ')} reducedMotion={state.reducedMotion} fromWrittenDays={page.mode === 'growth' || page.mode === 'complete' ? page.previousWrittenDays : undefined} variant="saved" playback={page.entryId ? { kind: page.mode ?? 'growth', eventId: page.entryId } : undefined} onPlaybackState={phase => setArtworkPhase(current => current === phase ? current : phase)} /></div>}
         <p className="description text-center">칭찬을 잘 남겼어요.</p>
+        {showArtworkWait && artworkPhase === 'preparing' && <p className="saved-artwork-status" role="status">지난 칭찬들이 모여 눈꽃을 피울 준비를 하고 있어요.</p>}
         <div className="action-stack"><Button onClick={() => startWrite()}>칭찬 하나 더 남기기</Button><Button variant="secondary" onClick={() => { setStack([]); setPage({screen:'home'}); }}>홈으로 돌아가기</Button></div>
       </div>}
 
