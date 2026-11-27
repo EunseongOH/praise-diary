@@ -188,6 +188,10 @@ test('entry review: first visitor sees brand and monthly introduction, reopening
   const intro=page.getByRole('dialog',{name:'다정록 첫 만남'});
   await expect(intro).toHaveAttribute('data-entry-scenario','first');
   await expect(intro.getByRole('heading',{name:'다정록'})).toBeVisible();
+  await expect(intro.getByText('오늘도 나에게 다정한 한 줄')).toBeVisible();
+  await expect(intro).toHaveAttribute('data-brand-art','window');
+  await expect(intro.locator('.entry-experience__brand-art')).toHaveAttribute('src',/assets\/branding\/entry-window\.webp$/);
+  await expect(intro.locator('.entry-experience__skip')).toBeHidden();
   await page.screenshot({path:'test-results/entry-first-brand-390.png'});
   await expect(intro).toHaveAttribute('data-entry-phase','intro',{timeout:8000});
   await page.screenshot({path:'test-results/entry-first-intro-390.png'});

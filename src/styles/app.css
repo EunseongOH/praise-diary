@@ -346,9 +346,11 @@ body { font-family: var(--font-body); font-size: var(--type-body); line-height: 
 
 /* Entry experience v0.1 — explicit QA scenario only, no production splash decision. */
 .entry-experience{position:fixed;z-index:1000;inset:0;margin-inline:auto;width:min(100%,var(--content-width));min-height:100dvh;background:var(--background);color:var(--ink);display:flex;flex-direction:column;justify-content:center;padding:max(24px,env(safe-area-inset-top)) var(--gutter) max(24px,env(safe-area-inset-bottom))}
-.entry-experience__stage{width:100%;min-height:280px;display:flex;flex:1;justify-content:center;align-items:center;text-align:center}
-.entry-experience__brand h1{font:400 36px/1.4 var(--font-artwork);letter-spacing:.05em;margin:0}
-.entry-experience__brand p{font:400 16px/1.6 var(--font-body);letter-spacing:.01em;color:var(--muted);margin:16px 0 0}
+.entry-experience__brand-art{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:54% 50%;pointer-events:none}
+.entry-experience__stage{width:100%;min-height:280px;display:flex;flex:1;justify-content:center;align-items:center;text-align:center;z-index:1}
+.entry-experience__brand{position:absolute;top:23%;left:var(--gutter);right:var(--gutter);display:flex;flex-direction:column;align-items:center;gap:16px;color:#f4eee9}
+.entry-experience__brand h1{font:400 36px/1.22 var(--font-artwork);letter-spacing:.05em;margin:0;white-space:nowrap}
+.entry-experience__brand p{font:400 16px/1.55 var(--font-body);letter-spacing:.01em;color:inherit;margin:0;white-space:nowrap}
 .entry-experience__copy{font:400 clamp(17px,4.5vw,21px)/1.8 var(--font-body);max-width:380px;word-break:keep-all;animation:entry-fadein .65s ease both}
 .entry-experience__copy p{margin:4px 0}
 .entry-experience__monthly{width:100%;display:grid;justify-items:center;gap:12px;animation:entry-fadein .6s ease both}
@@ -364,7 +366,9 @@ body { font-family: var(--font-body); font-size: var(--type-body); line-height: 
 .entry-experience[data-entry-phase="reveal"] .entry-experience__glyph{animation:none}
 .entry-experience[data-entry-phase="reveal"] .entry-experience__sample-label{opacity:0}
 .entry-experience__sample-label{font:400 var(--type-meta)/1.5 var(--font-body);color:var(--muted)}
-.entry-experience__skip{align-self:flex-end;min-height:var(--touch);padding:0 var(--space-3);border:0;color:var(--muted);background:transparent;font:500 var(--type-supporting)/1.5 var(--font-body)}
+.entry-experience__skip{position:relative;z-index:1;align-self:flex-end;min-height:var(--touch);padding:0 var(--space-3);border:0;color:var(--muted);background:transparent;font:500 var(--type-supporting)/1.5 var(--font-body)}
+/* The 0.8s brand splash is intentionally free of visible controls. The longer review intro is skippable. */
+.entry-experience[data-brand-art="window"][data-motion="on"] .entry-experience__skip{visibility:hidden;pointer-events:none}
 .entry-experience__skip:focus-visible{outline:var(--focus-width) solid var(--focus);border-radius:var(--radius-sm)}
 .saved-artwork-status{font:400 var(--type-supporting)/1.6 var(--font-body);color:var(--muted);text-align:center;margin:0;word-break:keep-all}
 @keyframes entry-fadein{from{opacity:0}to{opacity:1}}

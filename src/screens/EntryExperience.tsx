@@ -67,8 +67,11 @@ export function EntryExperience({ scenario, reducedMotion, monthTitle, onFinish 
     return () => document.removeEventListener('keydown', escape);
   }, []);
   const newMonth = scenario === 'new-month';
+  // The chosen window artwork is only shown during the brand phase.
+  const showBrand = short || phase === 'brand';
   const preview = !short && (phase === 'gather' || phase === 'hold' || phase === 'fade');
-  return createPortal(<section className="entry-experience" role="dialog" aria-modal="true" aria-label="다정록 첫 만남" data-entry-scenario={scenario} data-entry-phase={phase} data-motion={reducedMotion ? 'off' : 'on'}>
+  return createPortal(<section className="entry-experience" role="dialog" aria-modal="true" aria-label="다정록 첫 만남" data-entry-scenario={scenario} data-entry-phase={phase} data-motion={reducedMotion ? 'off' : 'on'} data-brand-art={showBrand ? 'window' : 'none'}>
+    {showBrand && <img className="entry-experience__brand-art" src={`${import.meta.env.BASE_URL}assets/branding/entry-window.webp`} alt="" aria-hidden="true" draggable={false} loading="eager" />}
     <div className="entry-experience__stage">
       {phase === 'brand' && <div className="entry-experience__brand">
         <h1>다정록</h1><p>오늘도 나에게 다정한 한 줄</p>
