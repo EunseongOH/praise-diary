@@ -72,7 +72,7 @@ export function selectSavedCopy(args: {
     return { text: SNOWFLAKE_COMPLETION_COPY, nextCounter: counter };
   }
   if (mode === 'addition') return { text: '눈꽃에 칭찬이 하나 더 쌓였어요.', nextCounter: counter };
-  if (afterDays >= 15 && !validTarget) return { text: '남긴 칭찬이 눈꽃에 더해졌어요.', nextCounter: counter };
   if (afterDays >= 16) return { text: '눈꽃에 새로운 칭찬이 더해졌어요.', nextCounter: counter };
+  if (afterDays === 15 && !validTarget) return { text: '남긴 칭찬이 눈꽃에 더해졌어요.', nextCounter: counter };
   return { text: SNOWFLAKE_DAY_COPY[afterDays] ?? '눈꽃에 칭찬이 더해졌어요.', nextCounter: counter };
 }
