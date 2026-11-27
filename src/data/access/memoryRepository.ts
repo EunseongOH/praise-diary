@@ -44,7 +44,9 @@ function checkPreferences(value: UserPreferences) {
 }
 /** Test-only adapter: all logic has the same public API regardless of future provider. */
 class ScopedMemoryRepository implements DiaryRepository {
-  constructor(private readonly bucket: UserBucket, private readonly now: () => string) {}
+  private readonly bucket: UserBucket;
+  private readonly now: () => string;
+  constructor(bucket: UserBucket, now: () => string) { this.bucket = bucket; this.now = now; }
 
   async listMonth(month: MonthId) {
     return clone([...this.bucket.entries.values()].filter(e => e.entryDate.slice(0, 7) === month).sort(compareEntries));
@@ -137,7 +139,8 @@ class ScopedMemoryRepository implements DiaryRepository {
 }
 export class MemoryRepositoryTestDatabase {
   private readonly users = new Map<string, UserBucket>();
-  constructor(private readonly now: () => string = () => new Date().toISOString()) {}
+  private readonly now: () => string;
+  constructor(now: () => string = () => new Date().toISOString()) { this.now = now; }
   /** The caller is a trusted test harness, NOT the browser's auth mechanism. */
   forTestUser(userId: string): DiaryRepository {
     assertId(userId);

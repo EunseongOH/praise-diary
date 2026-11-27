@@ -9,7 +9,8 @@ export class CachedDiaryRepository implements DiaryRepository {
   private readonly months = new Map<MonthId, EntryRecord[]>();
   private readonly inFlight = new Map<MonthId, Promise<EntryRecord[]>>();
   private cacheEpoch = 0;
-  constructor(private readonly source: DiaryRepository) {}
+  private readonly source: DiaryRepository;
+  constructor(source: DiaryRepository) { this.source = source; }
   async listMonth(month: MonthId): Promise<EntryRecord[]> {
     const cached = this.months.get(month);
     if (cached) return structuredClone(cached);

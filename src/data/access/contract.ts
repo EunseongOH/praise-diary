@@ -56,8 +56,10 @@ export interface DiaryRepository {
 }
 
 export class DiaryAccessError extends Error {
-  constructor(public readonly code: 'invalid' | 'conflict' | 'not_found' | 'unauthorized', message: string) {
+  readonly code: 'invalid' | 'conflict' | 'not_found' | 'unauthorized';
+  constructor(code: 'invalid' | 'conflict' | 'not_found' | 'unauthorized', message: string) {
     super(message);
+    this.code = code;
     this.name = 'DiaryAccessError';
   }
 }
