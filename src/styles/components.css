@@ -353,3 +353,47 @@
   text-align: center;
   font-weight: 600;
 }
+
+/* Only active in the explicit Apps-in-Toss sandbox bundle. The production
+   diary and calendar are not mutated by the fictional renderer preview. */
+.ait-review-snowflake-trigger {
+  display: flex; width: 100%; align-items: center; justify-content: center; gap: 12px;
+  background: #30283d; border: 0; border-bottom: 1px solid #655473;
+  color: #f3eaf8; min-height: 46px; padding: 9px 16px;
+  font: inherit; font-size: 13px; font-weight: 650;
+}
+.ait-review-snowflake-trigger span { font-size: 22px; line-height: 1; }
+.ait-snowflake-qa {
+  position: fixed; inset: 0; z-index: 1000; background: #1e1c27;
+  color: #f4effb; overflow: auto; padding: 24px 20px calc(38px + env(safe-area-inset-bottom));
+  display: flex; flex-direction: column; align-items: stretch;
+}
+.ait-snowflake-qa__header { display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; }
+.ait-snowflake-qa__header h2 { margin: 2px 0 0; font-size: 24px; line-height: 1.4; }
+.ait-snowflake-qa__eyebrow { margin: 0; font-size: 12px; color: #c4b6d6; }
+.ait-snowflake-qa__close {
+  min-width: 56px; min-height: 44px; border-radius: 10px; color: #efe5fa;
+  background: #393342; border: 1px solid #655473; font: inherit;
+}
+.ait-snowflake-qa__description { font-size: 14px; color: #d1c5df; line-height: 1.6; margin: 18px 0; }
+.ait-snowflake-qa__steps { display: flex; gap: 8px; }
+.ait-snowflake-qa__steps button {
+  flex: 1; min-height: 44px; border: 1px solid #6c607d; border-radius: 10px;
+  color: #e9e4f2; background: #282631; font: inherit;
+}
+.ait-snowflake-qa__steps button[aria-pressed="true"] {
+  background: #d3c2ef; color: #1e1c27; border-color: #d3c2ef; font-weight: 700;
+}
+.ait-snowflake-qa__stage {
+  width: 100%; max-width: 440px; min-height: 340px; margin: 10px auto 0;
+  display: grid; align-items: center; justify-items: stretch;
+}
+.ait-snowflake-qa__stage .artwork-slot,
+.ait-snowflake-qa__stage .snowflake-artwork { width: 100%; min-width: 0; }
+.ait-snowflake-qa__stage canvas { width: 100%; display: block; }
+.ait-snowflake-qa__status {
+  text-align: center; font-size: 14px; color: #d7d0e3; margin: 4px 0; min-height: 24px;
+}
+.ait-snowflake-qa__footer {
+  font-size: 12px; color: #aa9dbb; margin: 22px 0 0; text-align: center;
+}

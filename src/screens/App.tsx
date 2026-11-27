@@ -7,6 +7,7 @@ import { DiaryContent } from '../components/DiaryContent';
 import { JarArtwork } from '../components/JarArtwork';
 import { stackCount } from '../graphics/rediscover-motion.mjs';
 import { ArtworkSlot } from '../graphics/ArtworkSlot';
+import { SandboxSnowflakeQA } from './SandboxSnowflakeQA';
 import { HomeShell, type HomeMode } from './HomeShell';
 import { EntryExperience, markEntrySeen, reviewEntryMonth, reviewEntryScenario, type EntryScenario } from './EntryExperience';
 import { ArchiveScreen, type ArchiveSnapshot } from './ArchiveScreen';
@@ -45,6 +46,7 @@ export default function App() {
   const [stack, setStack] = useState<Page[]>([]);
   const [homeMonth, setHomeMonth] = useState<MonthId | null>(null);
   const [homeMode, setHomeMode] = useState<HomeMode>('art');
+  const [sandboxSnowflakeOpen, setSandboxSnowflakeOpen] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const [deleteAllStage, setDeleteAllStage] = useState<0 | 1 | 2 | 3>(0);
@@ -135,6 +137,7 @@ export default function App() {
   // a handler on the standalone web review. Use a ref so the event subscription
   // is stable while page, dialogs and draft-protection state change.
   nativeBackRef.current = () => {
+    if (sandboxSnowflakeOpen) { setSandboxSnowflakeOpen(false); return; }
     if (entryScenario) { setEntryScenario(null); return; }
     if (confirmDelete) { setConfirmDelete(null); return; }
     if (deleteAllStage !== 0) { setDeleteAllStage(0); return; }
@@ -266,6 +269,11 @@ export default function App() {
     {aitReview && <div className="ait-review-disclaimer" role="status">
       개발용 테스트 번들 · 실제 일기나 개인정보를 입력하지 마세요. 기록은 보존되지 않을 수 있어요.
     </div>}
+    {aitReview && page.screen === 'home' && <button type="button"
+      className="ait-review-snowflake-trigger" onClick={() => setSandboxSnowflakeOpen(true)}>
+      12월 눈꽃 렌더링 테스트 <span aria-hidden="true">›</span>
+    </button>}
+    {aitReview && sandboxSnowflakeOpen && <SandboxSnowflakeQA onClose={() => setSandboxSnowflakeOpen(false)} />}
     {entryScenario && <EntryExperience scenario={entryScenario} theme={themeFor(reviewEntryMonth(window.location.search, viewMonth))} reducedMotion={state.reducedMotion || window.matchMedia('(prefers-reduced-motion: reduce)').matches}
       onFinish={artworkIntroduced => { if (!new URLSearchParams(window.location.search).has('entryScenario')) markEntrySeen(todayMonth, artworkIntroduced); setEntryScenario(null); }} />}
     {page.screen !== 'home' && !isReader && !isArchiveF && <AppBar title={pageTitle[page.screen]} onBack={showBack && !nativeNav ? back : undefined}/>}
