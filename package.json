@@ -17,7 +17,9 @@
     "test:e2e": "playwright test",
     "test:motion": "node tests/rediscover-motion.mjs",
     "test:archive": "node tests/archive.mjs",
-    "check:popups": "node tests/no-native-popups.mjs"
+    "check:popups": "node tests/no-native-popups.mjs",
+    "audit:ait": "node scripts/audit-ait-launch.mjs",
+    "audit:ait:strict": "node scripts/audit-ait-launch.mjs --strict"
   },
   "dependencies": {
     "react": "^18.3.1",
