@@ -29,7 +29,7 @@ export function SandboxSnowflakeQA({ onClose }: { onClose: () => void }) {
             const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
             let count = 0;
             for (let i = 3; i < pixels.length; i += 4) {
-              if (pixels[i] > 20 && ++count >= 20) break;
+              if ((pixels[i] ?? 0) > 20 && ++count >= 20) break;
             }
             if (count >= 20) {
               setStatus('painted');
