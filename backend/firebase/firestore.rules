@@ -1,0 +1,87 @@
+// DESIGN REFERENCE ONLY. Not deployed. Security Rules are NOT a replacement for
+// verified Toss login: tokens must be minted ONLY after server-to-server mTLS
+// authentication-code exchange. No Firebase Anonymous sign-in in production.
+// Before launch, run Firestore Emulator rules tests with two independent users.
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isOwner(uid) {
+      return request.auth != null && request.auth.uid == uid;
+    }
+    function diaryValid(uid) {
+      return request.resource.data.keys().hasAll(['ownerId', 'entryDate', 'body', 'createdAt', 'updatedAt', 'revision'])
+        && request.resource.data.keys().hasOnly(['ownerId', 'entryDate', 'body', 'title', 'referencePrompt', 'createdAt', 'updatedAt', 'revision', 'reflections'])
+        && request.resource.data.ownerId == uid
+        && request.resource.data.entryDate is string
+        && request.resource.data.entryDate.size() == 10
+        && request.resource.data.body is string
+        && request.resource.data.body.size() > 0
+        && request.resource.data.body.size() <= 12000
+        && request.resource.data.revision is int
+        && request.resource.data.revision >= 1;
+    }
+    // No public user profiles. Only explicitly matched private subcollections are accessible.
+    match /users/{uid} {
+      allow read, write: if false;
+
+      // Query only paths inside /users/{request.auth.uid}/entries.
+      match /entries/{entryId} {
+        allow get, list: if isOwner(uid);
+        allow create: if isOwner(uid) && diaryValid(uid)
+          && request.resource.data.revision == 1;
+        allow update: if isOwner(uid) && resource.data.ownerId == uid
+          && diaryValid(uid)
+          && request.resource.data.revision == resource.data.revision + 1
+          && request.resource.data.createdAt == resource.data.createdAt
+          && request.resource.data.entryDate == resource.data.entryDate;
+        // Deletion of an entry needs to clean associated reflections if later split
+        // into subcollections. For the proposed MVP reflections are embedded arrays.
+        allow delete: if isOwner(uid);
+      }
+
+      match /preferences/{settingId} {
+        allow get: if isOwner(uid) && settingId == 'current';
+        allow list: if false;
+        allow create, update: if isOwner(uid) && settingId == 'current'
+          && request.resource.data.keys().hasOnly(['boundaryHour','reduceMotion','rediscoverUnlockedAt','postGoalCopyCounter','updatedAt'])
+          && request.resource.data.keys().hasAll(['boundaryHour','reduceMotion','postGoalCopyCounter','updatedAt'])
+          && request.resource.data.boundaryHour is int
+          && request.resource.data.boundaryHour >= 0
+          && request.resource.data.boundaryHour <= 4
+          && request.resource.data.reduceMotion is bool
+          && request.resource.data.postGoalCopyCounter is int
+          && request.resource.data.postGoalCopyCounter >= 0;
+        allow delete: if false;
+      }
+
+      match /artworkSeen/{key} {
+        allow get, list: if isOwner(uid);
+        allow create: if isOwner(uid)
+          && request.resource.data.keys().hasOnly(['artworkKey','month','seenAt'])
+          && request.resource.data.keys().hasAll(['artworkKey','month','seenAt'])
+          && request.resource.data.artworkKey is string
+          && request.resource.data.month is string;
+        allow update, delete: if false;
+      }
+
+      match /ideas/{ideaId} {
+        allow get, list, delete: if isOwner(uid);
+        allow create: if isOwner(uid)
+          && request.resource.data.keys().hasOnly(['month','body','createdAt'])
+          && request.resource.data.keys().hasAll(['month','body','createdAt'])
+          && request.resource.data.body is string
+          && request.resource.data.body.size() > 0
+          && request.resource.data.body.size() <= 1500;
+        allow update: if false;
+      }
+    }
+
+    // Public metadata only. No user diary content in this collection.
+    match /artworkCatalog/{key} {
+      allow get, list: if true;
+      allow create, update, delete: if false;
+    }
+
+    // Everything else is closed by default.
+  }
+}

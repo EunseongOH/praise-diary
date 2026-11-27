@@ -24,8 +24,11 @@ const SNOW_CLUSTERS = makeSnowflakeClusters();
  */
 export function GraphicArtwork({ theme, writtenDays, letterCount, reducedMotion = false, small = false, letterSource = '', entries = [], fromWrittenDays }: Props) {
   const id = useId().replace(/:/g, '');
-  const now = revealWindow(theme.kind, writtenDays, theme.targetDays);
-  const before = fromWrittenDays != null ? revealWindow(theme.kind, fromWrittenDays, theme.targetDays) : now;
+  // Legacy study renderer supports only these two kinds. Future kinds resolve through
+  // artworkRegistry; this fallback must not pretend an unknown kind is a sheep.
+  const legacyKind = theme.kind === 'sheep' ? 'sheep' : 'snowflake';
+  const now = revealWindow(legacyKind, writtenDays, theme.targetDays);
+  const before = fromWrittenDays != null ? revealWindow(legacyKind, fromWrittenDays, theme.targetDays) : now;
   const systemReducedMotion = typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
   const shouldGrow = !reducedMotion && !systemReducedMotion && !small && before.ratio < now.ratio;
   const shouldBreathe = !reducedMotion && !systemReducedMotion && !small && !shouldGrow && writtenDays > 0;
@@ -40,6 +43,9 @@ export function GraphicArtwork({ theme, writtenDays, letterCount, reducedMotion 
     [entries, paintedSlots],
   );
 
+  if (theme.kind !== 'snowflake' && theme.kind !== 'sheep') {
+    return <div role="img" aria-label={`${theme.title} 작품 준비 중`}>작품을 준비하고 있어요.</div>;
+  }
   return <svg
     className={`graphic-artwork graphic-artwork--path-type ${small ? 'graphic-artwork--small' : ''} ${reducedMotion ? 'reduce-motion' : ''}`}
     viewBox="0 0 340 340" role="img"

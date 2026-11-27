@@ -3,10 +3,10 @@ name: Prototype quality checks
 on:
   workflow_dispatch:
   pull_request:
-    branches: [main, feat/mvp-integration, feat/brand-splash-window]
+    branches: [main, feat/mvp-integration, feat/brand-splash-window, feat/entry-actual-artwork-preview]
     types: [opened, synchronize, reopened, ready_for_review, edited]
   push:
-    branches: [main, feat/design-system-prototype, feat/mvp-integration, feat/archive-f, feat/snowflake-service-integration, feat/entry-actual-artwork-preview]
+    branches: [main, feat/design-system-prototype, feat/mvp-integration, feat/archive-f, feat/snowflake-service-integration, feat/entry-actual-artwork-preview, feat/artwork-registry-backend-design]
 
 jobs:
   check:
@@ -23,6 +23,8 @@ jobs:
           cache-dependency-path: package.json
       - name: Install dependencies
         run: npm install --no-audit --no-fund
+      - name: Validate D1 schema and relational privacy constraints (no live database)
+        run: python3 -m unittest discover -s backend/tests -p 'test_*.py' -v
       - name: Verify prototype
         run: npm run check
       - name: Prepare actual React review package
