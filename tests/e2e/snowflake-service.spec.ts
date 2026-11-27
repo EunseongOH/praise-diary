@@ -216,7 +216,12 @@ test('entry review: zero-entry return and first encounter of a new month can be 
     const intro=page.getByRole('dialog',{name:'다정록 첫 만남'});
     await expect(intro).toHaveAttribute('data-entry-scenario',scenario);
     await expect(intro).toHaveAttribute('data-motion','off');
-    if(scenario==='new-month') await expect(intro.getByRole('heading',{name:'새해 양'})).toBeVisible();
+    await expect(intro.getByRole('heading',{name:'다정록'})).toBeVisible();
+    await expect(intro).toHaveAttribute('data-brand-art','window');
+    if(scenario==='new-month') {
+      await intro.getByRole('button',{name:'다음'}).click();
+      await expect(intro.getByRole('heading',{name:'새해 양'})).toBeVisible();
+    }
     await page.screenshot({path:'test-results/entry-'+scenario+'-320.png'});
     await intro.getByRole('button',{name:'홈으로'}).click();
     await expect(intro).toHaveCount(0);
