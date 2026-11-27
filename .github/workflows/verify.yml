@@ -35,11 +35,13 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: collection-visual-evidence
+          name: app-visual-evidence
           path: |
             test-results/**/collection-*.png
             test-results/**/diary-row-*.png
             test-results/**/archive-*.png
+            test-results/**/entry-*.png
+            test-results/entry-*.png
           if-no-files-found: warn
           retention-days: 14
       - name: Upload verified React review
