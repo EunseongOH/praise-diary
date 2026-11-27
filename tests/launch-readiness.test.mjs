@@ -22,3 +22,12 @@ test('never treat GitHub QA or a mock auth exchange as release proof',()=>{
  assert.equal(result.info.includes('never a live Toss/DB security guarantee.'),true);
  assert.ok(result.blockerCount>=8);
 });
+
+test('user confirmed appName registration without falsely claiming inspected private console',()=>{
+ const m=JSON.parse(fs.readFileSync(new URL('../docs/launch/app-registration.draft.json',import.meta.url),'utf8'));
+ assert.equal(m.product.appNameRegistered,'dajeongrok');
+ assert.equal(m.releaseEvidence.consoleAppRegistered,true);
+ assert.equal(m.releaseEvidence.verifiedAvailableAppName,true);
+ assert.equal(m.registrationEvidence.consoleContentIndependentlyInspected,false);
+ assert.ok(!m.publisher.workspaceId);
+});

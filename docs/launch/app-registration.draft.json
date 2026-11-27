@@ -26,7 +26,8 @@
     "pricing": "free_for_mvp",
     "externalAds": false,
     "requiresInAppPayment": false,
-    "notes": "서비스 설명은 실제 활성화된 기능만 반영해 최종 제출 시 재확인. 2027-01 양 그래픽 등 미출시 기능은 광고에 노출 금지."
+    "notes": "서비스 설명은 실제 활성화된 기능만 반영해 최종 제출 시 재확인. 2027-01 양 그래픽 등 미출시 기능은 광고에 노출 금지.",
+    "appNameRegistered": "dajeongrok"
   },
   "publisher": {
     "makerDisplayName": null,
@@ -46,8 +47,8 @@
     "landscapeScreenshot": null
   },
   "releaseEvidence": {
-    "consoleAppRegistered": false,
-    "verifiedAvailableAppName": false,
+    "consoleAppRegistered": true,
+    "verifiedAvailableAppName": true,
     "aitSdkInstalledAndBuilt": false,
     "realTossCodeExchangeVerified": false,
     "firebaseOrSupabaseAuthAndRulesVerified": false,
@@ -64,5 +65,11 @@
     "externalFontsAndRemoteResourcesReviewed": false,
     "nativeNavigationIntegrated": false,
     "consentAndRetentionLegallyReviewed": false
+  },
+  "registrationEvidence": {
+    "source": "user_confirmed_apps_in_toss_console_link",
+    "confirmedAt": "2026-11-27",
+    "consoleContentIndependentlyInspected": false,
+    "notes": "The user supplied the Apps-in-Toss console app-build URL for mini-app/dajeongrok. Workspace ID and private console URL intentionally not stored in this public repository."
   }
 }

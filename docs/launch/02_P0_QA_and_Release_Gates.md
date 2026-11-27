@@ -4,7 +4,7 @@
 ## P0 출시 차단 작업과 완료 증거
 | ID | 실제 해야 할 일 | 현재 상태 | 통과 증거 |
 |---|---|---|---|
-| A01 | 고유 appName 등록, 운영자/고객센터 확정 | 미확인 | 콘솔 등록 정보 |
+| A01 | 고유 appName 등록, 운영자/고객센터 확정 | **앱 생성 완료 (`dajeongrok`, 사용자 제공 링크)** / 운영자·고객센터는 미확인 | 콘솔 운영 정보 확인 필요 |
 | A02 | SDK 3.x 설치, granite.config.ts, .ait 번들 | 미구현 | 실제 AIT build 및 QR 실행 |
 | A03 | 토스 NavigationBar, backEvent/닫기 및 CORS 실제 origin | 미연결 | iOS/Android 기기 QA |
 | A04 | 일회성 Toss 익명 인증코드 → 서버 mTLS 교환 | 모의 함수만 | 두 계정의 실제 인증 성공/재사용 실패 |
