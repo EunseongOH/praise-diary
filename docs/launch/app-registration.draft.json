@@ -1,0 +1,75 @@
+{
+  "version": 1,
+  "status": "DRAFT_NOT_SUBMITTED",
+  "reviewedAt": "2026-11-27",
+  "product": {
+    "displayName": "다정록",
+    "appNameCandidate": "dajeongrok",
+    "appType": "non-game",
+    "categoryCandidate": "라이프스타일",
+    "shortDescription": "나를 칭찬하고 작품으로 남기는 일기",
+    "detailDescription": "다정록을 열고 오늘 나에게 칭찬해 주고 싶은 일을 떠올려 보세요. 안내 질문을 참고하거나 자유롭게 칭찬일기를 쓸 수 있어요. 날짜별로 쌓인 기록은 그달의 작품을 만들어 가는 재료가 됩니다. 홈에서 작품의 변화를 보고, 달력과 기록 목록에서 이전 칭찬을 다시 읽어볼 수 있어요. 칭찬일기를 10개 모으면 꺼내보기에서 예전의 나에게 남긴 말을 무작위로 다시 만날 수 있어요.",
+    "tagline": "오늘도 나에게 다정한 한 줄",
+    "keyFeatures": [
+      "오늘 나에게 남기는 칭찬일기",
+      "기록이 쌓일수록 달라지는 월간 작품",
+      "달력과 기록 목록, 꺼내보기로 다시 읽는 칭찬"
+    ],
+    "searchKeywordCandidates": [
+      "칭찬일기",
+      "자기돌봄",
+      "일기",
+      "하루기록",
+      "기록",
+      "회고"
+    ],
+    "pricing": "free_for_mvp",
+    "externalAds": false,
+    "requiresInAppPayment": false,
+    "notes": "서비스 설명은 실제 활성화된 기능만 반영해 최종 제출 시 재확인. 2027-01 양 그래픽 등 미출시 기능은 광고에 노출 금지.",
+    "appNameRegistered": "dajeongrok"
+  },
+  "publisher": {
+    "makerDisplayName": null,
+    "workspaceId": null,
+    "supportEmail": null,
+    "supportContactOrUrl": null,
+    "privacyPolicyUrl": null,
+    "termsUrl": null,
+    "dataControllerLegalName": null,
+    "dataControllerAddressOrRequiredContact": null
+  },
+  "assets": {
+    "appIcon": null,
+    "squareThumbnail": null,
+    "wideThumbnail": null,
+    "portraitScreenshots": [],
+    "landscapeScreenshot": null
+  },
+  "releaseEvidence": {
+    "consoleAppRegistered": true,
+    "verifiedAvailableAppName": true,
+    "aitSdkInstalledAndBuilt": false,
+    "realTossCodeExchangeVerified": false,
+    "firebaseOrSupabaseAuthAndRulesVerified": false,
+    "crossUserPrivacyTestsPassed": false,
+    "durableEntriesAndRecoveryTested": false,
+    "accountDeletionAndExportTested": false,
+    "currentReleaseArtworkApproved": false,
+    "mobileTossSandboxQATested": false,
+    "privacyTermsPublished": false,
+    "productionFlagsAndNoDemoDataVerified": false,
+    "accessibilityNavigationQAVerified": false,
+    "supportChannelReady": false,
+    "nonGameDarkThemePolicyReviewed": false,
+    "externalFontsAndRemoteResourcesReviewed": false,
+    "nativeNavigationIntegrated": false,
+    "consentAndRetentionLegallyReviewed": false
+  },
+  "registrationEvidence": {
+    "source": "user_confirmed_apps_in_toss_console_link",
+    "confirmedAt": "2026-11-27",
+    "consoleContentIndependentlyInspected": false,
+    "notes": "The user supplied the Apps-in-Toss console app-build URL for mini-app/dajeongrok. Workspace ID and private console URL intentionally not stored in this public repository."
+  }
+}

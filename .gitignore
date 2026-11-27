@@ -8,3 +8,13 @@ dist/
 coverage/
 dist-snowflake/
 artifacts/snowflake-service-review/
+
+# Apps-in-Toss bundle outputs and server auth/crypto credentials (never commit)
+*.ait
+*.p12
+*.pfx
+*.pem
+*.key
+*.keystore
+.ait/
+.granite/
