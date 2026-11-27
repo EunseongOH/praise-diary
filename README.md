@@ -1,5 +1,9 @@
 # 칭찬일기 · Praise Diary
 
+> **2026-11-27 출시 상태: NOT READY.** 현재 저장소는 다정록의 웹 UI/UX 검수용 React/Vite 프로젝트이며, 실제 앱인토스 SDK·Toss 인증 교환·사용자별 클라우드 저장·개인정보 처리방침을 아직 연결하지 않았습니다. `npm run check`/Playwright 통과와 앱인토스 실출시는 다릅니다. 실제 사용자 일기를 입력하거나 출시하지 마세요.
+>
+> 앱인토스 콘솔 등록 초안과 정확한 출시 차단 요건: [등록 내용](docs/launch/01_App_Registration_Copy.md) · [P0 QA 매트릭스](docs/launch/02_P0_QA_and_Release_Gates.md). `npm run audit:ait`로 출고 상태를 확인하고, 실제 승인 전 `npm run audit:ait:strict`는 의도적으로 실패합니다. Vercel 재배포 및 main 병합은 별도 승인 시 진행합니다.
+
 내가 남긴 칭찬이 달마다 텍스트 그래픽으로 자라는 작은 일기. 앱인토스 출시를 목표로 설계하는 **디자인·UX 프로토타입**입니다.
 
 ## 로컬 실행

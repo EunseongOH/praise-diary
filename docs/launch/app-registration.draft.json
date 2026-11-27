@@ -59,6 +59,10 @@
     "privacyTermsPublished": false,
     "productionFlagsAndNoDemoDataVerified": false,
     "accessibilityNavigationQAVerified": false,
-    "supportChannelReady": false
+    "supportChannelReady": false,
+    "nonGameDarkThemePolicyReviewed": false,
+    "externalFontsAndRemoteResourcesReviewed": false,
+    "nativeNavigationIntegrated": false,
+    "consentAndRetentionLegallyReviewed": false
   }
 }

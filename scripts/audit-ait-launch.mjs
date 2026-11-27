@@ -8,9 +8,6 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
-const file=p=>path.join(root,p);
-const read=p=>fs.existsSync(file(p))?fs.readFileSync(file(p),'utf8'):'';
-const json=p=>JSON.parse(read(p));
 export function assessLaunch(rootPath=root){
  const exists=p=>fs.existsSync(path.join(rootPath,p));
  const load=p=>exists(p)?fs.readFileSync(path.join(rootPath,p),'utf8'):'';
@@ -49,9 +46,19 @@ export function assessLaunch(rootPath=root){
    '실 DB 보안 규칙/RLS 및 서로 다른 사용자 교차접근 검증 필요');
  gate('data_controls',evidence.accountDeletionAndExportTested, '계정 탈퇴/전체 기록 삭제/내보내기·복원 미검증');
  const graphics=load('src/graphics/snowflake/flags.ts'),themes=load('src/data/themes.ts');
+ const css=load('src/styles/tokens.css'),html=load('index.html');
+ gate('dark_theme_policy',evidence.nonGameDarkThemePolicyReviewed,
+   css.includes('color-scheme: dark') ? '비게임 라이트 모드 기준과 기본 다크 퍼플 테마의 승인·예외 확인 필요' : '테마 검수 근거 필요');
+ gate('external_fonts',evidence.externalFontsAndRemoteResourcesReviewed,
+   html.includes('https://fonts.googleapis.com') || html.includes('https://cdn.jsdelivr.net') ?
+   '외부 CSS/폰트 CDN 로딩 허용 여부·번들 대체·폰트 라이선스 확인 필요' : '외부 리소스 정책 검증 필요');
+ gate('native_navigation',evidence.nativeNavigationIntegrated,
+   '현재 자체 AppBar/뒤로만 있으며 공식 Toss NavigationBar와 backEvent 미연결');
+ gate('legal_review',evidence.consentAndRetentionLegallyReviewed,
+   '사용자 자유 입력의 민감정보·미성년자/개인정보 처리위탁·국외 이전·파기 정책 최종 검토 필요');
  gate('artwork_production',evidence.currentReleaseArtworkApproved &&
    !graphics.includes('Production default: OFF'), '월간 눈꽃은 현재 리뷰 플래그 중심이고 출시 빌드/완성 목표 미확정');
- gate('future_months',!themes.includes("release: 'planned'") && evidence.currentReleaseArtworkApproved,
+ gate('future_months',!load('src/graphics/artworkRegistry.ts').includes("release: 'planned'") && evidence.currentReleaseArtworkApproved,
    '달력 월별 출시 일정과 실제 제작된 작품을 일치시키세요', 'warning');
  gate('native_and_a11y',evidence.mobileTossSandboxQATested && evidence.accessibilityNavigationQAVerified,
    '토스 실기기 네비게이션/키보드/텍스트 확대/스크린리더 미검증');

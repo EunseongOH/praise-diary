@@ -6,7 +6,7 @@ on:
     branches: [main, feat/mvp-integration, feat/brand-splash-window, feat/entry-actual-artwork-preview]
     types: [opened, synchronize, reopened, ready_for_review, edited]
   push:
-    branches: [main, feat/design-system-prototype, feat/mvp-integration, feat/archive-f, feat/snowflake-service-integration, feat/entry-actual-artwork-preview, feat/artwork-registry-backend-design, feat/provider-neutral-data-auth-contract]
+    branches: [main, feat/design-system-prototype, feat/mvp-integration, feat/archive-f, feat/snowflake-service-integration, feat/entry-actual-artwork-preview, feat/artwork-registry-backend-design, feat/provider-neutral-data-auth-contract, feat/ait-launch-readiness-audit]
 
 jobs:
   check:
@@ -29,6 +29,10 @@ jobs:
         run: |
           node --experimental-strip-types --test tests/access-contract.test.ts tests/toss-session-client.test.ts
           node --test backend/auth/toss-anonymous-bridge.test.mjs backend/auth/verified-user-id.test.mjs
+      - name: Audit Apps-in-Toss launch blockers (report only; not deployment)
+        run: |
+          npm run audit:ait
+          node --test tests/launch-readiness.test.mjs
       - name: Verify prototype
         run: npm run check
       - name: Prepare actual React review package
