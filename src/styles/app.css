@@ -342,3 +342,29 @@ body { font-family: var(--font-body); font-size: var(--type-body); line-height: 
 .snowflake-artwork { width: 100%; aspect-ratio: 1 / 1; --flake-bg: transparent; }
 .snowflake-artwork canvas { display: block; width: 100%; }
 .month-visual .gesture-artwork-viewer { width: 100%; height: 100%; }
+
+
+/* Entry experience v0.1 — explicit QA scenario only, no production splash decision. */
+.entry-experience{position:fixed;z-index:1000;inset:0;margin-inline:auto;width:min(100%,var(--content-width));min-height:100dvh;background:var(--background);color:var(--ink);display:flex;flex-direction:column;justify-content:center;padding:max(24px,env(safe-area-inset-top)) var(--gutter) max(24px,env(safe-area-inset-bottom))}
+.entry-experience__stage{width:100%;min-height:280px;display:flex;flex:1;justify-content:center;align-items:center;text-align:center}
+.entry-experience__brand h1{font:400 36px/1.4 var(--font-artwork);letter-spacing:.05em;margin:0}
+.entry-experience__brand p{font:400 16px/1.6 var(--font-body);letter-spacing:.01em;color:var(--muted);margin:16px 0 0}
+.entry-experience__copy{font:400 clamp(17px,4.5vw,21px)/1.8 var(--font-body);max-width:380px;word-break:keep-all;animation:entry-fadein .65s ease both}
+.entry-experience__copy p{margin:4px 0}
+.entry-experience__monthly{width:100%;display:grid;justify-items:center;gap:12px;animation:entry-fadein .6s ease both}
+.entry-experience__monthly h2{font:400 clamp(24px,6vw,32px)/1.4 var(--font-artwork);margin:0}
+.entry-experience__eyebrow{font:400 var(--type-meta)/1.5 var(--font-body);color:var(--muted);margin:0}
+.entry-experience__support{font:400 var(--type-supporting)/1.7 var(--font-body);color:var(--muted);text-wrap:balance;max-width:310px}
+.entry-experience__sample{position:relative;width:min(72vw,280px);max-width:100%;aspect-ratio:1;overflow:hidden;contain:layout paint}
+.entry-experience__arm{position:absolute;top:50%;left:50%;width:44%;height:20px;display:flex;align-items:center;justify-content:space-between;transform-origin:left center}
+.entry-experience__glyph{display:inline-block;font:400 12px/1 var(--font-body);color:var(--ink);opacity:0;animation:entry-glyph .85s ease-out forwards}
+.entry-experience[data-entry-phase="hold"] .entry-experience__glyph{opacity:.9;animation:none}
+.entry-experience[data-entry-phase="fade"] .entry-experience__sample{animation:entry-fadeout .8s ease-in forwards}
+.entry-experience__sample-label{font:400 var(--type-meta)/1.5 var(--font-body);color:var(--muted)}
+.entry-experience__skip{align-self:flex-end;min-height:var(--touch);padding:0 var(--space-3);border:0;color:var(--muted);background:transparent;font:500 var(--type-supporting)/1.5 var(--font-body)}
+.entry-experience__skip:focus-visible{outline:var(--focus-width) solid var(--focus);border-radius:var(--radius-sm)}
+.saved-artwork-status{font:400 var(--type-supporting)/1.6 var(--font-body);color:var(--muted);text-align:center;margin:0;word-break:keep-all}
+@keyframes entry-fadein{from{opacity:0}to{opacity:1}}
+@keyframes entry-fadeout{from{opacity:1}to{opacity:0}}
+@keyframes entry-glyph{from{opacity:0;filter:blur(3px)}to{opacity:.9;filter:blur(0)}}
+@media(prefers-reduced-motion:reduce){.entry-experience *, .entry-experience *::before, .entry-experience *::after{animation:none!important;transition:none!important}.entry-experience__glyph{opacity:.9}}
