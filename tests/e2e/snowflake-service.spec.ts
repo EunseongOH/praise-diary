@@ -195,6 +195,9 @@ test('entry review: first visitor sees brand and monthly introduction, reopening
   await page.screenshot({path:'test-results/entry-first-brand-390.png'});
   await expect(intro).toHaveAttribute('data-entry-phase','intro',{timeout:8000});
   await page.screenshot({path:'test-results/entry-first-intro-390.png'});
+  await expect(intro).toHaveAttribute('data-artwork-supported','true');
+  await expect(intro.locator('[data-entry-artwork-preview="snowflake"]')).toHaveAttribute('data-preview-days','15',{timeout:5000});
+  await expect(intro.locator('[data-entry-artwork-preview="snowflake"] canvas')).toBeAttached({timeout:6000});
   await intro.getByRole('button',{name:'건너뛰기'}).click();
   await expect(intro).toHaveCount(0);
   await expect(page.getByText('8일의 칭찬')).toBeVisible();
@@ -220,7 +223,8 @@ test('entry review: zero-entry return and first encounter of a new month can be 
     await expect(intro).toHaveAttribute('data-brand-art','window');
     if(scenario==='new-month') {
       await intro.getByRole('button',{name:'다음'}).click();
-      await expect(intro.getByRole('heading',{name:'새해 양'})).toBeVisible();
+      await expect(intro.getByRole('heading',{name:'12월의 눈꽃'})).toBeVisible();
+      await expect(intro.locator('[data-entry-artwork-preview="snowflake"]')).toHaveAttribute('data-preview-days','15');
     }
     await page.screenshot({path:'test-results/entry-'+scenario+'-320.png'});
     await intro.getByRole('button',{name:'홈으로'}).click();
@@ -228,6 +232,41 @@ test('entry review: zero-entry return and first encounter of a new month can be 
   }
   await expect(page.getByText('오늘의 나에게 칭찬 하나 남겨볼까요?')).toBeVisible();
   await context.close();
+});
+
+test('entry preview: real 15-day snowflake renders from isolated fictional diaries, then zero-day home stays empty',async ({browser})=>{
+  test.setTimeout(120_000);
+  const ctx=await browser.newContext({viewport:{width:390,height:844},reducedMotion:'reduce'});
+  const page=await ctx.newPage();
+  await page.goto('/?snowflakeDays=0&entryScenario=first');
+  const intro=page.getByRole('dialog',{name:'다정록 첫 만남'});
+  await expect(intro).toHaveAttribute('data-artwork-supported','true');
+  await intro.getByRole('button',{name:'다음'}).click();
+  await expect(intro.getByRole('heading',{name:'12월의 눈꽃'})).toBeVisible();
+  const preview=intro.locator('[data-entry-artwork-preview="snowflake"]');
+  await expect(preview).toHaveAttribute('data-preview-days','15');
+  await expect(preview.locator('[data-snowflake="static"] canvas')).toBeVisible({timeout:25000});
+  await expect(preview.locator('[data-snowflake="static"]')).toHaveAttribute('data-live','off');
+  await page.screenshot({path:'test-results/entry-actual-15day-snowflake-390.png'});
+  await intro.getByRole('button',{name:'홈으로'}).click();
+  await expect(intro).toHaveCount(0);
+  await expect(page.getByText('0일의 칭찬')).toBeVisible();
+  await expect(page.locator('.home-artwork-stage [data-written-days="15"]')).toHaveCount(0);
+  const storage=await page.evaluate(()=>sessionStorage.getItem('praise-diary:prototype:v1'));
+  if(storage) expect(JSON.parse(storage).entries).toHaveLength(0);
+  await ctx.close();
+});
+
+test('entry preview: January artwork is withheld until the real sheep renderer exists',async ({browser})=>{
+  const ctx=await browser.newContext({viewport:{width:320,height:700},reducedMotion:'reduce'});
+  const page=await ctx.newPage();
+  await page.goto('/?snowflakeDays=0&entryScenario=new-month&entryMonth=2027-01');
+  const intro=page.getByRole('dialog',{name:'다정록 첫 만남'});
+  await expect(intro).toHaveAttribute('data-artwork-supported','false');
+  await expect(intro.locator('[data-entry-artwork-preview]')).toHaveCount(0);
+  await intro.getByRole('button',{name:'홈으로'}).click();
+  await expect(intro).toHaveCount(0);
+  await ctx.close();
 });
 
 test('reduced motion (OS or app setting): no replay, no particles, the after-state still', async ({ browser }) => {
