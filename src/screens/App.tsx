@@ -7,6 +7,7 @@ import { JarArtwork } from '../components/JarArtwork';
 import { stackCount } from '../graphics/rediscover-motion.mjs';
 import { ArtworkSlot } from '../graphics/ArtworkSlot';
 import { HomeShell, type HomeMode } from './HomeShell';
+import { EntryExperience, markEntrySeen, reviewEntryScenario, type EntryScenario } from './EntryExperience';
 import { ArchiveScreen, type ArchiveSnapshot } from './ArchiveScreen';
 import { WriterLayout } from './WriterLayout';
 import { CollectionScreen, MonthlyGraphicDetail, LockedMonthDetail, GraphicIdeaForm } from './CollectionScreen';
@@ -30,6 +31,10 @@ function makeId() {
 export default function App() {
   const [state, setState] = useState<PrototypeState>(loadState);
   const [nowForPreview, setNowForPreview] = useState(currentPreviewTime);
+  // Only explicit review URLs show the unapproved entry animation. Product default is unchanged.
+  const [entryScenario, setEntryScenario] = useState<EntryScenario | null>(() =>
+    reviewEntryScenario(window.location.search, state.entries.length, monthOf(todayAndYesterday(currentPreviewTime(), state.boundaryHour).today)));
+
   useEffect(() => {
     if (import.meta.env.VITE_DEMO_DATE) return;
     const interval = window.setInterval(() => setNowForPreview(new Date()), 30_000);
@@ -228,6 +233,8 @@ export default function App() {
     onEditEntry={()=>startWrite(entry)} onDeleteEntry={()=>setConfirmDelete(entry.id)}/>;
   const isArchiveF=page.screen==='list'&&!page.day&&(!reviewMode||listVariant==='F');
   return <div className="app-shell" data-drawing={isDrawing}>
+    {entryScenario && <EntryExperience scenario={entryScenario} monthTitle={themeFor(viewMonth)?.title ?? '겨울의 눈꽃'} reducedMotion={state.reducedMotion || window.matchMedia('(prefers-reduced-motion: reduce)').matches}
+      onFinish={() => { if (!new URLSearchParams(window.location.search).has('entryScenario')) markEntrySeen(todayMonth); setEntryScenario(null); }} />}
     {page.screen !== 'home' && !isReader && !isArchiveF && <AppBar title={pageTitle[page.screen]} onBack={showBack ? back : undefined}/>}
     <main className={`app-content ${!isTabPage ? 'app-content--no-tabs' : ''} ${page.screen === 'home' ? 'app-content--home-integrated' : ''} ${page.screen==='write'?'app-content--writer':''} ${isArchiveF?'app-content--archive-f':''}`} id="main-content">
       {page.screen === 'home' && <HomeShell month={viewMonth} months={homeMonths} mode={homeMode} today={today}
