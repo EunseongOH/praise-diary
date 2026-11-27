@@ -1,4 +1,4 @@
-import type { DiaryEntry, DiaryReflection, MonthId } from '../types.ts';
+import type { DiaryReflection, MonthId } from '../types.ts';
 import { DiaryAccessError, makeEntryIndex } from './contract.ts';
 import type { CursorPage, DiaryRepository, EntryDraft, EntryEdit, EntryRecord, PageRequest, PreferencesEdit, ReflectionRecord, UserPreferences } from './contract.ts';
 

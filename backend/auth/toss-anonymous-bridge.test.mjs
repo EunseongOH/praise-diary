@@ -55,5 +55,5 @@ test('failed, missing, replayed or invalid Toss exchange never creates a session
 });
 test('server refuses to initialize without verified exchange and signed session issuer', () => {
   assert.throws(() => makeTossAnonymousBridge({ allowedOrigins: [origin], issueSession: () => {} }));
-  assert.throws(() => makeTossAnonymousBridge({ allowedOrigins: [origin], exchangeCodeWithToss: () => {}, issueSession: () => {} }));
+  assert.throws(() => makeTossAnonymousBridge({ allowedOrigins: ['http://insecure.example.test'], exchangeCodeWithToss: () => {}, issueSession: () => {} }));
 });
