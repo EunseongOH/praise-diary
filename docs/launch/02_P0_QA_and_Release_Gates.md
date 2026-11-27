@@ -5,7 +5,7 @@
 | ID | 실제 해야 할 일 | 현재 상태 | 통과 증거 |
 |---|---|---|---|
 | A01 | 고유 appName 등록, 운영자/고객센터 확정 | **앱 생성 완료 (`dajeongrok`, 사용자 제공 링크)** / 운영자·고객센터는 미확인 | 콘솔 운영 정보 확인 필요 |
-| A02 | SDK 3.x 설치, granite.config.ts, .ait 번들 | 미구현 | 실제 AIT build 및 QR 실행 |
+| A02 | SDK 3.x 설치, apps-in-toss.config.ts, .ait 번들 | **코드·CI 빌드 성공 (`dajeongrok.ait`) / 실제 토스 QR 실기기 미검증** | [검증된 CI](https://github.com/EunseongOH/praise-diary/actions/runs/45954067483), 기기 QA는 별도 |
 | A03 | 토스 NavigationBar, backEvent/닫기 및 CORS 실제 origin | 미연결 | iOS/Android 기기 QA |
 | A04 | 일회성 Toss 익명 인증코드 → 서버 mTLS 교환 | 모의 함수만 | 두 계정의 실제 인증 성공/재사용 실패 |
 | A05 | Firebase/Supabase 한 곳 결정, Auth·Security Rules/RLS | 추상 계약만 | 테스트 계정 A가 B의 모든 기록에 접근·삭제할 수 없음 |

@@ -53,7 +53,7 @@
   "releaseEvidence": {
     "consoleAppRegistered": true,
     "verifiedAvailableAppName": true,
-    "aitSdkInstalledAndBuilt": false,
+    "aitSdkInstalledAndBuilt": true,
     "realTossCodeExchangeVerified": false,
     "firebaseOrSupabaseAuthAndRulesVerified": false,
     "crossUserPrivacyTestsPassed": false,
@@ -68,7 +68,10 @@
     "nonGameDarkThemePolicyReviewed": false,
     "externalFontsAndRemoteResourcesReviewed": false,
     "nativeNavigationIntegrated": false,
-    "consentAndRetentionLegallyReviewed": false
+    "consentAndRetentionLegallyReviewed": false,
+    "aitSdkReviewBuildVerifiedAt": "2026-11-27",
+    "aitSdkReviewBuildGitHubRun": "https://github.com/EunseongOH/praise-diary/actions/runs/45954067483",
+    "aitSdkReviewBundleArtifact": "https://github.com/EunseongOH/praise-diary/actions/runs/45954067483/artifacts/15178595398"
   },
   "registrationEvidence": {
     "source": "user_confirmed_apps_in_toss_console_link",

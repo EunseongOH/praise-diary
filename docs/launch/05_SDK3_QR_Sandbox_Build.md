@@ -1,5 +1,7 @@
 # 다정록 SDK 3.x QR 테스트 번들 인수인계 (2026-11-27)
 
+**2026-11-27 자동 빌드 성공:** [GitHub Actions 전체 통과](https://github.com/EunseongOH/praise-diary/actions/runs/45954067483) / [테스트 번들 다운로드](https://github.com/EunseongOH/praise-diary/actions/runs/45954067483/artifacts/15178595398). `dajeongrok.ait` 파일을 확인함. QR 실기기 검수 전.
+
 **목적:** React/Vite 기존 화면을 앱인토스 WebView SDK 3.x 패키징하여 실제 토스 테스트에서 화면·탭·뒤로가기를 확인한다. 개인 일기를 실제로 저장하는 제품 버전이 아님.
 
 ## 핵심 변경
