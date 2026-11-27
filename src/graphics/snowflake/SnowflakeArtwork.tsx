@@ -10,7 +10,7 @@
  * Reduced motion (app setting or OS): no replay, no particles; the after-save state is shown still.
  * States are built in a worker (shared cache); nothing is shown until the month state exists (no fake artwork).
  */
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { DiaryEntry } from '../../data/types';
 import { SNOWFLAKE_REVIEW, VISUAL_STAGE_DAYS } from './flags';
 import { distinctDays, toEngine } from './sourceAdapter';
@@ -73,9 +73,49 @@ export function SnowflakeArtwork({ entries, reducedMotion, variant, playback, la
     if (variant === 'saved' && !event) onPlaybackState?.('settled');
   }, [variant, event, onPlaybackState]);
   if (!E.length) return null;
+  // First-ever praise: no "before" snapshot exists. The previous event pipeline
+  // required B and therefore waited forever, leaving the save experience stuck.
+  // Reveal the actual first-day Canvas bottom→top instead, then keep its I3 idle motion.
+  if (event && event.before.length === 0) {
+    if (!state) return <div className="snowflake-artwork" data-snowflake="pending" aria-hidden="true" />;
+    return <SnowflakeFirstGrowth key={event.id} id={event.id} snap={state} label={label} onPlaybackState={onPlaybackState} />;
+  }
   if (event) return <SnowflakeSaveEvent key={event.id} id={event.id} before={event.before} after={E} complete={event.complete} kind={event.kind} label={label} fallback={state} onPlaybackState={onPlaybackState} />;
   if (!state) return <div className="snowflake-artwork" data-snowflake="pending" aria-hidden="true" />;
   return <SnowflakeStatic key={still ? 'still' : 'live'} snap={state} live={!still && variant !== 'tile' && variant !== 'preview'} label={label} />;
+}
+
+/** One real first-day growth, without requiring a fictitious day-zero artwork. */
+function SnowflakeFirstGrowth({ id, snap, label, onPlaybackState }: {
+  id: string; snap: Snap; label: string;
+  onPlaybackState?: (phase: 'preparing' | 'replaying' | 'settled') => void;
+}) {
+  const [settled, setSettled] = useState(false);
+  const notified = useRef(false);
+  useEffect(() => {
+    if (!started.has(id)) started.set(id, performance.now());
+    onPlaybackState?.('replaying');
+    // Animation end is the normal path. A stopped/unsupported CSS animation
+    // must not permanently trap the user's save-success action.
+    const fallback = window.setTimeout(() => {
+      if (notified.current) return;
+      notified.current = true;
+      setSettled(true);
+      onPlaybackState?.('settled');
+    }, 2600);
+    return () => window.clearTimeout(fallback);
+  }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
+  const finish = () => {
+    if (notified.current) return;
+    notified.current = true;
+    setSettled(true);
+    onPlaybackState?.('settled');
+  };
+  return <div className={settled ? 'snowflake-first-grow snowflake-first-grow--settled' : 'snowflake-first-grow'}
+    data-snowflake="first-growth" data-phase={settled ? 'settled' : 'replaying'}
+    onAnimationEnd={(e) => { if (e.target === e.currentTarget) finish(); }}>
+    <SnowflakeStatic snap={snap} live label={label} />
+  </div>;
 }
 
 function SnowflakeSaveEvent({ id, before, after, complete, kind, label, fallback, onPlaybackState }: { id: string; before: Entry[]; after: Entry[]; complete: boolean; kind: string; label: string; fallback: Snap | null; onPlaybackState?: (phase: 'preparing' | 'replaying' | 'settled') => void }) {
