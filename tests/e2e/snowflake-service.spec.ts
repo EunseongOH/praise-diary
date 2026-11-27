@@ -108,7 +108,7 @@ test('review scenario 14 → 15: completion replay + snowglobe reward, then the 
   await page.setViewportSize({ width: 390, height: 860 });
   const errors = await open(page, 14);
   await save(page);
-  await expect(page.getByRole('heading', { name: '눈꽃이 조금 더 피어났어요.' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '남긴 칭찬이 눈꽃에 더해졌어요.' })).toBeVisible();
   await expect(page.getByText('활짝 피어났어요')).toHaveCount(0);
   await expect.poll(async () => (await event(page))?.kind, { timeout: 30_000 }).toBe('complete');
   const phases = new Set<string>();
@@ -155,6 +155,65 @@ test('archive F search and the snowflake together: saved entry is searchable, re
   await expect(page.locator('.gesture-artwork-viewer canvas')).toBeVisible({ timeout: 20_000 });
   await expect(page.locator('[data-fx]')).toHaveCount(0);
   expect(errors).toEqual([]);
+});
+
+test('saved copy: 14→15 review-only policy shows the agreed one-time completion line', async ({ page }) => {
+  test.setTimeout(180_000);
+  await open(page,14,'&goalPreview=15');
+  await save(page);
+  await expect(page.getByRole('heading', { name: '차곡차곡 모은 다정함이 하나의 눈꽃이 되었어요.' })).toBeVisible();
+  await expect.poll(async () => (await event(page))?.kind, {timeout:30000}).toBe('complete');
+  await waitDone(page);
+});
+
+test('post-goal repeated saves use different captions without replaying completion', async ({ page }) => {
+  test.setTimeout(180_000);
+  await open(page,15,'&goalPreview=15');
+  await save(page);
+  await expect(page.getByRole('heading', { name: '나에게 다정함 한 스푼을 더했어요.' })).toBeVisible();
+  await waitDone(page);
+  await page.getByRole('button', {name:'칭찬 하나 더 남기기'}).click();
+  await page.getByRole('textbox', {name:'나에게 남길 칭찬'}).fill('다정한 칭찬을 한 줄 더 남겼다.');
+  await page.locator('button.ui-button--full', {hasText:'칭찬 남기기'}).click();
+  await expect(page.getByRole('heading', {name:'나의 작은 노력을 한 번 더 알아봐 줬어요.'})).toBeVisible();
+  await expect(page.getByText('하나의 눈꽃이 되었어요.')).toHaveCount(0);
+});
+
+test('entry review: first visitor sees brand and monthly introduction, reopening the same session is a return visit', async ({browser}) => {
+  test.setTimeout(180_000);
+  const context=await browser.newContext({viewport:{width:390,height:844},reducedMotion:'no-preference'});
+  const page=await context.newPage();
+  await page.goto('/?snowflakeDays=8&entryPreview=1');
+  const intro=page.getByRole('dialog',{name:'다정록 첫 만남'});
+  await expect(intro).toHaveAttribute('data-entry-scenario','first');
+  await expect(intro.getByRole('heading',{name:'다정록'})).toBeVisible();
+  await expect(intro).toHaveAttribute('data-entry-phase','intro',{timeout:8000});
+  await intro.getByRole('button',{name:'건너뛰기'}).click();
+  await expect(intro).toHaveCount(0);
+  await expect(page.getByText('8일의 칭찬')).toBeVisible();
+  await page.reload();
+  const again=page.getByRole('dialog',{name:'다정록 첫 만남'});
+  await expect(again).toHaveAttribute('data-entry-scenario','return');
+  await expect(again).toHaveCount(0,{timeout:6000});
+  await expect(page.locator('.home-artwork-stage .artwork-slot')).toHaveAttribute('data-written-days','8');
+  await context.close();
+});
+
+test('entry review: zero-entry return and first encounter of a new month can be skipped; reduced motion stays still',async ({browser})=>{
+  test.setTimeout(120_000);
+  const context=await browser.newContext({viewport:{width:320,height:700},reducedMotion:'reduce'});
+  const page=await context.newPage();
+  for(const scenario of ['empty-return','new-month']){
+    await page.goto('/?snowflakeDays=0&entryScenario='+scenario);
+    const intro=page.getByRole('dialog',{name:'다정록 첫 만남'});
+    await expect(intro).toHaveAttribute('data-entry-scenario',scenario);
+    await expect(intro).toHaveAttribute('data-motion','off');
+    if(scenario==='new-month') await expect(intro.getByRole('heading',{name:'새해 양'})).toBeVisible();
+    await intro.getByRole('button',{name:'홈으로'}).click();
+    await expect(intro).toHaveCount(0);
+  }
+  await expect(page.getByText('오늘의 나에게 칭찬 하나 남겨볼까요?')).toBeVisible();
+  await context.close();
 });
 
 test('reduced motion (OS or app setting): no replay, no particles, the after-state still', async ({ browser }) => {
